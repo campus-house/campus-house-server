@@ -94,7 +94,7 @@ public class MyPageController {
                                                @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<Post> posts = postService.getPostsByUserId(user.getId(), pageable);
+            Page<Post> posts = postService.getPostsByAuthor(user.getId(), pageable);
             return ResponseEntity.ok(posts);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

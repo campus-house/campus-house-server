@@ -4,7 +4,6 @@ import com.example.campus_house.entity.Comment;
 import com.example.campus_house.entity.User;
 import com.example.campus_house.service.CommentService;
 import com.example.campus_house.service.AuthService;
-import com.example.campus_house.service.CommentLikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,31 +16,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Tag(name = "댓글", description = "댓글 관련 API")
 public class CommentController {
     
     private final CommentService commentService;
     private final AuthService authService;
-    private final CommentLikeService commentLikeService;
     
-    // 게시글의 댓글 조회
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<List<Comment>> getCommentsByPostId(@PathVariable Long postId) {
-        List<Comment> comments = commentService.getCommentsByPostId(postId);
-        return ResponseEntity.ok(comments);
-    }
-    
-    // 댓글 생성
-    @PostMapping
-    public ResponseEntity<Comment> createComment(@RequestBody CreateCommentRequest request) {
+    // 댓글 작성
+    @Operation(summary = "댓글 작성", description = "게시글에 댓글을 작성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "댓글 작성 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 필요")
+    })
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<Comment> createComment(
+            @Parameter(description = "게시글 ID", required = true)
+            @PathVariable Long postId,
+            @RequestBody CreateCommentRequest request,
+            @RequestHeader("Authorization") String token) {
         try {
+            User user = authService.getUserFromToken(token.substring(7));
             Comment comment = commentService.createComment(
-                    request.getPostId(),
-                    request.getUserId(),
+                    postId,
+                    user.getId(),
                     request.getContent(),
-                    request.getImageUrl(),
                     request.getParentId()
             );
             return ResponseEntity.ok(comment);
@@ -50,17 +51,71 @@ public class CommentController {
         }
     }
     
-    // 댓글 수정
-    @PutMapping("/{commentId}")
-    public ResponseEntity<Comment> updateComment(
-            @PathVariable Long commentId,
-            @RequestBody UpdateCommentRequest request) {
+    // 대댓글 작성
+    @Operation(summary = "대댓글 작성", description = "댓글에 대댓글을 작성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "대댓글 작성 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 필요")
+    })
+    @PostMapping("/comments/{parentCommentId}/replies")
+    public ResponseEntity<Comment> createReply(
+            @Parameter(description = "부모 댓글 ID", required = true)
+            @PathVariable Long parentCommentId,
+            @RequestBody CreateCommentRequest request,
+            @RequestHeader("Authorization") String token) {
         try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Comment comment = commentService.createComment(
+                    request.getPostId(),
+                    user.getId(),
+                    request.getContent(),
+                    parentCommentId
+            );
+            return ResponseEntity.ok(comment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // 댓글 목록 조회
+    @Operation(summary = "댓글 목록 조회", description = "게시글의 댓글 목록을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "댓글 조회 성공"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+    })
+    @GetMapping("/posts/{postId}/comments")
+    public ResponseEntity<List<Comment>> getCommentsByPostId(
+            @Parameter(description = "게시글 ID", required = true)
+            @PathVariable Long postId) {
+        try {
+            List<Comment> comments = commentService.getCommentsByPostId(postId);
+            return ResponseEntity.ok(comments);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // 댓글 수정
+    @Operation(summary = "댓글 수정", description = "내가 작성한 댓글을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 필요"),
+            @ApiResponse(responseCode = "403", description = "권한 없음")
+    })
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<Comment> updateComment(
+            @Parameter(description = "댓글 ID", required = true)
+            @PathVariable Long commentId,
+            @RequestBody UpdateCommentRequest request,
+            @RequestHeader("Authorization") String token) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
             Comment comment = commentService.updateComment(
                     commentId,
-                    request.getUserId(),
-                    request.getContent(),
-                    request.getImageUrl()
+                    user.getId(),
+                    request.getContent()
             );
             return ResponseEntity.ok(comment);
         } catch (Exception e) {
@@ -69,84 +124,47 @@ public class CommentController {
     }
     
     // 댓글 삭제
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, @RequestParam Long userId) {
+    @Operation(summary = "댓글 삭제", description = "내가 작성한 댓글을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공"),
+            @ApiResponse(responseCode = "401", description = "인증 필요"),
+            @ApiResponse(responseCode = "403", description = "권한 없음"),
+            @ApiResponse(responseCode = "404", description = "댓글을 찾을 수 없음")
+    })
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @Parameter(description = "댓글 ID", required = true)
+            @PathVariable Long commentId,
+            @RequestHeader("Authorization") String token) {
         try {
-            commentService.deleteComment(commentId, userId);
+            User user = authService.getUserFromToken(token.substring(7));
+            commentService.deleteComment(commentId, user.getId());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
     }
     
-    // 특정 사용자의 댓글 조회
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Comment>> getCommentsByUserId(@PathVariable Long userId) {
-        List<Comment> comments = commentService.getCommentsByUserId(userId);
-        return ResponseEntity.ok(comments);
-    }
-    
-    // 대댓글 조회
-    @GetMapping("/parent/{parentId}")
-    public ResponseEntity<List<Comment>> getRepliesByParentId(@PathVariable Long parentId) {
-        List<Comment> replies = commentService.getRepliesByParentId(parentId);
-        return ResponseEntity.ok(replies);
-    }
-    
-    // 댓글 좋아요 토글
-    @Operation(summary = "댓글 좋아요 토글", description = "댓글에 좋아요를 추가하거나 취소합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "좋아요 토글 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 실패"),
-            @ApiResponse(responseCode = "404", description = "댓글을 찾을 수 없음")
-    })
-    @PostMapping("/{commentId}/like")
-    public ResponseEntity<String> toggleLike(
-            @Parameter(description = "댓글 ID", required = true)
-            @PathVariable Long commentId,
-            @RequestHeader("Authorization") String token) {
-        try {
-            User user = authService.getUserFromToken(token.substring(7));
-            boolean isLiked = commentLikeService.toggleLike(commentId, user.getId());
-            String message = isLiked ? "댓글에 좋아요를 추가했습니다." : "댓글 좋아요를 취소했습니다.";
-            return ResponseEntity.ok(message);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("댓글 좋아요 처리 중 오류가 발생했습니다.");
-        }
-    }
-    
     // DTO 클래스들
     public static class CreateCommentRequest {
         private Long postId;
-        private Long userId;
         private String content;
-        private String imageUrl;
         private Long parentId;
         
         // Getters and Setters
         public Long getPostId() { return postId; }
         public void setPostId(Long postId) { this.postId = postId; }
-        public Long getUserId() { return userId; }
-        public void setUserId(Long userId) { this.userId = userId; }
         public String getContent() { return content; }
         public void setContent(String content) { this.content = content; }
-        public String getImageUrl() { return imageUrl; }
-        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
         public Long getParentId() { return parentId; }
         public void setParentId(Long parentId) { this.parentId = parentId; }
     }
     
     public static class UpdateCommentRequest {
-        private Long userId;
         private String content;
-        private String imageUrl;
         
         // Getters and Setters
-        public Long getUserId() { return userId; }
-        public void setUserId(Long userId) { this.userId = userId; }
         public String getContent() { return content; }
         public void setContent(String content) { this.content = content; }
-        public String getImageUrl() { return imageUrl; }
-        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     }
 }

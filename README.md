@@ -8,34 +8,46 @@
 
 ## 🚀 주요 기능
 
-### 1. 게시판 탭 ✅
-- **메모 기능**: 24시간 지속되는 임시 게시물 (공동구매, 음식나눔 등)
-- **동네 게시판**: 일반 게시판만 (모든 사용자 접근 가능)
-- **내 아파트 게시판**: 
-  - 일반 게시판 (거주지 인증된 사용자만 접근 가능)
-  - 질문 게시판 (모든 사용자 접근 가능)
+### 1. 게시판 시스템 ✅
+- **게시판 타입별 관리**: 아파트소식, 질문게시판, 동네소식
+- **게시글 CRUD**: 작성, 조회, 수정, 삭제 (작성자만 수정/삭제 가능)
+- **이미지 첨부**: 게시글에 이미지 포함 가능
+- **검색 기능**: 제목 + 내용 통합 검색
+- **정렬 옵션**: 최신순, 인기순 (좋아요 수 기준)
+- **상호작용**: 좋아요, 북마크 (스크랩) 기능
 
-### 2. 로그인/회원가입 ✅
+### 2. 댓글 시스템 ✅
+- **댓글 관리**: 댓글 작성, 조회, 수정, 삭제
+- **대댓글 지원**: 트리 구조로 계층적 댓글 시스템
+- **실시간 알림**: 댓글/대댓글 작성 시 알림 전송
+- **권한 관리**: 작성자만 수정/삭제 가능
+
+### 3. 채팅 시스템 (구현 예정) 🚧
+- **1:1 채팅**: 사용자 간 실시간 채팅
+- **채팅방 관리**: 자동 생성/조회, 메시지 히스토리
+- **읽음 처리**: 메시지 읽음 상태 관리
+- **알림 시스템**: 읽지 않은 메시지 수 표시
+
+### 4. 인증 시스템 ✅
 - **JWT 토큰 기반 인증**: 안전한 토큰 기반 인증 시스템
-- **회원가입**: 이메일, 닉네임, 사용자 타입별 가입
-- **로그인**: 이메일/비밀번호 로그인
-- **프로필 관리**: 닉네임, 위치, 대학교, 전공 정보 관리스
-- **거주지 인증 시스템**: 건물별 거주자 인증 및 권한 관리
+- **회원가입/로그인**: 이메일, 닉네임, 사용자 타입별 가입
+- **프로필 관리**: 개인정보 수정, 거주지 인증 상태 확인
+- **거주지 인증**: 건물별 거주자 인증 및 권한 관리
 - **시연용 계정**: 미리 생성된 테스트 계정 제공
 
-### 3. 지도 기능 ✅
+### 5. 마이페이지 ✅
+- **프로필 관리**: 개인정보 수정, 거주지 인증 상태 확인
+- **활동 내역**: 내가 작성한 게시글/댓글, 좋아요한 글, 저장한 글
+- **캐릭터 시스템**: 포인트 획득/사용, 캐릭터 가챠, 대표 캐릭터 설정
+- **포인트 관리**: 포인트 내역 조회, 통계 확인
+
+### 6. 매물 관리 ✅
 - **네이버 지도 API 연동**: 주소-좌표 변환, 지역 검색
 - **매물 탐색**: 지도에서 직관적인 매물 탐색
 - **검색 기능**: 건물명, 주소, 키워드 검색
 - **필터 기능**: 보증금/월세, 층수, 매물 타입별 필터링
 - **매물 상세 정보**: 기본 정보, 실거주자 후기, Q&A, 양도 정보
 - **스크랩 기능**: 관심 매물 저장 및 관리
-
-### 4. 마이페이지 ✅
-- **프로필 관리**: 개인정보 수정, 거주지 인증 상태 확인
-- **활동 내역**: 내가 작성한 게시글/댓글, 좋아요한 글, 저장한 글/매물
-- **캐릭터 시스템**: 포인트 획득/사용, 캐릭터 가챠, 대표 캐릭터 설정
-- **포인트 관리**: 포인트 내역 조회, 통계 확인
 
 ## 🛠 기술 스택
 
@@ -88,28 +100,49 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 src/main/java/com/example/campus_house/
 ├── CampusHouseApplication.java          # 메인 애플리케이션
 ├── config/
-│   └── JpaConfig.java                  # JPA 설정
+│   ├── JpaConfig.java                  # JPA 설정
+│   ├── SecurityConfig.java             # Spring Security 설정
+│   ├── SwaggerConfig.java              # Swagger 설정
+│   └── WebConfig.java                  # Web 설정
 ├── controller/                         # REST API 컨트롤러
-│   ├── MemoController.java
-│   ├── PostController.java
-│   ├── CommentController.java
-│   └── BookmarkController.java
+│   ├── PostController.java             # 게시글 관리
+│   ├── CommentController.java          # 댓글 관리
+│   ├── ChatController.java             # 채팅 관리 (구현 예정)
+│   ├── AuthController.java             # 인증 관리
+│   ├── MyPageController.java           # 마이페이지
+│   ├── CharacterController.java        # 캐릭터 관리
+│   ├── NotificationController.java     # 알림 관리
+│   └── PropertyController.java         # 매물 관리
 ├── entity/                             # JPA 엔티티
-│   ├── User.java
-│   ├── Memo.java
-│   ├── Post.java
-│   ├── Comment.java
-│   ├── Like.java
-│   └── Bookmark.java
+│   ├── User.java                       # 사용자
+│   ├── Post.java                       # 게시글
+│   ├── Comment.java                    # 댓글 (트리 구조)
+│   ├── Like.java                       # 좋아요
+│   ├── Bookmark.java                   # 북마크
+│   ├── ChatRoom.java                   # 채팅방
+│   ├── BoardType.java                  # 게시판 타입 enum
+│   ├── Character.java                  # 캐릭터
+│   ├── UserCharacter.java              # 사용자 캐릭터
+│   ├── PointHistory.java               # 포인트 내역
+│   ├── Notification.java               # 알림
+│   └── Property.java                   # 매물
 ├── repository/                         # 데이터 접근 계층
 │   ├── UserRepository.java
-│   ├── MemoRepository.java
 │   ├── PostRepository.java
+│   ├── CommentRepository.java
+│   ├── LikeRepository.java
+│   ├── BookmarkRepository.java
+│   ├── ChatRoomRepository.java
 │   └── ...
 ├── service/                           # 비즈니스 로직
-│   ├── MemoService.java
 │   ├── PostService.java
 │   ├── CommentService.java
+│   ├── LikeService.java
+│   ├── BookmarkService.java
+│   ├── AuthService.java
+│   ├── CharacterService.java
+│   ├── PointService.java
+│   ├── NotificationService.java
 │   └── ...
 └── scheduler/                         # 스케줄러
     └── BoardScheduler.java
@@ -186,107 +219,151 @@ http://localhost:8080
 
 ## 📚 API 문서
 
-### 메모 관련 API
+### 게시글 관련 API
 
-#### 활성 메모 목록 조회
+#### 게시글 관리
 ```http
-GET /api/memos
-```
-
-#### 메모 생성
-```http
-POST /api/memos
+# 게시글 작성
+POST /api/boards/{type}/posts
+Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "userId": 1,
-  "content": "피자 공동구매 하실 분?",
-  "type": "PURCHASE",
-  "maxParticipants": 4,
-  "location": "서울대학교",
-  "contactInfo": "010-1234-5678"
-}
-```
-
-#### 메모 답장/채팅
-```http
-POST /api/memos/{memoId}/replies
-Content-Type: application/json
-
-{
-  "userId": 2,
-  "content": "저도 참여하고 싶어요!",
-  "type": "REPLY"
-}
-```
-
-### 게시판 관련 API
-
-#### 게시판별 게시글 조회
-```http
-GET /api/posts/board/{boardCategory}?page=0&size=20
-GET /api/posts/board/{boardCategory}/{boardType}?page=0&size=20
-```
-- `boardCategory`: `NEIGHBORHOOD` (동네), `APARTMENT` (아파트)
-- `boardType`: `GENERAL` (일반), `QUESTION` (질문)
-
-#### 게시글 생성
-```http
-POST /api/posts
-Content-Type: application/json
-
-{
-  "userId": 1,
   "title": "기숙사 식당 운영시간이 궁금해요",
-  "content": "새내기인데 기숙사 식당 언제 열어요?",
-  "boardCategory": "APARTMENT",
-  "boardType": "QUESTION",
-  "location": "서울대학교"
+  "content": "새로 입사했는데 식당 운영시간을 모르겠어요",
+  "imageUrl": "https://example.com/image.jpg"
 }
-```
 
-#### 게시글 검색
-```http
-GET /api/posts/search?keyword=기숙사&boardType=QUESTION&page=0&size=20
-```
+# 모든 게시글 조회 (페이징)
+GET /api/boards/{type}/posts?page=0&size=20
 
-### 댓글 관련 API
+# 특정 게시글 조회
+GET /api/posts/{id}
 
-#### 댓글 조회
-```http
-GET /api/comments/post/{postId}
-```
-
-#### 댓글 작성
-```http
-POST /api/comments
+# 내가 작성한 게시글만 수정
+PUT /api/posts/{id}
+Authorization: Bearer {token}
 Content-Type: application/json
 
 {
-  "postId": 1,
-  "userId": 2,
-  "content": "저도 궁금했어요!",
-  "parentId": null
+  "title": "수정된 제목",
+  "content": "수정된 내용",
+  "imageUrl": "https://example.com/new-image.jpg"
 }
-```
 
-### 좋아요/북마크/댓글 좋아요 API (리소스별 통합)
-
-#### 게시글 좋아요 토글
-```http
-POST /api/posts/{postId}/like
+# 내가 작성한 게시글만 삭제
+DELETE /api/posts/{id}
 Authorization: Bearer {token}
 ```
 
-#### 게시글 북마크 토글
+#### 게시글 조회
 ```http
+# 최신순 조회
+GET /api/boards/{type}/posts/latest?page=0&size=20
+
+# 인기순 조회 (좋아요 수 기준)
+GET /api/boards/{type}/posts/popular?page=0&size=20
+
+# 제목 + 내용에서 검색
+GET /api/boards/{type}/posts/search?keyword=검색어&page=0&size=20
+```
+
+#### 상호작용
+```http
+# 좋아요 달기
+POST /api/posts/{postId}/like
+Authorization: Bearer {token}
+
+# 북마크 하기 (스크랩)
 POST /api/posts/{postId}/bookmark
 Authorization: Bearer {token}
 ```
 
-#### 댓글 좋아요 토글
+### 댓글 관련 API
+
+#### 댓글 관리
 ```http
-POST /api/comments/{commentId}/like
+# 댓글 작성
+POST /api/posts/{postId}/comments
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "content": "저도 궁금했는데 감사합니다!",
+  "parentId": null
+}
+
+# 대댓글 작성
+POST /api/comments/{parentCommentId}/replies
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "postId": 1,
+  "content": "대댓글 내용입니다"
+}
+
+# 댓글 목록 조회
+GET /api/posts/{postId}/comments
+
+# 댓글 수정
+PUT /api/comments/{commentId}
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "content": "수정된 댓글 내용"
+}
+
+# 댓글 삭제
+DELETE /api/comments/{commentId}
+Authorization: Bearer {token}
+```
+
+### 채팅 관련 API (구현 예정)
+
+#### 채팅 관리
+```http
+# 채팅방 생성/조회
+POST /api/chat/rooms
+Authorization: Bearer {token}
+
+# 사용자의 채팅방 목록
+GET /api/chat/rooms/user/{userName}
+Authorization: Bearer {token}
+
+# 특정 채팅방 조회
+GET /api/chat/rooms/{roomId}
+Authorization: Bearer {token}
+
+# 두 사용자 간 채팅방 조회
+GET /api/chat/rooms/users/{user1Name}/{user2Name}
+Authorization: Bearer {token}
+
+# 메시지 전송
+POST /api/chat/rooms/{roomId}/messages
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "content": "안녕하세요!",
+  "messageType": "TEXT"
+}
+
+# 메시지 목록 조회
+GET /api/chat/rooms/{roomId}/messages?page=0&size=50
+Authorization: Bearer {token}
+
+# 메시지 읽음 처리
+POST /api/chat/rooms/{roomId}/read
+Authorization: Bearer {token}
+
+# 읽지 않은 메시지 수 조회
+GET /api/chat/unread-count/{userName}
+Authorization: Bearer {token}
+
+# 특정 채팅방의 읽지 않은 메시지 수 조회
+GET /api/chat/rooms/{roomId}/unread-count/{userName}
 Authorization: Bearer {token}
 ```
 
@@ -539,22 +616,52 @@ Authorization: Bearer {token}
 - `mainCharacterId`: 대표 캐릭터 ID
 - `characterImage`: 캐릭터 이미지
 
-### Memo (메모)
-- `id`: 메모 ID
-- `content`: 내용
-- `type`: 메모 타입 (SHARING/PURCHASE/FOOD/ETC)
-- `expiresAt`: 만료 시간 (24시간 후)
-- `maxParticipants`: 최대 참여자 수
-
 ### Post (게시글)
 - `id`: 게시글 ID
 - `title`: 제목
 - `content`: 내용
-- `boardCategory`: 게시판 카테고리 (NEIGHBORHOOD/APARTMENT)
-- `boardType`: 게시판 타입 (QUESTION/GENERAL)
-- `isNew`: 새 질문 표시 여부
-- `viewCount`: 조회수
+- `imageUrl`: 이미지 URL
+- `boardType`: 게시판 타입 (APARTMENT/QUESTION/LOCAL)
+- `author`: 작성자 (User 참조)
 - `likeCount`: 좋아요 수
+- `bookmarkCount`: 북마크 수
+- `commentCount`: 댓글 수
+- `viewCount`: 조회수
+- `createdAt`: 생성일시
+- `updatedAt`: 수정일시
+
+### Comment (댓글)
+- `id`: 댓글 ID
+- `post`: 게시글 (Post 참조)
+- `author`: 작성자 (User 참조)
+- `parent`: 부모 댓글 (Comment 참조, 대댓글용)
+- `children`: 자식 댓글들 (Comment 리스트)
+- `content`: 댓글 내용
+- `createdAt`: 생성일시
+- `updatedAt`: 수정일시
+
+### Like (좋아요)
+- `id`: 좋아요 ID
+- `post`: 게시글 (Post 참조)
+- `user`: 사용자 (User 참조)
+- `createdAt`: 생성일시
+
+### Bookmark (북마크)
+- `id`: 북마크 ID
+- `post`: 게시글 (Post 참조)
+- `user`: 사용자 (User 참조)
+- `createdAt`: 생성일시
+
+### ChatRoom (채팅방)
+- `id`: 채팅방 ID
+- `user1`: 사용자1 (User 참조)
+- `user2`: 사용자2 (User 참조)
+- `createdAt`: 생성일시
+
+### BoardType (게시판 타입)
+- `APARTMENT`: 아파트소식
+- `QUESTION`: 질문게시판
+- `LOCAL`: 동네소식
 
 ### Property (매물)
 - `id`: 매물 ID
