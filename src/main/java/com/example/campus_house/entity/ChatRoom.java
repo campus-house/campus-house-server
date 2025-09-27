@@ -32,4 +32,29 @@ public class ChatRoom {
     @CreatedDate
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "user1_last_read_at")
+    private LocalDateTime user1LastReadAt;
+    
+    @Column(name = "user2_last_read_at")
+    private LocalDateTime user2LastReadAt;
+    
+    // 사용자별 마지막 읽음 시간 설정
+    public void setLastReadTime(User user, LocalDateTime readTime) {
+        if (user.equals(user1)) {
+            this.user1LastReadAt = readTime;
+        } else if (user.equals(user2)) {
+            this.user2LastReadAt = readTime;
+        }
+    }
+    
+    // 사용자별 마지막 읽음 시간 조회
+    public LocalDateTime getLastReadTime(User user) {
+        if (user.equals(user1)) {
+            return user1LastReadAt;
+        } else if (user.equals(user2)) {
+            return user2LastReadAt;
+        }
+        return null;
+    }
 }

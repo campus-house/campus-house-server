@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/comments/**").permitAll()
                 .requestMatchers("/api/likes/**").permitAll()
                 .requestMatchers("/api/bookmarks/**").permitAll()
+                .requestMatchers("/api/chat/**").authenticated() // 채팅 API는 인증 필요
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
                 .requestMatchers("/swagger-ui.html").permitAll()
