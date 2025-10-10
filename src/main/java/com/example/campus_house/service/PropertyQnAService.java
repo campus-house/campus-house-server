@@ -24,6 +24,7 @@ public class PropertyQnAService {
     private final PropertyQnARepository propertyQnARepository;
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
     
     // 특정 매물의 Q&A 조회 (질문만)
     @Cacheable(value = "qnas", key = "#propertyId + '_questions_' + #pageable.pageNumber + '_' + #pageable.pageSize")
@@ -82,7 +83,28 @@ public class PropertyQnAService {
                 .likeCount(0)
                 .build();
         
-        return propertyQnARepository.save(question);
+        PropertyQnA saved = propertyQnARepository.save(question);
+
+        // 해당 건물 거주자에게 질문 알림 전송 (질문 작성자 제외)
+        if (property.getId() != null) {
+            Long buildingId = property.getId();
+            java.util.List<User> residents = userRepository.findByVerifiedBuildingIdAndIsVerifiedTrue(buildingId);
+            for (User resident : residents) {
+                if (!resident.getId().equals(userId)) {
+                    notificationService.createNotificationFromUser(
+                            resident.getId(),
+                            userId,
+                            com.example.campus_house.entity.Notification.NotificationType.POST_COMMENT,
+                            "우리 집 질문이 올라왔습니다",
+                            content,
+                            saved.getId().toString(),
+                            "PROPERTY_QNA"
+                    );
+                }
+            }
+        }
+
+        return saved;
     }
     
     // 답변 작성

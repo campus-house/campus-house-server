@@ -77,10 +77,10 @@ public class Notification {
         POINT_EARNED,       // 포인트 획득
         POINT_USED,         // 포인트 사용
         
-        // 캐릭터 관련
-        CHARACTER_OBTAINED, // 캐릭터 획득
-        CHARACTER_GACHA,    // 가챠 결과
-        
+        // 채팅 관련
+        CHAT_MESSAGE,       // 새로운 채팅 메시지 도착
+        CHAT_ROOM_CREATED,  // 새로운 채팅방 생성
+
         // 시스템 관련
         SYSTEM_NOTICE,      // 시스템 공지
         WELCOME            // 환영 메시지

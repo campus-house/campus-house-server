@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
     
     private final PostRepository postRepository;
+    private final BadgeService badgeService;
     
     // 게시판 타입별 게시글 조회
     public Page<Post> getPostsByBoardType(BoardType boardType, Pageable pageable) {
@@ -30,7 +31,11 @@ public class PostService {
     // 게시글 생성
     @Transactional
     public Post createPost(Post post) {
-        return postRepository.save(post);
+        Post saved = postRepository.save(post);
+        if (post.getAuthor() != null && post.getAuthor().getId() != null) {
+            badgeService.awardIfFirstPost(post.getAuthor().getId());
+        }
+        return saved;
     }
     
     // 게시글 수정

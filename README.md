@@ -27,6 +27,7 @@
 - **채팅방 관리**: 자동 생성/조회, 메시지 히스토리
 - **읽음 처리**: 메시지 읽음 상태 관리
 - **알림 시스템**: 읽지 않은 메시지 수 표시
+  - 채팅 알림: 새 메시지 수신 시 알림(NotificationType=CHAT_MESSAGE) 생성 (REST 기반)
 
 ### 4. 인증 시스템 ✅
 - **JWT 토큰 기반 인증**: 안전한 토큰 기반 인증 시스템
@@ -37,7 +38,7 @@
 
 ### 5. 마이페이지 ✅
 - **프로필 관리**: 개인정보 수정, 거주지 인증 상태 확인
-- **활동 내역**: 내가 작성한 게시글/댓글, 좋아요한 글, 저장한 글
+- **활동 내역**: 내가 작성한 게시글/댓글, 좋아요한 글, 저장한 글(게시글 북마크)
 - **캐릭터 시스템**: 포인트 획득/사용, 캐릭터 가챠, 대표 캐릭터 설정
 - **포인트 관리**: 포인트 내역 조회, 통계 확인
 
@@ -112,6 +113,7 @@ src/main/java/com/example/campus_house/
 │   ├── MyPageController.java           # 마이페이지
 │   ├── CharacterController.java        # 캐릭터 관리
 │   ├── NotificationController.java     # 알림 관리
+│   ├── ScrapController.java            # 스크랩 관리 (매물 스크랩 목록)
 │   └── PropertyController.java         # 매물 관리
 ├── entity/                             # JPA 엔티티
 │   ├── User.java                       # 사용자
@@ -367,6 +369,15 @@ GET /api/chat/rooms/{roomId}/unread-count/{userName}
 Authorization: Bearer {token}
 ```
 
+#### 채팅 알림 동작
+```text
+- 새로운 채팅 메시지 전송 시, 수신자에게 알림 생성
+- NotificationType: CHAT_MESSAGE
+- 제목: "새 메시지", 내용: 메시지 본문 미리보기
+- relatedType=CHAT_ROOM, relatedId=채팅방 ID
+- 읽음 처리: /api/notifications/{notificationId}/read 또는 /api/notifications/read-all
+```
+
 ### 인증 관련 API
 
 #### 회원가입
@@ -545,9 +556,9 @@ GET /api/mypage/bookmarks?page=0&size=20
 Authorization: Bearer {token}
 ```
 
-#### 내 매물 스크랩 조회
+#### 내 매물 스크랩 조회 (마이페이지에서 분리)
 ```http
-GET /api/mypage/property-scraps?page=0&size=20
+GET /api/scraps/properties?page=0&size=20
 Authorization: Bearer {token}
 ```
 

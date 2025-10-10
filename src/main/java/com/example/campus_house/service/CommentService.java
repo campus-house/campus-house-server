@@ -23,6 +23,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostService postService;
     private final NotificationService notificationService;
+    private final BadgeService badgeService;
     
     // 게시글의 댓글 조회 (최상위 댓글만)
     public List<Comment> getCommentsByPostId(Long postId) {
@@ -60,6 +61,9 @@ public class CommentService {
         
         // 댓글 수 증가
         postService.updateCommentCount(postId, 1);
+
+        // 배지: 첫 댓글
+        badgeService.awardIfFirstComment(userId);
         
         // 알림 생성 (게시글 작성자에게)
         if (!post.getAuthor().getId().equals(userId)) {
@@ -86,6 +90,11 @@ public class CommentService {
         }
         
         return savedComment;
+    }
+
+    // 특정 사용자의 댓글 목록 조회 (최신순)
+    public List<Comment> getCommentsByAuthor(Long authorId) {
+        return commentRepository.findByAuthorIdOrderByCreatedAtDesc(authorId);
     }
     
     // 댓글 수정

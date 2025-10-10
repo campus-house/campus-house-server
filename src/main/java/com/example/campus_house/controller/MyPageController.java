@@ -20,10 +20,12 @@ public class MyPageController {
     private final UserRepository userRepository;
     private final PostService postService;
     private final BookmarkService bookmarkService;
-    private final PropertyScrapService propertyScrapService;
     private final CharacterService characterService;
     private final PointService pointService;
     private final AuthService authService;
+    private final PropertyReviewService propertyReviewService;
+    private final com.example.campus_house.repository.ResidenceVerificationRepository residenceVerificationRepository;
+    private final CommentService commentService;
     
     // 사용자 프로필 조회
     @GetMapping("/profile")
@@ -100,6 +102,18 @@ public class MyPageController {
             return ResponseEntity.badRequest().build();
         }
     }
+
+    // 내가 작성한 댓글 조회
+    @GetMapping("/comments")
+    public ResponseEntity<List<Comment>> getMyComments(@RequestHeader("Authorization") String token) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            List<Comment> comments = commentService.getCommentsByAuthor(user.getId());
+            return ResponseEntity.ok(comments);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
     
     // 내가 저장한 게시글 조회
     @GetMapping("/bookmarks")
@@ -114,18 +128,7 @@ public class MyPageController {
         }
     }
     
-    // 내가 저장한 매물 조회
-    @GetMapping("/property-scraps")
-    public ResponseEntity<Page<PropertyScrap>> getMyPropertyScraps(@RequestHeader("Authorization") String token,
-                                                                 @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        try {
-            User user = authService.getUserFromToken(token.substring(7));
-            Page<PropertyScrap> scraps = propertyScrapService.getScrapedPropertiesByUserId(user.getId(), pageable);
-            return ResponseEntity.ok(scraps);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+    // (이전) 내가 저장한 매물 조회 엔드포인트는 ScrapController로 분리됨
     
     // 보유 캐릭터 조회
     @GetMapping("/characters")
@@ -202,6 +205,73 @@ public class MyPageController {
         }
     }
     
+    // 내 거주지 조회 (승인된 인증 기준)
+    @GetMapping("/residence")
+    public ResponseEntity<ResidenceInfo> getMyResidence(@RequestHeader("Authorization") String token) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            java.util.Optional<ResidenceVerification> approved =
+                    residenceVerificationRepository.findByUserIdAndStatus(
+                            user.getId(), ResidenceVerification.VerificationStatus.APPROVED);
+            if (approved.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            ResidenceVerification v = approved.get();
+            ResidenceInfo info = ResidenceInfo.builder()
+                    .buildingId(v.getBuildingId())
+                    .buildingName(v.getBuildingName())
+                    .buildingAddress(v.getBuildingAddress())
+                    .roomNumber(v.getRoomNumber())
+                    .verifiedAt(v.getVerifiedAt())
+                    .build();
+            return ResponseEntity.ok(info);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 내가 남긴 매물 후기 조회
+    @GetMapping("/property-reviews")
+    public ResponseEntity<Page<PropertyReview>> getMyPropertyReviews(
+            @RequestHeader("Authorization") String token,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Page<PropertyReview> reviews = propertyReviewService.getReviewsByUserId(user.getId(), pageable);
+            return ResponseEntity.ok(reviews);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    // 매물 후기 작성
+    @PostMapping("/property-reviews")
+    public ResponseEntity<PropertyReview> createMyPropertyReview(
+            @RequestHeader("Authorization") String token,
+            @RequestBody CreatePropertyReviewRequest request) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            PropertyReview review = propertyReviewService.createReview(
+                    request.getPropertyId(),
+                    user.getId(),
+                    request.getTitle(),
+                    request.getContent(),
+                    request.getImageUrl(),
+                    request.getRating(),
+                    request.getNoiseLevel(),
+                    request.getSafetyLevel(),
+                    request.getConvenienceLevel(),
+                    request.getManagementLevel(),
+                    request.getPros(),
+                    request.getCons(),
+                    request.getLivingPeriod()
+            );
+            return ResponseEntity.ok(review);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
     // 캐릭터 통계 조회
     @GetMapping("/characters/stats")
     public ResponseEntity<CharacterService.UserCharacterStats> getCharacterStats(@RequestHeader("Authorization") String token) {
@@ -234,6 +304,32 @@ public class MyPageController {
         private String introduction;
     }
     
+    @lombok.Data
+    @lombok.Builder
+    public static class ResidenceInfo {
+        private Long buildingId;
+        private String buildingName;
+        private String buildingAddress;
+        private String roomNumber;
+        private java.time.LocalDateTime verifiedAt;
+    }
+
+    @lombok.Data
+    public static class CreatePropertyReviewRequest {
+        private Long propertyId;
+        private String title;
+        private String content;
+        private String imageUrl;
+        private Integer rating;
+        private Integer noiseLevel;
+        private Integer safetyLevel;
+        private Integer convenienceLevel;
+        private Integer managementLevel;
+        private String pros;
+        private String cons;
+        private String livingPeriod;
+    }
+
     @lombok.Data
     public static class UpdateProfileRequest {
         private String nickname;

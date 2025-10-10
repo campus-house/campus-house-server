@@ -25,7 +25,6 @@ public class CharacterService {
     private final UserCharacterRepository userCharacterRepository;
     private final PointHistoryRepository pointHistoryRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
     
     // 모든 활성화된 캐릭터 조회
     public List<Character> getAllActiveCharacters() {
@@ -96,15 +95,7 @@ public class CharacterService {
                 .build();
         pointHistoryRepository.save(pointHistory);
         
-        // 캐릭터 획득 알림
-        notificationService.createNotification(
-                userId,
-                com.example.campus_house.entity.Notification.NotificationType.CHARACTER_OBTAINED,
-                "새로운 캐릭터를 획득했습니다!",
-                gachaResult.getName() + " 캐릭터를 획득했습니다! (" + gachaResult.getRarity() + " 등급)",
-                gachaResult.getId().toString(),
-                "CHARACTER"
-        );
+        // (삭제) 캐릭터 획득 알림
         
         return gachaResult;
     }

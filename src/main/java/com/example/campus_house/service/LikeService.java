@@ -20,6 +20,7 @@ public class LikeService {
     private final UserRepository userRepository;
     private final PostService postService;
     private final NotificationService notificationService;
+    private final BadgeService badgeService;
     
     // 게시글 좋아요 토글
     @Transactional
@@ -45,6 +46,7 @@ public class LikeService {
             
             likeRepository.save(like);
             postService.updateLikeCount(postId, 1);
+            badgeService.awardIfFirstLike(userId);
             
             // 게시글 작성자에게 좋아요 알림 전송 (자신의 게시글이 아닌 경우)
             if (!post.getAuthor().getId().equals(userId)) {

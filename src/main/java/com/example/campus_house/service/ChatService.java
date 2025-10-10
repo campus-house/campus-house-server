@@ -31,6 +31,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final NotificationService notificationService;
     
     // JWT 토큰에서 사용자 정보 추출
     private User getUserFromToken(String token) {
@@ -210,6 +211,22 @@ public class ChatService {
         
         message = chatMessageRepository.save(message);
         
+        // 채팅 알림: 상대 사용자에게 새 메시지 알림 생성
+        User receiver = chatRoom.getUser1().equals(currentUser) ? chatRoom.getUser2() : chatRoom.getUser1();
+        try {
+            notificationService.createNotificationFromUser(
+                    receiver.getId(),
+                    currentUser.getId(),
+                    com.example.campus_house.entity.Notification.NotificationType.CHAT_MESSAGE,
+                    "새 메시지", // title
+                    request.getContent(), // content 미리보기
+                    String.valueOf(chatRoom.getId()), // relatedId: 채팅방 ID
+                    "CHAT_ROOM" // relatedType
+            );
+        } catch (Exception ignore) {
+            // 알림 실패는 메시지 전송 실패로 간주하지 않음
+        }
+
         return ChatMessageResponse.from(message, currentUser);
     }
     
