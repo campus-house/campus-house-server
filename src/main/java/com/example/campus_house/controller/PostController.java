@@ -238,23 +238,60 @@ public class PostController {
         }
     }
     
-    // 북마크 토글 (스크랩)
-    @Operation(summary = "게시글 북마크 토글", description = "게시글을 북마크에 추가하거나 제거합니다.")
+    // 게시글 북마크 토글
+    @Operation(summary = "게시글 북마크 토글", description = "게시글을 북마크에 추가하거나 제거합니다. 게시글의 스크랩 수가 변경됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "북마크 토글 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 필요")
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 필요"),
+            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PostMapping("/posts/{postId}/bookmark")
-    public ResponseEntity<String> toggleBookmark(
+    public ResponseEntity<BookmarkResponse> toggleBookmark(
             @Parameter(description = "게시글 ID", required = true)
             @PathVariable Long postId,
-            @RequestHeader("Authorization") String token) {
+            @Parameter(description = "사용자 ID", required = true)
+            @RequestParam Long userId) {
         try {
-            User user = authService.getUserFromToken(token.substring(7));
-            boolean isBookmarked = bookmarkService.toggleBookmark(postId, user.getId());
-            return ResponseEntity.ok(isBookmarked ? "북마크 추가됨" : "북마크 취소됨");
-        } catch (RuntimeException e) {
+            boolean isBookmarked = bookmarkService.togglePostBookmark(postId, userId);
+            BookmarkResponse response = new BookmarkResponse(isBookmarked);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+    
+    // 게시글 북마크 상태 확인
+    @Operation(summary = "게시글 북마크 상태 확인", description = "특정 게시글이 북마크되어 있는지 확인합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "북마크 상태 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "401", description = "인증 필요")
+    })
+    @GetMapping("/posts/{postId}/bookmark/status")
+    public ResponseEntity<Boolean> isBookmarked(
+            @Parameter(description = "게시글 ID", required = true)
+            @PathVariable Long postId,
+            @Parameter(description = "사용자 ID", required = true)
+            @RequestParam Long userId) {
+        try {
+            boolean isBookmarked = bookmarkService.isPostBookmarked(postId, userId);
+            return ResponseEntity.ok(isBookmarked);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // DTO 클래스
+    public static class BookmarkResponse {
+        private boolean isBookmarked;
+        
+        public BookmarkResponse(boolean isBookmarked) {
+            this.isBookmarked = isBookmarked;
+        }
+        
+        // Getters and Setters
+        public boolean isBookmarked() { return isBookmarked; }
+        public void setBookmarked(boolean bookmarked) { isBookmarked = bookmarked; }
     }
 }

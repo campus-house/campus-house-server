@@ -117,11 +117,10 @@ public class MyPageController {
     
     // 내가 저장한 게시글 조회
     @GetMapping("/bookmarks")
-    public ResponseEntity<Page<Bookmark>> getMyBookmarks(@RequestHeader("Authorization") String token,
-                                                        @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<List<Bookmark>> getMyBookmarks(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<Bookmark> bookmarks = bookmarkService.getBookmarkedPostsByUserId(user.getId(), pageable);
+            List<Bookmark> bookmarks = bookmarkService.getAllBookmarkedPostsByUserId(user.getId());
             return ResponseEntity.ok(bookmarks);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

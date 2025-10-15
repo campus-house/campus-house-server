@@ -42,6 +42,11 @@ public class BookmarkService {
         if (bookmarkRepository.existsByUserIdAndPostId(userId, postId)) {
             // 북마크 취소
             bookmarkRepository.deleteByUserIdAndPostId(userId, postId);
+            
+            // 게시글의 스크랩 수 감소
+            post.setScrapCount(Math.max(0, post.getScrapCount() - 1));
+            postRepository.save(post);
+            
             return false; // 북마크 취소됨
         } else {
             // 북마크 추가
@@ -51,6 +56,11 @@ public class BookmarkService {
                     .build();
             
             bookmarkRepository.save(bookmark);
+            
+            // 게시글의 스크랩 수 증가
+            post.setScrapCount(post.getScrapCount() + 1);
+            postRepository.save(post);
+            
             return true; // 북마크 추가됨
         }
     }
