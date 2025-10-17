@@ -32,12 +32,8 @@ public class Character {
     @Column(nullable = false)
     private String imageUrl; // 캐릭터 이미지 URL
     
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CharacterRarity rarity; // 희귀도
-    
-    @Column(nullable = false)
-    private Integer price; // 가격 (포인트)
+    private Integer price; // 가격 (리워드)
     
     @Column(nullable = false)
     @Builder.Default
@@ -47,10 +43,4 @@ public class Character {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
-    public enum CharacterRarity {
-        COMMON,     // 일반 (70%)
-        RARE,       // 레어 (20%)
-        EPIC,       // 에픽 (8%)
-        LEGENDARY   // 레전더리 (2%)
-    }
 }

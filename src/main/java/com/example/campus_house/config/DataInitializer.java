@@ -42,7 +42,6 @@ public class DataInitializer implements CommandLineRunner {
                 .major("컴퓨터공학과")
                 .introduction("기숙사에서 2년째 살고 있어요! 주변 맛집과 편의시설에 대해 잘 알고 있습니다.")
                 .characterImage("character1.png")
-                .status(User.UserStatus.ACTIVE)
                 .build();
         
         userRepository.save(verifiedResident);
@@ -59,7 +58,6 @@ public class DataInitializer implements CommandLineRunner {
                 .major("경영학과")
                 .introduction("올해 새내기예요! 자취방 정보가 궁금합니다.")
                 .characterImage("character2.png")
-                .status(User.UserStatus.ACTIVE)
                 .build();
         
         userRepository.save(nonVerifiedUser);
@@ -79,7 +77,6 @@ public class DataInitializer implements CommandLineRunner {
                 .major("전자공학과")
                 .introduction("4학년 선배입니다. 기숙사 생활에 대한 조언을 해드릴 수 있어요!")
                 .characterImage("character3.png")
-                .status(User.UserStatus.ACTIVE)
                 .build();
         
         userRepository.save(verifiedResident2);
@@ -135,7 +132,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("기숙사 고양이")
                 .description("기숙사에서 자주 보이는 귀여운 고양이")
                 .imageUrl("character_common_cat.png")
-                .rarity(Character.CharacterRarity.COMMON)
                 .price(50)
                 .isActive(true)
                 .build();
@@ -145,7 +141,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("편의점 알바생")
                 .description("24시간 편의점에서 일하는 친근한 알바생")
                 .imageUrl("character_common_convenience.png")
-                .rarity(Character.CharacterRarity.COMMON)
                 .price(50)
                 .isActive(true)
                 .build();
@@ -155,7 +150,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("도서관 사서")
                 .description("조용한 도서관을 지키는 사서")
                 .imageUrl("character_common_librarian.png")
-                .rarity(Character.CharacterRarity.COMMON)
                 .price(50)
                 .isActive(true)
                 .build();
@@ -166,7 +160,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("기숙사 사감선생님")
                 .description("기숙사를 관리하는 엄격하지만 따뜻한 사감선생님")
                 .imageUrl("character_rare_dormitory_teacher.png")
-                .rarity(Character.CharacterRarity.RARE)
                 .price(200)
                 .isActive(true)
                 .build();
@@ -176,7 +169,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("캠퍼스 보안요원")
                 .description("캠퍼스의 안전을 지키는 보안요원")
                 .imageUrl("character_rare_security.png")
-                .rarity(Character.CharacterRarity.RARE)
                 .price(200)
                 .isActive(true)
                 .build();
@@ -187,7 +179,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("기숙사 학생회장")
                 .description("기숙사 학생들을 이끄는 카리스마 있는 학생회장")
                 .imageUrl("character_epic_student_council.png")
-                .rarity(Character.CharacterRarity.EPIC)
                 .price(500)
                 .isActive(true)
                 .build();
@@ -197,7 +188,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("캠퍼스 마스코트")
                 .description("학교의 상징이 되는 귀여운 마스코트")
                 .imageUrl("character_epic_mascot.png")
-                .rarity(Character.CharacterRarity.EPIC)
                 .price(500)
                 .isActive(true)
                 .build();
@@ -208,7 +198,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("캠퍼스의 전설")
                 .description("캠퍼스에서 전설로 불리는 신비로운 존재")
                 .imageUrl("character_legendary_legend.png")
-                .rarity(Character.CharacterRarity.LEGENDARY)
                 .price(1000)
                 .isActive(true)
                 .build();
@@ -218,7 +207,6 @@ public class DataInitializer implements CommandLineRunner {
                 .name("기숙사의 수호신")
                 .description("기숙사를 수호하는 신비로운 수호신")
                 .imageUrl("character_legendary_guardian.png")
-                .rarity(Character.CharacterRarity.LEGENDARY)
                 .price(1000)
                 .isActive(true)
                 .build();

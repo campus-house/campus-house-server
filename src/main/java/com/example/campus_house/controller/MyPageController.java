@@ -21,9 +21,8 @@ public class MyPageController {
     private final PostService postService;
     private final BookmarkService bookmarkService;
     private final CharacterService characterService;
-    private final PointService pointService;
+    private final RewardService rewardService;
     private final AuthService authService;
-    private final PropertyReviewService propertyReviewService;
     private final com.example.campus_house.repository.ResidenceVerificationRepository residenceVerificationRepository;
     private final CommentService commentService;
     
@@ -41,7 +40,7 @@ public class MyPageController {
                     .userType(user.getUserType())
                     .isVerified(user.getIsVerified())
                     .verifiedBuildingName(user.getVerifiedBuildingName())
-                    .points(user.getPoints())
+                    .rewards(user.getRewards())
                     .mainCharacterId(user.getMainCharacterId())
                     .location(user.getLocation())
                     .university(user.getUniversity())
@@ -181,11 +180,11 @@ public class MyPageController {
     
     // 포인트 내역 조회
     @GetMapping("/points/history")
-    public ResponseEntity<Page<PointHistory>> getPointHistory(@RequestHeader("Authorization") String token,
+    public ResponseEntity<Page<RewardHistory>> getRewardHistory(@RequestHeader("Authorization") String token,
                                                             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<PointHistory> history = pointService.getPointHistory(user.getId(), pageable);
+            Page<RewardHistory> history = rewardService.getRewardHistory(user.getId(), pageable);
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -194,10 +193,10 @@ public class MyPageController {
     
     // 포인트 통계 조회
     @GetMapping("/points/stats")
-    public ResponseEntity<PointService.UserPointStats> getPointStats(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<RewardService.UserRewardStats> getRewardStats(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            PointService.UserPointStats stats = pointService.getUserPointStats(user.getId());
+            RewardService.UserRewardStats stats = rewardService.getUserRewardStats(user.getId());
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -231,13 +230,12 @@ public class MyPageController {
 
     // 내가 남긴 매물 후기 조회
     @GetMapping("/property-reviews")
-    public ResponseEntity<Page<PropertyReview>> getMyPropertyReviews(
+    public ResponseEntity<String> getMyPropertyReviews(
             @RequestHeader("Authorization") String token,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<PropertyReview> reviews = propertyReviewService.getReviewsByUserId(user.getId(), pageable);
-            return ResponseEntity.ok(reviews);
+            return ResponseEntity.ok("Property review service is not available");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -245,27 +243,12 @@ public class MyPageController {
 
     // 매물 후기 작성
     @PostMapping("/property-reviews")
-    public ResponseEntity<PropertyReview> createMyPropertyReview(
+    public ResponseEntity<String> createMyPropertyReview(
             @RequestHeader("Authorization") String token,
             @RequestBody CreatePropertyReviewRequest request) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            PropertyReview review = propertyReviewService.createReview(
-                    request.getPropertyId(),
-                    user.getId(),
-                    request.getTitle(),
-                    request.getContent(),
-                    request.getImageUrl(),
-                    request.getRating(),
-                    request.getNoiseLevel(),
-                    request.getSafetyLevel(),
-                    request.getConvenienceLevel(),
-                    request.getManagementLevel(),
-                    request.getPros(),
-                    request.getCons(),
-                    request.getLivingPeriod()
-            );
-            return ResponseEntity.ok(review);
+            return ResponseEntity.ok("Property review service is not available");
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
@@ -295,7 +278,7 @@ public class MyPageController {
         private User.UserType userType;
         private Boolean isVerified;
         private String verifiedBuildingName;
-        private Integer points;
+        private Integer rewards;
         private Long mainCharacterId;
         private String location;
         private String university;

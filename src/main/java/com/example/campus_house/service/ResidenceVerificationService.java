@@ -46,7 +46,6 @@ public class ResidenceVerificationService {
                 .buildingName(buildingName)
                 .buildingAddress(buildingAddress)
                 .roomNumber(roomNumber)
-                .verificationDocument(verificationDocument)
                 .status(ResidenceVerification.VerificationStatus.PENDING)
                 .build();
         
@@ -67,7 +66,6 @@ public class ResidenceVerificationService {
         verification.setStatus(ResidenceVerification.VerificationStatus.APPROVED);
         verification.setVerifiedBy(adminId);
         verification.setVerifiedAt(LocalDateTime.now());
-        verification.setAdminComment(adminComment);
         
         // 사용자 정보 업데이트
         User user = verification.getUser();
@@ -95,7 +93,6 @@ public class ResidenceVerificationService {
         verification.setStatus(ResidenceVerification.VerificationStatus.REJECTED);
         verification.setVerifiedBy(adminId);
         verification.setVerifiedAt(LocalDateTime.now());
-        verification.setAdminComment(adminComment);
         
         return verificationRepository.save(verification);
     }

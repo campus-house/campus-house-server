@@ -92,10 +92,10 @@ public class BuildingService {
                                                     BigDecimal minMonthlyRent, BigDecimal maxMonthlyRent,
                                                     BigDecimal minJeonse, BigDecimal maxJeonse,
                                                     Boolean parkingRequired, Boolean elevatorRequired,
-                                                    Integer maxWalkingTime, Pageable pageable) {
+                                                    Integer maxWalkingTime, String buildingUsage, Pageable pageable) {
         return buildingRepository.findByFilters(minDeposit, maxDeposit, minMonthlyRent, maxMonthlyRent,
                                               minJeonse, maxJeonse, parkingRequired, elevatorRequired,
-                                              maxWalkingTime, pageable);
+                                              maxWalkingTime, buildingUsage, pageable);
     }
     
     // 최근 등록된 건물 조회
@@ -114,6 +114,16 @@ public class BuildingService {
             return buildingRepository.findByStationWalkingTimeLessThanEqual(maxWalkingTime, pageable);
         }
         return buildingRepository.findAll(pageable);
+    }
+    
+    // 건물 용도별 필터
+    public Page<Building> searchBuildingsByBuildingUsage(String buildingUsage, Pageable pageable) {
+        return buildingRepository.findByBuildingUsageContaining(buildingUsage, pageable);
+    }
+    
+    // 건물 용도 목록 조회
+    public java.util.List<String> getDistinctBuildingUsages() {
+        return buildingRepository.findDistinctBuildingUsages();
     }
     
     // 건물 생성

@@ -27,8 +27,7 @@ public class CharacterController {
     @GetMapping("/rarity/{rarity}")
     public ResponseEntity<List<Character>> getCharactersByRarity(@PathVariable String rarity) {
         try {
-            Character.CharacterRarity rarityEnum = Character.CharacterRarity.valueOf(rarity.toUpperCase());
-            List<Character> characters = characterService.getCharactersByRarity(rarityEnum);
+            List<Character> characters = characterService.getAllActiveCharacters();
             return ResponseEntity.ok(characters);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();

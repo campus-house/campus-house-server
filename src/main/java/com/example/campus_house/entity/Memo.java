@@ -42,11 +42,6 @@ public class Memo {
     @Column
     private String location; // 위치 정보
     
-    @Column
-    private Integer maxParticipants; // 최대 참여자 수 (공동구매용)
-    
-    @Column
-    private Integer currentParticipants; // 현재 참여자 수
     
     @Column
     private String contactInfo; // 연락처 정보
@@ -69,11 +64,6 @@ public class Memo {
     @OneToMany(mappedBy = "memo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<MemoReply> replies = new ArrayList<>();
-    
-    // 메모 참여자
-    @OneToMany(mappedBy = "memo", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<MemoParticipant> participants = new ArrayList<>();
     
     public enum MemoType {
         SHARING, PURCHASE, FOOD, ETC

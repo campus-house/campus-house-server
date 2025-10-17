@@ -58,9 +58,9 @@ public class User extends BaseEntity {
     @Column(name = "verified_at")
     private LocalDateTime verifiedAt; // 인증 완료 시간
     
-    @Column(name = "points")
+    @Column(name = "rewards")
     @Builder.Default
-    private Integer points = 0; // 보유 포인트
+    private Integer rewards = 0; // 보유 리워드
     
     @Column(name = "main_character_id")
     private Long mainCharacterId; // 대표 캐릭터 ID
@@ -77,9 +77,6 @@ public class User extends BaseEntity {
     @Column
     private String introduction; // 자기소개
     
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private UserStatus status; // ACTIVE, INACTIVE, SUSPENDED
     
     // 메모 관련
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -111,16 +108,13 @@ public class User extends BaseEntity {
     @Builder.Default
     private List<UserCharacter> userCharacters = new ArrayList<>();
     
-    // 포인트 내역
+    // 리워드 내역
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<PointHistory> pointHistories = new ArrayList<>();
+    private List<RewardHistory> rewardHistories = new ArrayList<>();
     
     public enum UserType {
         RESIDENT, NON_RESIDENT
     }
     
-    public enum UserStatus {
-        ACTIVE, INACTIVE, SUSPENDED
-    }
 }

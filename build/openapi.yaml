@@ -1,0 +1,27 @@
+openapi: 3.0.1
+info:
+  title: 캠퍼스 하우스 API
+  description: 대학생 자취 커뮤니티 앱의 백엔드 API 문서
+  contact:
+    name: Campus House Team
+    url: https://campushouse.com
+    email: contact@campushouse.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+servers:
+- url: http://localhost:8080
+  description: 개발 서버
+- url: https://api.campushouse.com
+  description: 프로덕션 서버
+security:
+- bearerAuth: []
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: "JWT 토큰을 입력하세요. 예: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      scheme: bearer
+      bearerFormat: JWT

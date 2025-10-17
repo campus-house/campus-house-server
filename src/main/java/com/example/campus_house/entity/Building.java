@@ -95,10 +95,6 @@ public class Building {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     
-    // 건물 이미지
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<BuildingImage> images = new ArrayList<>();
     
     // 건물 후기
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

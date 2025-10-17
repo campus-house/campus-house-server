@@ -10,17 +10,26 @@ public class WebConfig implements WebMvcConfigurer {
     
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
+        // API 엔드포인트용 CORS 설정 (credentials 허용)
         registry.addMapping("/api/**")
-                .allowedOrigins("*") // 개발 환경에서는 모든 origin 허용
+                .allowedOriginPatterns("http://localhost:*", "https://localhost:*", "http://127.0.0.1:*", "https://127.0.0.1:*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)
                 .maxAge(3600);
         
-        // Swagger UI를 위한 CORS 설정
+        // Swagger UI를 위한 CORS 설정 (credentials 허용)
         registry.addMapping("/swagger-ui/**")
-                .allowedOrigins("*")
+                .allowedOriginPatterns("http://localhost:*", "https://localhost:*", "http://127.0.0.1:*", "https://127.0.0.1:*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*");
+                .allowedHeaders("*")
+                .allowCredentials(true);
+        
+        // OpenAPI docs를 위한 CORS 설정 (credentials 허용)
+        registry.addMapping("/v3/api-docs/**")
+                .allowedOriginPatterns("http://localhost:*", "https://localhost:*", "http://127.0.0.1:*", "https://127.0.0.1:*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

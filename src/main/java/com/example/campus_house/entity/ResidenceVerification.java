@@ -43,11 +43,6 @@ public class ResidenceVerification {
     @Column(nullable = false)
     private VerificationStatus status; // PENDING, APPROVED, REJECTED
     
-    @Column(name = "verification_document")
-    private String verificationDocument; // 인증 서류 (임대계약서, 통장 등)
-    
-    @Column(name = "admin_comment")
-    private String adminComment; // 관리자 코멘트
     
     @Column(name = "verified_by")
     private Long verifiedBy; // 인증한 관리자 ID

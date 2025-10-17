@@ -10,10 +10,7 @@ import java.util.List;
 public interface CharacterRepository extends JpaRepository<Character, Long> {
     
     // 활성화된 캐릭터 조회
-    List<Character> findByIsActiveTrueOrderByRarityAscPriceAsc();
-    
-    // 희귀도별 캐릭터 조회
-    List<Character> findByRarityAndIsActiveTrueOrderByPriceAsc(Character.CharacterRarity rarity);
+    List<Character> findByIsActiveTrueOrderByPriceAsc();
     
     // 가격대별 캐릭터 조회
     List<Character> findByPriceBetweenAndIsActiveTrueOrderByPriceAsc(Integer minPrice, Integer maxPrice);

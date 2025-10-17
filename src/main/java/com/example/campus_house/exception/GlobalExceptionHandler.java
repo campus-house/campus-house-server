@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.example.campus_house.controller")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)

@@ -1,7 +1,6 @@
 package com.example.campus_house.controller;
 
 import com.example.campus_house.entity.Memo;
-import com.example.campus_house.entity.MemoParticipant;
 import com.example.campus_house.entity.MemoReply;
 import com.example.campus_house.service.MemoService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,6 @@ public class MemoController {
                     request.getImageUrl(),
                     request.getType(),
                     request.getLocation(),
-                    request.getMaxParticipants(),
                     request.getContactInfo(),
                     request.getDeadline()
             );
@@ -76,38 +74,6 @@ public class MemoController {
         }
     }
     
-    // 메모 참여 신청
-    @PostMapping("/{memoId}/participate")
-    public ResponseEntity<MemoParticipant> participateInMemo(
-            @PathVariable Long memoId,
-            @RequestBody ParticipateRequest request) {
-        try {
-            MemoParticipant participant = memoService.participateInMemo(
-                    memoId,
-                    request.getUserId(),
-                    request.getMessage()
-            );
-            return ResponseEntity.ok(participant);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    
-    // 메모 참여 승인/거부
-    @PutMapping("/participants/{participantId}")
-    public ResponseEntity<MemoParticipant> updateParticipantStatus(
-            @PathVariable Long participantId,
-            @RequestBody UpdateParticipantStatusRequest request) {
-        try {
-            MemoParticipant participant = memoService.updateParticipantStatus(
-                    participantId,
-                    request.getStatus()
-            );
-            return ResponseEntity.ok(participant);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
     
     // 메모 답장/채팅 목록 조회
     @GetMapping("/{memoId}/replies")
@@ -116,12 +82,6 @@ public class MemoController {
         return ResponseEntity.ok(replies);
     }
     
-    // 메모 참여자 목록 조회
-    @GetMapping("/{memoId}/participants")
-    public ResponseEntity<List<MemoParticipant>> getMemoParticipants(@PathVariable Long memoId) {
-        List<MemoParticipant> participants = memoService.getMemoParticipants(memoId);
-        return ResponseEntity.ok(participants);
-    }
     
     // 메모 삭제
     @DeleteMapping("/{memoId}")
@@ -141,7 +101,6 @@ public class MemoController {
         private String imageUrl;
         private Memo.MemoType type;
         private String location;
-        private Integer maxParticipants;
         private String contactInfo;
         private LocalDateTime deadline;
         
@@ -156,8 +115,6 @@ public class MemoController {
         public void setType(Memo.MemoType type) { this.type = type; }
         public String getLocation() { return location; }
         public void setLocation(String location) { this.location = location; }
-        public Integer getMaxParticipants() { return maxParticipants; }
-        public void setMaxParticipants(Integer maxParticipants) { this.maxParticipants = maxParticipants; }
         public String getContactInfo() { return contactInfo; }
         public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
         public LocalDateTime getDeadline() { return deadline; }
@@ -181,22 +138,4 @@ public class MemoController {
         public void setType(MemoReply.ReplyType type) { this.type = type; }
     }
     
-    public static class ParticipateRequest {
-        private Long userId;
-        private String message;
-        
-        // Getters and Setters
-        public Long getUserId() { return userId; }
-        public void setUserId(Long userId) { this.userId = userId; }
-        public String getMessage() { return message; }
-        public void setMessage(String message) { this.message = message; }
-    }
-    
-    public static class UpdateParticipantStatusRequest {
-        private MemoParticipant.ParticipantStatus status;
-        
-        // Getters and Setters
-        public MemoParticipant.ParticipantStatus getStatus() { return status; }
-        public void setStatus(MemoParticipant.ParticipantStatus status) { this.status = status; }
-    }
 }

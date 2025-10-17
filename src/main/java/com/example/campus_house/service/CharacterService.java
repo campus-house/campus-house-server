@@ -1,11 +1,11 @@
 package com.example.campus_house.service;
 
 import com.example.campus_house.entity.Character;
-import com.example.campus_house.entity.PointHistory;
+import com.example.campus_house.entity.RewardHistory;
 import com.example.campus_house.entity.User;
 import com.example.campus_house.entity.UserCharacter;
 import com.example.campus_house.repository.CharacterRepository;
-import com.example.campus_house.repository.PointHistoryRepository;
+import com.example.campus_house.repository.RewardHistoryRepository;
 import com.example.campus_house.repository.UserCharacterRepository;
 import com.example.campus_house.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,17 +23,12 @@ public class CharacterService {
     
     private final CharacterRepository characterRepository;
     private final UserCharacterRepository userCharacterRepository;
-    private final PointHistoryRepository pointHistoryRepository;
+    private final RewardHistoryRepository rewardHistoryRepository;
     private final UserRepository userRepository;
     
     // 모든 활성화된 캐릭터 조회
     public List<Character> getAllActiveCharacters() {
-        return characterRepository.findByIsActiveTrueOrderByRarityAscPriceAsc();
-    }
-    
-    // 희귀도별 캐릭터 조회
-    public List<Character> getCharactersByRarity(Character.CharacterRarity rarity) {
-        return characterRepository.findByRarityAndIsActiveTrueOrderByPriceAsc(rarity);
+        return characterRepository.findByIsActiveTrueOrderByPriceAsc();
     }
     
     // 사용자별 보유 캐릭터 조회
@@ -46,90 +41,12 @@ public class CharacterService {
         return userCharacterRepository.findMainCharacterByUserId(userId);
     }
     
-    // 캐릭터 가챠 (뽑기)
+    // 캐릭터 가챠 (뽑기) - 나중에 구현 예정
     @Transactional
     public Character performGacha(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
-        
-        // 가챠 비용 확인 (100 포인트)
-        int gachaCost = 100;
-        if (user.getPoints() < gachaCost) {
-            throw new RuntimeException("포인트가 부족합니다. (필요: " + gachaCost + " 포인트)");
-        }
-        
-        // 가챠 실행
-        Character gachaResult = performGachaLogic();
-        
-        // 사용자 캐릭터 보유 처리
-        Optional<UserCharacter> existingUserCharacter = userCharacterRepository.findByUserIdAndCharacterId(userId, gachaResult.getId());
-        if (existingUserCharacter.isPresent()) {
-            // 이미 보유한 캐릭터인 경우 수량 증가
-            UserCharacter userCharacter = existingUserCharacter.get();
-            userCharacter.setQuantity(userCharacter.getQuantity() + 1);
-            userCharacterRepository.save(userCharacter);
-        } else {
-            // 새로운 캐릭터인 경우 새로 생성
-            UserCharacter newUserCharacter = UserCharacter.builder()
-                    .user(user)
-                    .character(gachaResult)
-                    .isMain(false)
-                    .quantity(1)
-                    .obtainedAt(LocalDateTime.now())
-                    .build();
-            userCharacterRepository.save(newUserCharacter);
-        }
-        
-        // 포인트 차감
-        user.setPoints(user.getPoints() - gachaCost);
-        userRepository.save(user);
-        
-        // 포인트 내역 기록
-        PointHistory pointHistory = PointHistory.builder()
-                .user(user)
-                .type(PointHistory.PointType.CHARACTER_GACHA)
-                .amount(-gachaCost)
-                .balance(user.getPoints())
-                .description("캐릭터 가챠 (" + gachaResult.getName() + ")")
-                .relatedId(gachaResult.getId().toString())
-                .build();
-        pointHistoryRepository.save(pointHistory);
-        
-        // (삭제) 캐릭터 획득 알림
-        
-        return gachaResult;
+        throw new RuntimeException("가챠 기능은 나중에 구현될 예정입니다.");
     }
     
-    // 가챠 로직 (희귀도별 확률 적용)
-    private Character performGachaLogic() {
-        List<Character> allCharacters = characterRepository.findByIsActiveTrueOrderByRarityAscPriceAsc();
-        if (allCharacters.isEmpty()) {
-            throw new RuntimeException("가챠할 수 있는 캐릭터가 없습니다.");
-        }
-        
-        Random random = new Random();
-        int randomValue = random.nextInt(100) + 1; // 1-100
-        
-        Character.CharacterRarity selectedRarity;
-        if (randomValue <= 2) {
-            selectedRarity = Character.CharacterRarity.LEGENDARY; // 2%
-        } else if (randomValue <= 10) {
-            selectedRarity = Character.CharacterRarity.EPIC; // 8%
-        } else if (randomValue <= 30) {
-            selectedRarity = Character.CharacterRarity.RARE; // 20%
-        } else {
-            selectedRarity = Character.CharacterRarity.COMMON; // 70%
-        }
-        
-        // 선택된 희귀도의 캐릭터 중 랜덤 선택
-        List<Character> charactersByRarity = characterRepository.findByRarityAndIsActiveTrueOrderByPriceAsc(selectedRarity);
-        if (charactersByRarity.isEmpty()) {
-            // 해당 희귀도에 캐릭터가 없으면 일반 등급으로 폴백
-            charactersByRarity = characterRepository.findByRarityAndIsActiveTrueOrderByPriceAsc(Character.CharacterRarity.COMMON);
-        }
-        
-        return charactersByRarity.get(random.nextInt(charactersByRarity.size()));
-    }
     
     // 대표 캐릭터 설정
     @Transactional
@@ -169,9 +86,9 @@ public class CharacterService {
             throw new RuntimeException("판매하지 않는 캐릭터입니다.");
         }
         
-        // 포인트 확인
-        if (user.getPoints() < character.getPrice()) {
-            throw new RuntimeException("포인트가 부족합니다. (필요: " + character.getPrice() + " 포인트)");
+        // 리워드 확인
+        if (user.getRewards() < character.getPrice()) {
+            throw new RuntimeException("리워드가 부족합니다. (필요: " + character.getPrice() + " 리워드)");
         }
         
         // 사용자 캐릭터 보유 처리
@@ -193,20 +110,20 @@ public class CharacterService {
             userCharacterRepository.save(newUserCharacter);
         }
         
-        // 포인트 차감
-        user.setPoints(user.getPoints() - character.getPrice());
+        // 리워드 차감
+        user.setRewards(user.getRewards() - character.getPrice());
         userRepository.save(user);
         
-        // 포인트 내역 기록
-        PointHistory pointHistory = PointHistory.builder()
+        // 리워드 내역 기록
+        RewardHistory rewardHistory = RewardHistory.builder()
                 .user(user)
-                .type(PointHistory.PointType.CHARACTER_PURCHASE)
+                .type(RewardHistory.RewardType.CHARACTER_PURCHASE)
                 .amount(-character.getPrice())
-                .balance(user.getPoints())
+                .balance(user.getRewards())
                 .description("캐릭터 구매 (" + character.getName() + ")")
                 .relatedId(character.getId().toString())
                 .build();
-        pointHistoryRepository.save(pointHistory);
+        rewardHistoryRepository.save(rewardHistory);
         
         return character;
     }
@@ -214,17 +131,9 @@ public class CharacterService {
     // 사용자 통계 조회
     public UserCharacterStats getUserCharacterStats(Long userId) {
         Long totalCharacters = userCharacterRepository.countByUserId(userId);
-        Long commonCount = userCharacterRepository.countByUserIdAndRarity(userId, "COMMON");
-        Long rareCount = userCharacterRepository.countByUserIdAndRarity(userId, "RARE");
-        Long epicCount = userCharacterRepository.countByUserIdAndRarity(userId, "EPIC");
-        Long legendaryCount = userCharacterRepository.countByUserIdAndRarity(userId, "LEGENDARY");
         
         return UserCharacterStats.builder()
                 .totalCharacters(totalCharacters)
-                .commonCount(commonCount)
-                .rareCount(rareCount)
-                .epicCount(epicCount)
-                .legendaryCount(legendaryCount)
                 .build();
     }
     
@@ -233,9 +142,5 @@ public class CharacterService {
     @lombok.Builder
     public static class UserCharacterStats {
         private Long totalCharacters;
-        private Long commonCount;
-        private Long rareCount;
-        private Long epicCount;
-        private Long legendaryCount;
     }
 }

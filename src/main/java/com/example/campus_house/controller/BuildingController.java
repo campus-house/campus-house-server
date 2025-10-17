@@ -93,12 +93,13 @@ public class BuildingController {
             @RequestParam(required = false) Boolean parkingRequired,
             @RequestParam(required = false) Boolean elevatorRequired,
             @RequestParam(required = false) Integer maxWalkingTime,
+            @RequestParam(required = false) String buildingUsage,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         
         Page<Building> buildings = buildingService.searchBuildingsWithFilters(
                 minDeposit, maxDeposit, minMonthlyRent, maxMonthlyRent,
                 minJeonse, maxJeonse, parkingRequired, elevatorRequired,
-                maxWalkingTime, pageable);
+                maxWalkingTime, buildingUsage, pageable);
         return ResponseEntity.ok(buildings);
     }
     
@@ -182,6 +183,21 @@ public class BuildingController {
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByStationAccessibility(maxWalkingTime, pageable);
         return ResponseEntity.ok(buildings);
+    }
+    
+    // 건물 용도별 필터 (오피스텔, 아파트, 원룸 등)
+    @GetMapping("/search/filters/building-usage")
+    public ResponseEntity<Page<Building>> searchBuildingsByBuildingUsage(
+            @RequestParam String buildingUsage,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Building> buildings = buildingService.searchBuildingsByBuildingUsage(buildingUsage, pageable);
+        return ResponseEntity.ok(buildings);
+    }
+    
+    // 건물 용도 목록 조회
+    @GetMapping("/building-usages")
+    public ResponseEntity<?> getBuildingUsages() {
+        return ResponseEntity.ok(buildingService.getDistinctBuildingUsages());
     }
     
     // 건물 생성

@@ -26,7 +26,4 @@ public interface UserCharacterRepository extends JpaRepository<UserCharacter, Lo
     @Query("SELECT COUNT(uc) FROM UserCharacter uc WHERE uc.user.id = :userId")
     Long countByUserId(@Param("userId") Long userId);
     
-    // 희귀도별 보유 캐릭터 수 조회
-    @Query("SELECT COUNT(uc) FROM UserCharacter uc WHERE uc.user.id = :userId AND uc.character.rarity = :rarity")
-    Long countByUserIdAndRarity(@Param("userId") Long userId, @Param("rarity") String rarity);
 }

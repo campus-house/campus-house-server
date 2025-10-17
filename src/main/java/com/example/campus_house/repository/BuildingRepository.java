@@ -64,7 +64,8 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
            "(:maxJeonse IS NULL OR b.jeonse <= :maxJeonse) AND " +
            "(:parkingRequired IS NULL OR (:parkingRequired = true AND b.parkingSpaces > 0)) AND " +
            "(:elevatorRequired IS NULL OR (:elevatorRequired = true AND b.elevators > 0)) AND " +
-           "(:maxWalkingTime IS NULL OR b.schoolWalkingTime <= :maxWalkingTime)")
+           "(:maxWalkingTime IS NULL OR b.schoolWalkingTime <= :maxWalkingTime) AND " +
+           "(:buildingUsage IS NULL OR b.buildingUsage LIKE %:buildingUsage%)")
     Page<Building> findByFilters(@Param("minDeposit") BigDecimal minDeposit,
                                 @Param("maxDeposit") BigDecimal maxDeposit,
                                 @Param("minMonthlyRent") BigDecimal minMonthlyRent,
@@ -74,6 +75,7 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
                                 @Param("parkingRequired") Boolean parkingRequired,
                                 @Param("elevatorRequired") Boolean elevatorRequired,
                                 @Param("maxWalkingTime") Integer maxWalkingTime,
+                                @Param("buildingUsage") String buildingUsage,
                                 Pageable pageable);
     
     // 최근 등록된 건물 조회
@@ -84,4 +86,11 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     
     // 영통역 접근성 필터
     Page<Building> findByStationWalkingTimeLessThanEqual(Integer maxWalkingTime, Pageable pageable);
+    
+    // 건물 용도별 검색
+    Page<Building> findByBuildingUsageContaining(String buildingUsage, Pageable pageable);
+    
+    // 건물 용도 목록 조회
+    @Query("SELECT DISTINCT b.buildingUsage FROM Building b WHERE b.buildingUsage IS NOT NULL ORDER BY b.buildingUsage")
+    java.util.List<String> findDistinctBuildingUsages();
 }

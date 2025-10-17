@@ -44,7 +44,6 @@ public class AuthService {
                 .location(location)
                 .university(university)
                 .major(major)
-                .status(User.UserStatus.ACTIVE)
                 .build();
         
         return userRepository.save(user);
@@ -61,9 +60,6 @@ public class AuthService {
         }
         
         // 계정 상태 확인
-        if (user.getStatus() != User.UserStatus.ACTIVE) {
-            throw new RuntimeException("비활성화된 계정입니다.");
-        }
         
         // JWT 토큰 생성
         return jwtUtil.generateToken(email, user.getId());
