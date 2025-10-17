@@ -2,7 +2,11 @@ package com.example.campus_house.service;
 
 import com.example.campus_house.entity.BoardType;
 import com.example.campus_house.entity.Post;
+import com.example.campus_house.entity.Building;
+import com.example.campus_house.entity.User;
 import com.example.campus_house.repository.PostRepository;
+import com.example.campus_house.repository.BuildingRepository;
+import com.example.campus_house.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +20,8 @@ public class PostService {
     
     private final PostRepository postRepository;
     private final BadgeService badgeService;
+    private final BuildingRepository buildingRepository;
+    private final UserRepository userRepository;
     
     // 게시판 타입별 게시글 조회
     public Page<Post> getPostsByBoardType(BoardType boardType, Pageable pageable) {
@@ -115,5 +121,181 @@ public class PostService {
         Post post = getPostById(postId);
         post.setCommentCount(Math.max(0, post.getCommentCount() + delta));
         postRepository.save(post);
+    }
+    
+    // ========== 건물별 질문 관련 메서드 ==========
+    
+    // 건물별 질문 게시글 조회
+    public Page<Post> getQuestionsByBuildingId(Long buildingId, Pageable pageable) {
+        return postRepository.findByBuildingIdAndBoardTypeOrderByCreatedAtDesc(buildingId, BoardType.QUESTION, pageable);
+    }
+    
+    // 건물별 질문 게시글 수
+    public Long getQuestionCountByBuildingId(Long buildingId) {
+        return postRepository.countByBuildingIdAndBoardType(buildingId, BoardType.QUESTION);
+    }
+    
+    // 특정 사용자의 건물별 질문 게시글 조회
+    public Page<Post> getQuestionsByUserIdAndBuildingId(Long userId, Long buildingId, Pageable pageable) {
+        return postRepository.findByAuthorIdAndBuildingIdAndBoardTypeOrderByCreatedAtDesc(userId, buildingId, BoardType.QUESTION, pageable);
+    }
+    
+    // 건물별 질문 작성
+    @Transactional
+    public Post createBuildingQuestion(Long userId, Long buildingId, String title, String content) {
+        // 건물 존재 확인
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new RuntimeException("건물을 찾을 수 없습니다."));
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        Post question = Post.builder()
+                .title(title)
+                .content(content)
+                .boardType(BoardType.QUESTION)
+                .author(user)
+                .building(building)
+                .likeCount(0)
+                .bookmarkCount(0)
+                .commentCount(0)
+                .viewCount(0)
+                .scrapCount(0)
+                .build();
+        
+        Post saved = postRepository.save(question);
+        
+        // 첫 게시글 작성 시 배지 수여
+        if (user.getId() != null) {
+            badgeService.awardIfFirstPost(user.getId());
+        }
+        
+        return saved;
+    }
+    
+    // ========== 거주지 인증 권한 체크 ==========
+    
+    // 거주지 인증 여부 확인
+    public void checkResidenceVerification(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        if (!user.getIsVerified() || user.getVerifiedBuildingId() == null) {
+            throw new RuntimeException("거주지 인증이 필요한 서비스입니다. 거주지 인증을 먼저 완료해주세요.");
+        }
+    }
+    
+    // ========== 거주지 기반 질문 필터링 ==========
+    
+    // 사용자가 거주 중인 건물의 질문만 조회 (QUESTION 게시판용)
+    public Page<Post> getQuestionsForResident(Long userId, Pageable pageable) {
+        // 거주지 인증 여부 확인
+        checkResidenceVerification(userId);
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        // 인증된 건물의 질문만 조회
+        return postRepository.findByBuildingIdAndBoardTypeOrderByCreatedAtDesc(
+                user.getVerifiedBuildingId(), BoardType.QUESTION, pageable);
+    }
+    
+    // 사용자가 거주 중인 건물의 질문 수 조회
+    public Long getQuestionCountForResident(Long userId) {
+        // 거주지 인증 여부 확인
+        checkResidenceVerification(userId);
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        // 인증된 건물의 질문 수 조회
+        return postRepository.countByBuildingIdAndBoardType(user.getVerifiedBuildingId(), BoardType.QUESTION);
+    }
+    
+    // ========== APARTMENT 게시판 거주지 기반 필터링 ==========
+    
+    // 사용자가 거주 중인 건물의 APARTMENT 게시글만 조회
+    public Page<Post> getApartmentPostsForResident(Long userId, Pageable pageable) {
+        // 거주지 인증 여부 확인
+        checkResidenceVerification(userId);
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        // 인증된 건물의 APARTMENT 게시글만 조회
+        return postRepository.findByBuildingIdAndBoardTypeOrderByCreatedAtDesc(
+                user.getVerifiedBuildingId(), BoardType.APARTMENT, pageable);
+    }
+    
+    // 사용자가 거주 중인 건물의 APARTMENT 게시글 수 조회
+    public Long getApartmentPostCountForResident(Long userId) {
+        // 거주지 인증 여부 확인
+        checkResidenceVerification(userId);
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        // 인증된 건물의 APARTMENT 게시글 수 조회
+        return postRepository.countByBuildingIdAndBoardType(user.getVerifiedBuildingId(), BoardType.APARTMENT);
+    }
+    
+    // ========== TRANSFER 게시판 관련 메서드 ==========
+    
+    // 건물별 TRANSFER 게시글 조회
+    public Page<Post> getTransfersByBuildingId(Long buildingId, Pageable pageable) {
+        return postRepository.findByBuildingIdAndBoardTypeOrderByCreatedAtDesc(buildingId, BoardType.TRANSFER, pageable);
+    }
+    
+    // 건물별 TRANSFER 게시글 수 조회
+    public Long getTransferCountByBuildingId(Long buildingId) {
+        return postRepository.countByBuildingIdAndBoardType(buildingId, BoardType.TRANSFER);
+    }
+    
+    // 건물별 TRANSFER 게시글 작성
+    @Transactional
+    public Post createBuildingTransfer(Long userId, Long buildingId, String title, String content) {
+        // 건물 존재 확인
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new RuntimeException("건물을 찾을 수 없습니다."));
+        
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
+        Post transfer = Post.builder()
+                .title(title)
+                .content(content)
+                .boardType(BoardType.TRANSFER)
+                .author(user)
+                .building(building)
+                .likeCount(0)
+                .bookmarkCount(0)
+                .commentCount(0)
+                .viewCount(0)
+                .scrapCount(0)
+                .build();
+        
+        Post saved = postRepository.save(transfer);
+        
+        // 첫 게시글 작성 시 배지 수여
+        if (user.getId() != null) {
+            badgeService.awardIfFirstPost(user.getId());
+        }
+        
+        return saved;
+    }
+    
+    // 게시판 타입별 접근 권한 체크
+    public void checkBoardAccessPermission(Long userId, BoardType boardType) {
+        // APARTMENT와 QUESTION 게시판은 거주지 인증 필요
+        if (boardType == BoardType.APARTMENT || boardType == BoardType.QUESTION) {
+            checkResidenceVerification(userId);
+        }
+        // LOCAL과 TRANSFER 게시판은 인증 불필요
     }
 }

@@ -1,6 +1,7 @@
 package com.example.campus_house.controller;
 
 import com.example.campus_house.dto.ApiResponse;
+import com.example.campus_house.dto.QuestionRequest;
 import com.example.campus_house.entity.BoardType;
 import com.example.campus_house.entity.Post;
 import com.example.campus_house.entity.User;
@@ -35,7 +36,8 @@ public class PostController {
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "거주지 인증 필요")
     })
     @PostMapping("/boards/{type}/posts")
     public ResponseEntity<ApiResponse<Post>> createPost(
@@ -43,27 +45,70 @@ public class PostController {
             @PathVariable String type,
             @RequestBody Post post,
             @RequestHeader("Authorization") String token) {
-        User user = authService.getUserFromToken(token.substring(7));
-        BoardType boardType = BoardType.valueOf(type.toUpperCase());
-        post.setAuthor(user);
-        post.setBoardType(boardType);
-        Post createdPost = postService.createPost(post);
-        return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 작성되었습니다.", createdPost));
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            BoardType boardType = BoardType.valueOf(type.toUpperCase());
+            
+            // APARTMENT와 QUESTION 게시판은 거주지 인증 필요
+            postService.checkBoardAccessPermission(user.getId(), boardType);
+            
+            post.setAuthor(user);
+            post.setBoardType(boardType);
+            Post createdPost = postService.createPost(post);
+            return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 작성되었습니다.", createdPost));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).body(ApiResponse.error(e.getMessage()));
+        }
     }
     
     // 모든 게시글 조회 (페이징)
     @Operation(summary = "게시글 목록 조회", description = "특정 게시판의 모든 게시글을 조회합니다.")
     @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "거주지 인증 필요")
     })
     @GetMapping("/boards/{type}/posts")
     public ResponseEntity<Page<Post>> getPostsByBoardType(
             @Parameter(description = "게시판 타입 (APARTMENT, QUESTION, LOCAL)", required = true)
             @PathVariable String type,
-            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestHeader(value = "Authorization", required = false) String token) {
         try {
             BoardType boardType = BoardType.valueOf(type.toUpperCase());
+            
+            // APARTMENT와 QUESTION 게시판은 거주지 인증 필요
+            if (boardType == BoardType.APARTMENT || boardType == BoardType.QUESTION) {
+                if (token == null) {
+                    return ResponseEntity.status(401).build();
+                }
+                
+                try {
+                    User user = authService.getUserFromToken(token.substring(7));
+                    postService.checkBoardAccessPermission(user.getId(), boardType);
+                    
+                    // QUESTION 게시판인 경우 거주지 기반 필터링 적용
+                    if (boardType == BoardType.QUESTION) {
+                        Page<Post> posts = postService.getQuestionsForResident(user.getId(), pageable);
+                        return ResponseEntity.ok(posts);
+                    }
+                    
+                    // APARTMENT 게시판인 경우 거주지 기반 필터링 적용
+                    if (boardType == BoardType.APARTMENT) {
+                        Page<Post> posts = postService.getApartmentPostsForResident(user.getId(), pageable);
+                        return ResponseEntity.ok(posts);
+                    }
+                    
+                    // 기타 게시판은 일반 조회
+                    Page<Post> posts = postService.getPostsByBoardType(boardType, pageable);
+                    return ResponseEntity.ok(posts);
+                } catch (RuntimeException e) {
+                    return ResponseEntity.status(403).build();
+                }
+            }
+            
+            // LOCAL과 TRANSFER 게시판은 인증 불필요
             Page<Post> posts = postService.getPostsByBoardType(boardType, pageable);
             return ResponseEntity.ok(posts);
         } catch (IllegalArgumentException e) {
@@ -286,5 +331,73 @@ public class PostController {
         // Getters and Setters
         public boolean isBookmarked() { return isBookmarked; }
         public void setBookmarked(boolean bookmarked) { isBookmarked = bookmarked; }
+    }
+    
+    // ========== 건물별 질문 관련 API ==========
+    
+    // 건물별 질문 목록 조회 (QUESTION 게시판에서)
+    @Operation(summary = "건물별 질문 목록 조회", description = "특정 건물에 대한 질문들을 조회합니다.")
+    @GetMapping("/buildings/{buildingId}/questions")
+    public ResponseEntity<Page<Post>> getBuildingQuestions(
+            @Parameter(description = "건물 ID", required = true)
+            @PathVariable Long buildingId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> questions = postService.getQuestionsByBuildingId(buildingId, pageable);
+        return ResponseEntity.ok(questions);
+    }
+    
+    // 건물별 질문 작성 (QUESTION 게시판에)
+    @Operation(summary = "건물별 질문 작성", description = "특정 건물에 대한 질문을 작성합니다.")
+    @PostMapping("/buildings/{buildingId}/questions")
+    public ResponseEntity<Post> createBuildingQuestion(
+            @Parameter(description = "건물 ID", required = true)
+            @PathVariable Long buildingId,
+            @RequestHeader("Authorization") String token,
+            @RequestBody QuestionRequest request) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Post question = postService.createBuildingQuestion(user.getId(), buildingId, request.getTitle(), request.getContent());
+            return ResponseEntity.ok(question);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // 건물별 질문 수 조회
+    @Operation(summary = "건물별 질문 수 조회", description = "특정 건물에 대한 질문 수를 조회합니다.")
+    @GetMapping("/buildings/{buildingId}/questions/count")
+    public ResponseEntity<Long> getBuildingQuestionCount(
+            @Parameter(description = "건물 ID", required = true)
+            @PathVariable Long buildingId) {
+        Long count = postService.getQuestionCountByBuildingId(buildingId);
+        return ResponseEntity.ok(count);
+    }
+    
+    // 거주지 기반 질문 수 조회 (QUESTION 게시판용)
+    @Operation(summary = "거주지 기반 질문 수 조회", description = "사용자가 거주 중인 건물의 질문 수를 조회합니다.")
+    @GetMapping("/boards/question/posts/count")
+    public ResponseEntity<Long> getQuestionCountForResident(
+            @RequestHeader("Authorization") String token) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Long count = postService.getQuestionCountForResident(user.getId());
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // 거주지 기반 APARTMENT 게시글 수 조회
+    @Operation(summary = "거주지 기반 APARTMENT 게시글 수 조회", description = "사용자가 거주 중인 건물의 APARTMENT 게시글 수를 조회합니다.")
+    @GetMapping("/boards/apartment/posts/count")
+    public ResponseEntity<Long> getApartmentPostCountForResident(
+            @RequestHeader("Authorization") String token) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Long count = postService.getApartmentPostCountForResident(user.getId());
+            return ResponseEntity.ok(count);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

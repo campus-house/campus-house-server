@@ -31,10 +31,7 @@ public class Building {
     private String buildingName; // 건물명
     
     @Column(nullable = false)
-    private String address; // 주소
-    
-    @Column
-    private String detailAddress; // 상세주소
+    private String address; // 건물 전체 주소 (예: "서울시 관악구 신림동 123-45")
     
     @Column(nullable = false)
     private Double latitude; // 위도
@@ -73,14 +70,18 @@ public class Building {
     @Column
     private LocalDateTime completionDate; // 준공일
     
-    @Column(columnDefinition = "TEXT")
-    private String nearbyFacilities; // 주변 생활시설
+    @Column
+    private Integer nearbyConvenienceStores; // 반경 1km 이내 편의점 개수 (외부 API 연동 예정)
+    
+    @Column
+    private Integer nearbyMarts; // 반경 1km 이내 마트 개수 (외부 API 연동 예정)
+    
+    @Column
+    private Integer nearbyHospitals; // 반경 1km 이내 병원 개수 (외부 API 연동 예정)
     
     @Column
     private Integer schoolWalkingTime; // 학교까지 걸리는 시간 (분)
     
-    @Column
-    private BigDecimal managementFee; // 관리비
     
     @Column
     private Integer stationWalkingTime; // 영통역까지 걸리는 시간 (분)
@@ -101,15 +102,15 @@ public class Building {
     @Builder.Default
     private List<BuildingReview> reviews = new ArrayList<>();
     
-    // 건물 Q&A
+    // 건물 관련 질문 (Post 엔티티의 QUESTION 게시판)
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<BuildingQnA> qnas = new ArrayList<>();
+    private List<Post> questions = new ArrayList<>();
     
-    // 양도 정보
+    // 양도 정보 (Post 엔티티의 TRANSFER 게시판)
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
-    private List<BuildingTransfer> transfers = new ArrayList<>();
+    private List<Post> transfers = new ArrayList<>();
     
     // 스크랩
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

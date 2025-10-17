@@ -16,8 +16,7 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     // 키워드로 건물 검색
     @Query("SELECT b FROM Building b WHERE " +
            "b.buildingName LIKE %:keyword% OR " +
-           "b.address LIKE %:keyword% OR " +
-           "b.nearbyFacilities LIKE %:keyword%")
+           "b.address LIKE %:keyword%")
     Page<Building> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
     
     // 건물명으로 검색
@@ -84,8 +83,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     // 인기 건물 조회 (스크랩 수 기준)
     Page<Building> findByOrderByScrapCountDesc(Pageable pageable);
     
-    // 영통역 접근성 필터
-    Page<Building> findByStationWalkingTimeLessThanEqual(Integer maxWalkingTime, Pageable pageable);
     
     // 건물 용도별 검색
     Page<Building> findByBuildingUsageContaining(String buildingUsage, Pageable pageable);
@@ -93,4 +90,13 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     // 건물 용도 목록 조회
     @Query("SELECT DISTINCT b.buildingUsage FROM Building b WHERE b.buildingUsage IS NOT NULL ORDER BY b.buildingUsage")
     java.util.List<String> findDistinctBuildingUsages();
+    
+    // 편의점 개수로 검색 (외부 API 연동 예정)
+    Page<Building> findByNearbyConvenienceStoresGreaterThanEqual(Integer minConvenienceStores, Pageable pageable);
+    
+    // 마트 개수로 검색 (외부 API 연동 예정)
+    Page<Building> findByNearbyMartsGreaterThanEqual(Integer minMarts, Pageable pageable);
+    
+    // 병원 개수로 검색 (외부 API 연동 예정)
+    Page<Building> findByNearbyHospitalsGreaterThanEqual(Integer minHospitals, Pageable pageable);
 }

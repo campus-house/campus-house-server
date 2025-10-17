@@ -38,6 +38,11 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
+    // 건물 관련 질문인 경우 건물 ID (QUESTION 게시판에서만 사용)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id")
+    private Building building;
+
     // 통계 필드들
     @Builder.Default
     @Column(name = "like_count")

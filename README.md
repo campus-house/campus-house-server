@@ -22,7 +22,7 @@
 - **실시간 알림**: 댓글/대댓글 작성 시 알림 전송
 - **권한 관리**: 작성자만 수정/삭제 가능
 
-### 3. 채팅 시스템 (구현 예정) 🚧
+### 3. 채팅 시스템 ✅
 - **1:1 채팅**: 사용자 간 실시간 채팅
 - **채팅방 관리**: 자동 생성/조회, 메시지 히스토리
 - **읽음 처리**: 메시지 읽음 상태 관리
@@ -225,7 +225,7 @@ http://localhost:8080
 
 #### 게시글 관리
 ```http
-# 게시글 작성
+# 게시글 작성 (APARTMENT, QUESTION 게시판은 거주지 인증 필수)
 POST /api/boards/{type}/posts
 Authorization: Bearer {token}
 Content-Type: application/json
@@ -235,6 +235,12 @@ Content-Type: application/json
   "content": "새로 입사했는데 식당 운영시간을 모르겠어요",
   "imageUrl": "https://example.com/image.jpg"
 }
+
+# 게시판별 접근 권한:
+# - APARTMENT: 거주지 인증 필수
+# - QUESTION: 거주지 인증 필수  
+# - LOCAL: 인증 불필요
+# - TRANSFER: 인증 불필요
 
 # 모든 게시글 조회 (페이징)
 GET /api/boards/{type}/posts?page=0&size=20
@@ -268,6 +274,22 @@ GET /api/boards/{type}/posts/popular?page=0&size=20
 
 # 제목 + 내용에서 검색
 GET /api/boards/{type}/posts/search?keyword=검색어&page=0&size=20
+
+# QUESTION 게시판 조회 (거주지 기반 필터링) - 거주지 인증 필수
+GET /api/boards/question/posts?page=0&size=20
+Authorization: Bearer {token}  # 거주지 인증된 사용자만 자신이 거주하는 건물의 질문 조회
+
+# APARTMENT 게시판 조회 (거주지 기반 필터링) - 거주지 인증 필수
+GET /api/boards/apartment/posts?page=0&size=20
+Authorization: Bearer {token}  # 거주지 인증된 사용자만 자신이 거주하는 건물의 게시글 조회
+
+# 거주지 기반 질문 수 조회 - 거주지 인증 필수
+GET /api/boards/question/posts/count
+Authorization: Bearer {token}
+
+# 거주지 기반 APARTMENT 게시글 수 조회 - 거주지 인증 필수
+GET /api/boards/apartment/posts/count
+Authorization: Bearer {token}
 ```
 
 #### 상호작용
@@ -501,9 +523,90 @@ GET /api/buildings/search/filters?minDeposit=500&maxDeposit=2000&parkingRequired
 GET /api/buildings/{buildingId}
 ```
 
+#### 건물 상세 페이지 탭별 API
+```http
+# 기본 정보 탭
+GET /api/buildings/{buildingId}/building-info
+
+# 실거주자 후기 탭
+GET /api/buildings/{buildingId}/reviews?page=0&size=20
+
+# 건물 후기 작성 (거주지 인증 필수)
+POST /api/mypage/building-reviews
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "buildingId": 1,
+  "title": "후기 제목",
+  "content": "후기 내용",
+  "imageUrl": "https://example.com/image.jpg",
+  "rating": 5,
+  "noiseLevel": 3,
+  "safetyLevel": 4,
+  "convenienceLevel": 5,
+  "managementLevel": 4,
+  "pros": "장점들",
+  "cons": "단점들",
+  "livingPeriod": "1년"
+}
+
+# 질문하기 탭 (Post 기반)
+GET /api/buildings/{buildingId}/qnas?page=0&size=20
+
+# 건물별 질문 작성 (거주지 인증 필수)
+POST /api/buildings/{buildingId}/questions
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "title": "질문 제목",
+  "content": "질문 내용"
+}
+
+# 양도 탭 (Post 기반)
+GET /api/buildings/{buildingId}/transfers?page=0&size=20
+
+# 건물별 양도 글 작성
+POST /api/buildings/{buildingId}/transfers
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "title": "양도 글 제목",
+  "content": "양도 글 내용"
+}
+```
+
 #### 최근 등록된 건물 정보 조회
 ```http
 GET /api/buildings/recent?page=0&size=20
+```
+
+#### 인기 건물 조회 (스크랩 수 기준)
+```http
+GET /api/buildings/popular?page=0&size=20
+```
+
+#### 건물 용도별 필터
+```http
+# 건물 용도별 검색 (오피스텔, 아파트, 원룸 등)
+GET /api/buildings/search/filters/building-usage?buildingUsage=오피스텔
+
+# 건물 용도 목록 조회
+GET /api/buildings/building-usages
+```
+
+#### 주변 시설 기반 검색 (외부 API 연동 예정)
+```http
+# 편의점 개수로 검색
+GET /api/buildings/search/filters/convenience-stores?minConvenienceStores=3
+
+# 마트 개수로 검색
+GET /api/buildings/search/filters/marts?minMarts=2
+
+# 병원 개수로 검색
+GET /api/buildings/search/filters/hospitals?minHospitals=1
 ```
 
 #### 건물 정보 생성
@@ -962,6 +1065,7 @@ Authorization: Bearer {token}
 - `APARTMENT`: 아파트소식
 - `QUESTION`: 질문게시판
 - `LOCAL`: 동네소식
+- `TRANSFER`: 양도게시판
 
 ### Building (건물 정보)
 - `id`: 건물 ID
@@ -971,7 +1075,6 @@ Authorization: Bearer {token}
 - `deposit`: 보증금 (만원)
 - `monthlyRent`: 월세 (만원)
 - `jeonse`: 전세 (만원)
-- `managementFee`: 관리비 (만원)
 - `households`: 세대수
 - `heatingType`: 난방방식
 - `parkingSpaces`: 주차대수
@@ -979,10 +1082,14 @@ Authorization: Bearer {token}
 - `buildingUsage`: 건축물용도
 - `approvalDate`: 사용승인일
 - `completionDate`: 준공일
-- `nearbyFacilities`: 주변 생활시설
+- `nearbyConvenienceStores`: 반경 1km 이내 편의점 개수 (외부 API 연동 예정)
+- `nearbyMarts`: 반경 1km 이내 마트 개수 (외부 API 연동 예정)
+- `nearbyHospitals`: 반경 1km 이내 병원 개수 (외부 API 연동 예정)
 - `schoolWalkingTime`: 학교까지 걸리는 시간 (분)
 - `stationWalkingTime`: 영통역까지 걸리는 시간 (분)
 - `scrapCount`: 스크랩 수
+- `createdAt`: 생성일시
+- `updatedAt`: 수정일시
 
 ### BuildingReview (건물 후기)
 - `id`: 후기 ID
@@ -1000,25 +1107,21 @@ Authorization: Bearer {token}
 - `managementLevel`: 관리 수준 (1-5)
 - `likeCount`: 좋아요 수
 
-### BuildingQnA (건물 Q&A)
-- `id`: Q&A ID
-- `buildingId`: 건물 ID
-- `userId`: 작성자 ID
-- `content`: 질문/답변 내용
-- `type`: 타입 (QUESTION/ANSWER)
-- `parent`: 부모 질문 (대댓글용)
+### Post (게시글) - 건물 관련 확장
+- `id`: 게시글 ID
+- `title`: 제목
+- `content`: 내용
+- `imageUrl`: 이미지 URL
+- `boardType`: 게시판 타입 (APARTMENT/QUESTION/LOCAL/TRANSFER)
+- `author`: 작성자 (User 참조)
+- `building`: 건물 (Building 참조, QUESTION/TRANSFER 게시판에서만 사용)
 - `likeCount`: 좋아요 수
-
-### BuildingTransfer (건물 양도 정보)
-- `id`: 양도 ID
-- `buildingId`: 건물 ID
-- `userId`: 작성자 ID
-- `title`: 양도 제목
-- `content`: 양도 내용
-- `imageUrl`: 양도 이미지
-- `transferFee`: 양도비
-- `contactInfo`: 연락처
-- `status`: 양도 상태 (AVAILABLE/COMPLETED/CANCELLED)
+- `bookmarkCount`: 북마크 수
+- `commentCount`: 댓글 수
+- `viewCount`: 조회수
+- `scrapCount`: 스크랩 수
+- `createdAt`: 생성일시
+- `updatedAt`: 수정일시
 
 ### BuildingImage (건물 이미지)
 - `id`: 이미지 ID
@@ -1107,7 +1210,29 @@ Authorization: Bearer {token}
 
 ## 📝 개발 로그
 
-### v1.4.0 (현재)
+### v1.5.0 (현재)
+- ✅ 건물 후기 시스템 고도화
+  - BuildingReview 엔티티 및 서비스 구현
+  - 상세 평가 항목 (소음, 안전, 편의성, 관리 등)
+  - 후기 작성, 수정, 삭제, 좋아요 기능
+  - 사용자별 후기 관리 및 통계
+- ✅ 게시판 시스템 통합 및 최적화
+  - BuildingQnA, BuildingTransfer 엔티티 삭제
+  - Post 엔티티로 통합 (QUESTION, TRANSFER 게시판)
+  - 건물별 질문/양도 게시글 관리
+  - 게시판 타입 확장 (TRANSFER 추가)
+- ✅ 건물 정보 시스템 확장
+  - 주변 시설 정보 추가 (편의점, 마트, 병원 개수)
+  - 건물 용도별 필터링 기능
+  - 인기 건물 조회 (스크랩 수 기준)
+  - 외부 API 연동 준비 (주변 시설 정보)
+- ✅ API 엔드포인트 확장
+  - 건물 후기 관련 API 추가
+  - 건물별 질문/양도 게시글 API
+  - 주변 시설 기반 검색 API
+  - 건물 용도별 필터링 API
+
+### v1.4.0
 - ✅ 채팅 시스템 구현 완료
   - 1:1 실시간 채팅 기능
   - 채팅방 자동 생성/조회
@@ -1129,10 +1254,6 @@ Authorization: Bearer {token}
   - 상세 필터링 (보증금, 월세, 전세, 주차장, 엘리베이터, 학교/영통역 접근성)
   - 학교/영통역까지 걸리는 시간 정보 제공
   - 건물별 상세 정보 (세대수, 난방방식, 주차대수, 승강기대수, 건축물용도 등)
-- ✅ 건물 후기 시스템 구현 완료
-  - 건물 후기 작성 및 조회
-  - 상세 평가 항목 (소음, 안전, 편의성, 관리 등)
-  - 사용자별 후기 관리
 - ✅ 스크랩 시스템 구현 완료
   - 건물 스크랩 기능
   - 사용자별 스크랩 목록 관리
@@ -1175,13 +1296,15 @@ Authorization: Bearer {token}
 - ✅ 지도 탭 기능 구현 완료  
 - ✅ 로그인/회원가입 기능 구현 완료
 
-### 다음 버전 예정 (v1.5.0)
+### 다음 버전 예정 (v1.6.0)
 - 🔄 WebSocket 기반 실시간 채팅
 - 🔄 푸시 알림 시스템
 - 🔄 건물 추천 알고리즘 (사용자 선호도 기반)
 - 🔄 사용자 활동 분석 대시보드
 - 🔄 건물 정보 CSV 데이터 자동 업데이트
 - 🔄 영통역까지 걸리는 시간 자동 계산 (지도 API 연동)
+- 🔄 주변 시설 정보 자동 업데이트 (외부 API 연동)
+- 🔄 건물 후기 통계 및 분석 기능
 
 ## 🤝 기여하기
 

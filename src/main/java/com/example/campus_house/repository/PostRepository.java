@@ -36,4 +36,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     // 조회수 기준 인기 게시글
     @Query("SELECT p FROM Post p WHERE p.boardType = :boardType ORDER BY p.viewCount DESC, p.createdAt DESC")
     Page<Post> findPopularPostsByViewCount(@Param("boardType") BoardType boardType, Pageable pageable);
+    
+    // 건물별 질문 게시글 조회
+    Page<Post> findByBuildingIdAndBoardTypeOrderByCreatedAtDesc(Long buildingId, BoardType boardType, Pageable pageable);
+    
+    // 건물별 질문 게시글 수
+    Long countByBuildingIdAndBoardType(Long buildingId, BoardType boardType);
+    
+    // 특정 사용자의 건물별 질문 게시글 조회
+    Page<Post> findByAuthorIdAndBuildingIdAndBoardTypeOrderByCreatedAtDesc(Long authorId, Long buildingId, BoardType boardType, Pageable pageable);
 }

@@ -2,10 +2,15 @@ package com.example.campus_house.controller;
 
 import com.example.campus_house.entity.Building;
 import com.example.campus_house.entity.BuildingScrap;
+import com.example.campus_house.entity.BuildingReview;
+import com.example.campus_house.entity.Post;
 import com.example.campus_house.entity.User;
+import com.example.campus_house.dto.QuestionRequest;
 import com.example.campus_house.service.AuthService;
 import com.example.campus_house.service.BuildingService;
 import com.example.campus_house.service.BuildingScrapService;
+import com.example.campus_house.service.BuildingReviewService;
+import com.example.campus_house.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +28,8 @@ public class BuildingController {
     
     private final BuildingService buildingService;
     private final BuildingScrapService buildingScrapService;
+    private final BuildingReviewService buildingReviewService;
+    private final PostService postService;
     private final AuthService authService;
     
     // 모든 건물 조회
@@ -33,15 +40,6 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
     
-    // 건물 상세 조회
-    @GetMapping("/{buildingId}")
-    public ResponseEntity<Building> getBuildingById(@PathVariable Long buildingId) {
-        Optional<Building> building = buildingService.getBuildingById(buildingId);
-        if (building.isPresent()) {
-            return ResponseEntity.ok(building.get());
-        }
-        return ResponseEntity.notFound().build();
-    }
     
     // 키워드로 건물 검색
     @GetMapping("/search")
@@ -151,14 +149,6 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
     
-    // 학교 접근성 필터
-    @GetMapping("/search/filters/school-accessibility")
-    public ResponseEntity<Page<Building>> searchBuildingsBySchoolAccessibility(
-            @RequestParam Integer maxWalkingTime,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.searchBuildingsBySchoolAccessibility(maxWalkingTime, pageable);
-        return ResponseEntity.ok(buildings);
-    }
     
     // 최근 등록된 건물 조회
     @GetMapping("/recent")
@@ -176,14 +166,6 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
     
-    // 영통역 접근성 필터
-    @GetMapping("/search/filters/station-accessibility")
-    public ResponseEntity<Page<Building>> searchBuildingsByStationAccessibility(
-            @RequestParam Integer maxWalkingTime,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.searchBuildingsByStationAccessibility(maxWalkingTime, pageable);
-        return ResponseEntity.ok(buildings);
-    }
     
     // 건물 용도별 필터 (오피스텔, 아파트, 원룸 등)
     @GetMapping("/search/filters/building-usage")
@@ -198,6 +180,33 @@ public class BuildingController {
     @GetMapping("/building-usages")
     public ResponseEntity<?> getBuildingUsages() {
         return ResponseEntity.ok(buildingService.getDistinctBuildingUsages());
+    }
+    
+    // 편의점 개수로 검색 (외부 API 연동 예정)
+    @GetMapping("/search/filters/convenience-stores")
+    public ResponseEntity<Page<Building>> searchBuildingsByConvenienceStores(
+            @RequestParam Integer minConvenienceStores,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Building> buildings = buildingService.searchBuildingsByConvenienceStores(minConvenienceStores, pageable);
+        return ResponseEntity.ok(buildings);
+    }
+    
+    // 마트 개수로 검색 (외부 API 연동 예정)
+    @GetMapping("/search/filters/marts")
+    public ResponseEntity<Page<Building>> searchBuildingsByMarts(
+            @RequestParam Integer minMarts,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Building> buildings = buildingService.searchBuildingsByMarts(minMarts, pageable);
+        return ResponseEntity.ok(buildings);
+    }
+    
+    // 병원 개수로 검색 (외부 API 연동 예정)
+    @GetMapping("/search/filters/hospitals")
+    public ResponseEntity<Page<Building>> searchBuildingsByHospitals(
+            @RequestParam Integer minHospitals,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Building> buildings = buildingService.searchBuildingsByHospitals(minHospitals, pageable);
+        return ResponseEntity.ok(buildings);
     }
     
     // 건물 생성
@@ -294,6 +303,81 @@ public class BuildingController {
             User user = authService.getUserFromToken(token.substring(7));
             boolean isScraped = buildingScrapService.isScraped(user.getId(), buildingId);
             return ResponseEntity.ok(isScraped);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // ========== 건물 상세 페이지 탭별 API ==========
+    
+    // 기본 정보 탭
+    @GetMapping("/{buildingId}/building-info")
+    public ResponseEntity<Building> getBuildingInfo(@PathVariable Long buildingId) {
+        Optional<Building> building = buildingService.getBuildingById(buildingId);
+        if (building.isPresent()) {
+            return ResponseEntity.ok(building.get());
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    // 실거주자 후기 탭
+    @GetMapping("/{buildingId}/reviews")
+    public ResponseEntity<Page<BuildingReview>> getBuildingReviews(
+            @PathVariable Long buildingId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<BuildingReview> reviews = buildingReviewService.getReviewsByBuildingId(buildingId, pageable);
+        return ResponseEntity.ok(reviews);
+    }
+    
+    // 질문하기 탭 (Post 기반)
+    @GetMapping("/{buildingId}/qnas")
+    public ResponseEntity<Page<Post>> getBuildingQuestions(
+            @PathVariable Long buildingId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> questions = postService.getQuestionsByBuildingId(buildingId, pageable);
+        return ResponseEntity.ok(questions);
+    }
+    
+    // 건물별 질문 작성
+    @PostMapping("/{buildingId}/questions")
+    public ResponseEntity<Post> createBuildingQuestion(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long buildingId,
+            @RequestBody QuestionRequest request) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            
+            // 거주지 인증 여부 확인
+            postService.checkResidenceVerification(user.getId());
+            
+            Post question = postService.createBuildingQuestion(user.getId(), buildingId, request.getTitle(), request.getContent());
+            return ResponseEntity.ok(question);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // 양도 탭 (Post 기반)
+    @GetMapping("/{buildingId}/transfers")
+    public ResponseEntity<Page<Post>> getBuildingTransfers(
+            @PathVariable Long buildingId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
+        Page<Post> transfers = postService.getTransfersByBuildingId(buildingId, pageable);
+        return ResponseEntity.ok(transfers);
+    }
+    
+    // 건물별 양도 글 작성
+    @PostMapping("/{buildingId}/transfers")
+    public ResponseEntity<Post> createBuildingTransfer(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long buildingId,
+            @RequestBody QuestionRequest request) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            Post transfer = postService.createBuildingTransfer(user.getId(), buildingId, request.getTitle(), request.getContent());
+            return ResponseEntity.ok(transfer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

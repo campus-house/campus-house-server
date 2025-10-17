@@ -79,13 +79,6 @@ public class BuildingService {
         return buildingRepository.findAll(pageable);
     }
     
-    // 학교 접근성 필터
-    public Page<Building> searchBuildingsBySchoolAccessibility(Integer maxWalkingTime, Pageable pageable) {
-        if (maxWalkingTime != null) {
-            return buildingRepository.findBySchoolWalkingTimeLessThanEqual(maxWalkingTime, pageable);
-        }
-        return buildingRepository.findAll(pageable);
-    }
     
     // 복합 필터링
     public Page<Building> searchBuildingsWithFilters(BigDecimal minDeposit, BigDecimal maxDeposit,
@@ -108,13 +101,6 @@ public class BuildingService {
         return buildingRepository.findByOrderByScrapCountDesc(pageable);
     }
     
-    // 영통역 접근성 필터
-    public Page<Building> searchBuildingsByStationAccessibility(Integer maxWalkingTime, Pageable pageable) {
-        if (maxWalkingTime != null) {
-            return buildingRepository.findByStationWalkingTimeLessThanEqual(maxWalkingTime, pageable);
-        }
-        return buildingRepository.findAll(pageable);
-    }
     
     // 건물 용도별 필터
     public Page<Building> searchBuildingsByBuildingUsage(String buildingUsage, Pageable pageable) {
@@ -124,6 +110,30 @@ public class BuildingService {
     // 건물 용도 목록 조회
     public java.util.List<String> getDistinctBuildingUsages() {
         return buildingRepository.findDistinctBuildingUsages();
+    }
+    
+    // 편의점 개수로 검색 (외부 API 연동 예정)
+    public Page<Building> searchBuildingsByConvenienceStores(Integer minConvenienceStores, Pageable pageable) {
+        if (minConvenienceStores != null) {
+            return buildingRepository.findByNearbyConvenienceStoresGreaterThanEqual(minConvenienceStores, pageable);
+        }
+        return buildingRepository.findAll(pageable);
+    }
+    
+    // 마트 개수로 검색 (외부 API 연동 예정)
+    public Page<Building> searchBuildingsByMarts(Integer minMarts, Pageable pageable) {
+        if (minMarts != null) {
+            return buildingRepository.findByNearbyMartsGreaterThanEqual(minMarts, pageable);
+        }
+        return buildingRepository.findAll(pageable);
+    }
+    
+    // 병원 개수로 검색 (외부 API 연동 예정)
+    public Page<Building> searchBuildingsByHospitals(Integer minHospitals, Pageable pageable) {
+        if (minHospitals != null) {
+            return buildingRepository.findByNearbyHospitalsGreaterThanEqual(minHospitals, pageable);
+        }
+        return buildingRepository.findAll(pageable);
     }
     
     // 건물 생성
@@ -169,8 +179,14 @@ public class BuildingService {
         if (updatedBuilding.getBuildingUsage() != null) {
             building.setBuildingUsage(updatedBuilding.getBuildingUsage());
         }
-        if (updatedBuilding.getNearbyFacilities() != null) {
-            building.setNearbyFacilities(updatedBuilding.getNearbyFacilities());
+        if (updatedBuilding.getNearbyConvenienceStores() != null) {
+            building.setNearbyConvenienceStores(updatedBuilding.getNearbyConvenienceStores());
+        }
+        if (updatedBuilding.getNearbyMarts() != null) {
+            building.setNearbyMarts(updatedBuilding.getNearbyMarts());
+        }
+        if (updatedBuilding.getNearbyHospitals() != null) {
+            building.setNearbyHospitals(updatedBuilding.getNearbyHospitals());
         }
         if (updatedBuilding.getSchoolWalkingTime() != null) {
             building.setSchoolWalkingTime(updatedBuilding.getSchoolWalkingTime());
