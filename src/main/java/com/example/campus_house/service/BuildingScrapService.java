@@ -4,6 +4,7 @@ import com.example.campus_house.entity.Building;
 import com.example.campus_house.entity.BuildingScrap;
 import com.example.campus_house.entity.User;
 import com.example.campus_house.repository.BuildingScrapRepository;
+import com.example.campus_house.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ public class BuildingScrapService {
     
     private final BuildingScrapRepository buildingScrapRepository;
     private final BuildingService buildingService;
+    private final UserRepository userRepository;
     
     // 건물 스크랩
     @Transactional
@@ -34,10 +36,13 @@ public class BuildingScrapService {
         Building building = buildingService.getBuildingById(buildingId)
                 .orElseThrow(() -> new RuntimeException("건물을 찾을 수 없습니다."));
         
+        // 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        
         // 스크랩 생성
         BuildingScrap scrap = BuildingScrap.builder()
-                .userId(userId)
-                .buildingId(buildingId)
+                .user(user)
                 .building(building)
                 .build();
         

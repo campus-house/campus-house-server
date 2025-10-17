@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: 캠퍼스 하우스 API
   description: 대학생 자취 커뮤니티 앱의 백엔드 API 문서
-  version: 1.0.0
+  version: 1.4.0
   contact:
     name: Campus House Team
     email: contact@campushouse.com
@@ -18,13 +18,206 @@ servers:
 security:
   - bearerAuth: []
 paths:
-  # 게시글 관리
+  # 인증 관련 API
+  /api/auth/register:
+    post:
+      tags:
+        - 인증
+      summary: 회원가입
+      description: 새로운 사용자를 등록합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: 회원가입 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 회원가입이 완료되었습니다.
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 잘못된 요청
+        '409':
+          description: 이미 존재하는 이메일
+
+  /api/auth/login:
+    post:
+      tags:
+        - 인증
+      summary: 로그인
+      description: 사용자 로그인을 처리합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 로그인에 성공했습니다.
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: 인증 실패
+
+  /api/auth/check-email:
+    get:
+      tags:
+        - 인증
+      summary: 이메일 중복 확인
+      description: 이메일 중복 여부를 확인합니다.
+      parameters:
+        - name: email
+          in: query
+          required: true
+          description: 확인할 이메일
+          schema:
+            type: string
+            format: email
+            example: user@example.com
+      responses:
+        '200':
+          description: 이메일 확인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                    example: true
+        '400':
+          description: 잘못된 이메일 형식
+
+  /api/auth/check-nickname:
+    get:
+      tags:
+        - 인증
+      summary: 닉네임 중복 확인
+      description: 닉네임 중복 여부를 확인합니다.
+      parameters:
+        - name: nickname
+          in: query
+          required: true
+          description: 확인할 닉네임
+          schema:
+            type: string
+            example: 홍길동
+      responses:
+        '200':
+          description: 닉네임 확인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                    example: true
+        '400':
+          description: 잘못된 닉네임 형식
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - 인증
+      summary: 비밀번호 변경
+      description: 사용자 비밀번호를 변경합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+      responses:
+        '200':
+          description: 비밀번호 변경 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 비밀번호가 변경되었습니다.
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
+  /api/auth/update-profile:
+    put:
+      tags:
+        - 인증
+      summary: 프로필 수정
+      description: 사용자 프로필 정보를 수정합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: 프로필 수정 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 프로필이 수정되었습니다.
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
+  # 게시글 관련 API
   /api/boards/{type}/posts:
     post:
       tags:
         - 게시글
       summary: 게시글 작성
-      description: 새로운 게시글을 작성합니다. 사진 포함 가능합니다.
+      description: 새로운 게시글을 작성합니다.
       security:
         - bearerAuth: []
       parameters:
@@ -34,11 +227,12 @@ paths:
           description: 게시판 타입
           schema:
             type: string
-            example: free
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/CreatePostRequest'
       responses:
@@ -47,18 +241,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostResponse'
+                $ref: '#/components/schemas/Post'
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
+
     get:
       tags:
         - 게시글
-      summary: 모든 게시글 조회
-      description: 페이징을 지원하는 게시글 목록을 조회합니다.
-      security:
-        - bearerAuth: []
+      summary: 게시글 목록 조회
+      description: 특정 게시판의 게시글 목록을 조회합니다.
       parameters:
         - name: type
           in: path
@@ -66,48 +259,49 @@ paths:
           description: 게시판 타입
           schema:
             type: string
-            example: free
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
         - name: page
           in: query
-          description: 페이지 번호 (0부터 시작)
+          description: 페이지 번호
           schema:
             type: integer
             default: 0
-            example: 0
         - name: size
           in: query
           description: 페이지당 게시글 수
           schema:
             type: integer
             default: 20
-            example: 20
         - name: sort
           in: query
           description: 정렬 기준
           schema:
             type: string
-            enum: [latest, popular]
-            default: latest
-            example: latest
+            default: "createdAt,desc"
       responses:
         '200':
           description: 게시글 목록 조회 성공
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostResponse'
-        '401':
-          description: 인증 필요
-  /api/boards/{type}/posts/latest:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+  /api/boards/{type}/posts/{postId}:
     get:
       tags:
         - 게시글
-      summary: 최신순 게시글 조회
-      description: 최신순으로 정렬된 게시글 목록을 조회합니다.
-      security:
-        - bearerAuth: []
+      summary: 게시글 상세 조회
+      description: 특정 게시글의 상세 정보를 조회합니다.
       parameters:
         - name: type
           in: path
@@ -115,125 +309,9 @@ paths:
           description: 게시판 타입
           schema:
             type: string
-            example: free
-        - name: page
-          in: query
-          description: 페이지 번호
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          description: 페이지당 게시글 수
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 최신순 게시글 조회 성공
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostResponse'
-        '401':
-          description: 인증 필요
-  /api/boards/{type}/posts/popular:
-    get:
-      tags:
-        - 게시글
-      summary: 인기순 게시글 조회
-      description: 좋아요 수 기준으로 정렬된 인기 게시글 목록을 조회합니다.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: type
-          in: path
-          required: true
-          description: 게시판 타입
-          schema:
-            type: string
-            example: free
-        - name: page
-          in: query
-          description: 페이지 번호
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          description: 페이지당 게시글 수
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 인기순 게시글 조회 성공
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostResponse'
-        '401':
-          description: 인증 필요
-  /api/boards/{type}/posts/search:
-    get:
-      tags:
-        - 게시글
-      summary: 게시글 검색
-      description: 제목과 내용에서 키워드를 검색합니다.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: type
-          in: path
-          required: true
-          description: 게시판 타입
-          schema:
-            type: string
-            example: free
-        - name: keyword
-          in: query
-          required: true
-          description: 검색 키워드
-          schema:
-            type: string
-            example: 자취방
-        - name: page
-          in: query
-          description: 페이지 번호
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          description: 페이지당 게시글 수
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 검색 결과 조회 성공
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PostResponse'
-        '401':
-          description: 인증 필요
-  /api/posts/{id}:
-    get:
-      tags:
-        - 게시글
-      summary: 특정 게시글 조회
-      description: 게시글 ID로 특정 게시글을 조회합니다.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
           in: path
           required: true
           description: 게시글 ID
@@ -246,20 +324,27 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostResponse'
+                $ref: '#/components/schemas/Post'
         '404':
           description: 게시글을 찾을 수 없음
-        '401':
-          description: 인증 필요
+
     put:
       tags:
         - 게시글
       summary: 게시글 수정
-      description: 내가 작성한 게시글만 수정할 수 있습니다.
+      description: 게시글을 수정합니다.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
           in: path
           required: true
           description: 게시글 ID
@@ -278,24 +363,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PostResponse'
+                $ref: '#/components/schemas/Post'
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
         '403':
-          description: 수정 권한 없음
+          description: 권한 없음
         '404':
           description: 게시글을 찾을 수 없음
+
     delete:
       tags:
         - 게시글
       summary: 게시글 삭제
-      description: 내가 작성한 게시글만 삭제할 수 있습니다.
+      description: 게시글을 삭제합니다.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
           in: path
           required: true
           description: 게시글 ID
@@ -305,29 +399,30 @@ paths:
       responses:
         '200':
           description: 게시글 삭제 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 게시글이 삭제되었습니다.
         '401':
           description: 인증 필요
         '403':
-          description: 삭제 권한 없음
+          description: 권한 없음
         '404':
           description: 게시글을 찾을 수 없음
-  /api/posts/{postId}/like:
+
+  /api/boards/{type}/posts/{postId}/like:
     post:
       tags:
         - 게시글
-      summary: 좋아요 달기
-      description: 게시물에 좋아요를 추가합니다. 게시물의 좋아요 수가 1 증가하고 유저의 좋아요 목록에 추가됩니다.
+      summary: 게시글 좋아요
+      description: 게시글에 좋아요를 추가합니다.
       security:
         - bearerAuth: []
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
         - name: postId
           in: path
           required: true
@@ -337,7 +432,7 @@ paths:
             example: 1
       responses:
         '200':
-          description: 좋아요 성공
+          description: 좋아요 추가 성공
           content:
             application/json:
               schema:
@@ -346,24 +441,27 @@ paths:
                   message:
                     type: string
                     example: 좋아요가 추가되었습니다.
-                  likeCount:
-                    type: integer
-                    example: 15
         '400':
-          description: 이미 좋아요를 누른 게시글
+          description: 이미 좋아요한 게시글
         '401':
           description: 인증 필요
-        '404':
-          description: 게시글을 찾을 수 없음
-  /api/posts/{postId}/scrap:
-    post:
+
+    delete:
       tags:
         - 게시글
-      summary: 스크랩 하기
-      description: 게시물을 스크랩합니다. 게시물의 스크랩 수가 1 증가하고 유저의 스크랩 목록에 추가됩니다.
+      summary: 게시글 좋아요 취소
+      description: 게시글 좋아요를 취소합니다.
       security:
         - bearerAuth: []
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
         - name: postId
           in: path
           required: true
@@ -373,7 +471,7 @@ paths:
             example: 1
       responses:
         '200':
-          description: 스크랩 성공
+          description: 좋아요 취소 성공
           content:
             application/json:
               schema:
@@ -381,26 +479,97 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: 스크랩이 추가되었습니다.
-                  scrapCount:
-                    type: integer
-                    example: 8
+                    example: 좋아요가 취소되었습니다.
         '400':
-          description: 이미 스크랩한 게시글
+          description: 좋아요하지 않은 게시글
         '401':
           description: 인증 필요
-        '404':
-          description: 게시글을 찾을 수 없음
-  # 댓글 관리
-  /api/posts/{postId}/comments:
+
+  /api/boards/{type}/posts/{postId}/bookmark:
+    post:
+      tags:
+        - 게시글
+      summary: 게시글 북마크
+      description: 게시글을 북마크합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
+          in: path
+          required: true
+          description: 게시글 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 북마크 추가 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bookmark'
+        '400':
+          description: 이미 북마크한 게시글
+        '401':
+          description: 인증 필요
+
+    delete:
+      tags:
+        - 게시글
+      summary: 게시글 북마크 취소
+      description: 게시글 북마크를 취소합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
+          in: path
+          required: true
+          description: 게시글 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 북마크 취소 성공
+        '400':
+          description: 북마크하지 않은 게시글
+        '401':
+          description: 인증 필요
+
+  # 댓글 관련 API
+  /api/boards/{type}/posts/{postId}/comments:
     post:
       tags:
         - 댓글
       summary: 댓글 작성
-      description: 게시물에 댓글을 작성합니다. 게시물의 댓글 수가 1 증가합니다.
+      description: 게시글에 댓글을 작성합니다.
       security:
         - bearerAuth: []
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
         - name: postId
           in: path
           required: true
@@ -420,21 +589,26 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentResponse'
+                $ref: '#/components/schemas/Comment'
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
-        '404':
-          description: 게시글을 찾을 수 없음
+
     get:
       tags:
         - 댓글
       summary: 댓글 목록 조회
-      description: 게시물의 댓글 목록을 조회합니다.
-      security:
-        - bearerAuth: []
+      description: 게시글의 댓글 목록을 조회합니다.
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
         - name: postId
           in: path
           required: true
@@ -460,57 +634,41 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CommentResponse'
-        '401':
-          description: 인증 필요
-        '404':
-          description: 게시글을 찾을 수 없음
-  /api/comments/{parentCommentId}/replies:
-    post:
-      tags:
-        - 댓글
-      summary: 대댓글 작성
-      description: 부모 댓글에 대댓글을 작성합니다. 게시물의 댓글 수가 1 증가합니다.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: parentCommentId
-          in: path
-          required: true
-          description: 부모 댓글 ID
-          schema:
-            type: integer
-            example: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCommentRequest'
-      responses:
-        '201':
-          description: 대댓글 작성 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommentResponse'
-        '400':
-          description: 잘못된 요청
-        '401':
-          description: 인증 필요
-        '404':
-          description: 부모 댓글을 찾을 수 없음
-  /api/comments/{commentId}:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Comment'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+  /api/boards/{type}/posts/{postId}/comments/{commentId}:
     put:
       tags:
         - 댓글
       summary: 댓글 수정
-      description: 내가 작성한 댓글만 수정할 수 있습니다.
+      description: 댓글을 수정합니다.
       security:
         - bearerAuth: []
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
+          in: path
+          required: true
+          description: 게시글 ID
+          schema:
+            type: integer
+            example: 1
         - name: commentId
           in: path
           required: true
@@ -530,23 +688,39 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommentResponse'
+                $ref: '#/components/schemas/Comment'
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
         '403':
-          description: 수정 권한 없음
+          description: 권한 없음
         '404':
           description: 댓글을 찾을 수 없음
+
     delete:
       tags:
         - 댓글
       summary: 댓글 삭제
-      description: 내가 작성한 댓글만 삭제할 수 있습니다.
+      description: 댓글을 삭제합니다.
       security:
         - bearerAuth: []
       parameters:
+        - name: type
+          in: path
+          required: true
+          description: 게시판 타입
+          schema:
+            type: string
+            enum: [APARTMENT, QUESTION, LOCAL]
+            example: APARTMENT
+        - name: postId
+          in: path
+          required: true
+          description: 게시글 ID
+          schema:
+            type: integer
+            example: 1
         - name: commentId
           in: path
           required: true
@@ -557,21 +731,149 @@ paths:
       responses:
         '200':
           description: 댓글 삭제 성공
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: 댓글이 삭제되었습니다.
         '401':
           description: 인증 필요
         '403':
-          description: 삭제 권한 없음
+          description: 권한 없음
         '404':
           description: 댓글을 찾을 수 없음
-  # 채팅 관리
+
+  # 메모 관련 API
+  /api/memos:
+    get:
+      tags:
+        - 메모
+      summary: 활성 메모 목록 조회
+      description: 활성화된 메모 목록을 조회합니다.
+      responses:
+        '200':
+          description: 메모 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Memo'
+
+    post:
+      tags:
+        - 메모
+      summary: 메모 생성
+      description: 새로운 메모를 생성합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemoRequest'
+      responses:
+        '201':
+          description: 메모 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Memo'
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
+  /api/memos/type/{type}:
+    get:
+      tags:
+        - 메모
+      summary: 타입별 메모 조회
+      description: 특정 타입의 메모를 조회합니다.
+      parameters:
+        - name: type
+          in: path
+          required: true
+          description: 메모 타입
+          schema:
+            type: string
+            enum: [MEETUP, STUDY, SHARE, ETC]
+            example: MEETUP
+      responses:
+        '200':
+          description: 타입별 메모 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Memo'
+
+  /api/memos/{memoId}/replies:
+    post:
+      tags:
+        - 메모
+      summary: 메모 답장/채팅 작성
+      description: 메모에 답장이나 채팅을 작성합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: memoId
+          in: path
+          required: true
+          description: 메모 ID
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemoReplyRequest'
+      responses:
+        '201':
+          description: 답장 작성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoReply'
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
+  /api/memos/{memoId}/participate:
+    post:
+      tags:
+        - 메모
+      summary: 메모 참여 신청
+      description: 메모에 참여를 신청합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: memoId
+          in: path
+          required: true
+          description: 메모 ID
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParticipateRequest'
+      responses:
+        '200':
+          description: 참여 신청 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemoParticipant'
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
+  # 채팅 관련 API
   /api/chat/rooms:
     post:
       tags:
@@ -580,14 +882,12 @@ paths:
       description: 이미 채팅방이 있으면 기존 방 반환, 없으면 새 방 생성
       security:
         - bearerAuth: []
-      parameters:
-        - name: otherUserName
-          in: query
-          required: true
-          description: 상대방 사용자 닉네임
-          schema:
-            type: string
-            example: 홍길동
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateChatRoomRequest'
       responses:
         '200':
           description: 채팅방 조회/생성 성공
@@ -595,54 +895,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ChatRoomResponse'
-              example:
-                id: 1
-                otherUserName: 홍길동
-                otherUserNickname: 홍길동
-                otherUserProfileImage: https://example.com/profile.jpg
-                createdAt: '2024-01-15T10:30:00'
-                lastMessageTime: '2024-01-15T14:25:00'
-                lastMessageContent: 안녕하세요!
-                unreadCount: 3
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
-  /api/chat/rooms/user/{userName}:
+
     get:
       tags:
         - 채팅
-      summary: 사용자 채팅방 목록
-      description: 특정 사용자의 채팅방 목록을 조회합니다.
+      summary: 채팅방 목록 조회
+      description: 사용자의 채팅방 목록을 조회합니다.
       security:
         - bearerAuth: []
       parameters:
-        - name: userName
-          in: path
-          required: true
-          description: 사용자 닉네임
+        - name: page
+          in: query
+          description: 페이지 번호
           schema:
-            type: string
-            example: 홍길동
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 채팅방 수
+          schema:
+            type: integer
+            default: 20
       responses:
         '200':
           description: 채팅방 목록 조회 성공
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChatRoomResponse'
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatRoomResponse'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
         '401':
           description: 인증 필요
-        '403':
-          description: 다른 사용자의 채팅방 목록 조회 권한 없음
-  /api/chat/rooms/{roomId}:
+
+  /api/chat/rooms/{roomId}/messages:
     get:
       tags:
         - 채팅
-      summary: 특정 채팅방 조회
-      description: 특정 채팅방의 정보를 조회합니다.
+      summary: 채팅 메시지 조회
+      description: 채팅방의 메시지 목록을 조회합니다.
       security:
         - bearerAuth: []
       parameters:
@@ -653,56 +955,43 @@ paths:
           schema:
             type: integer
             example: 1
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 메시지 수
+          schema:
+            type: integer
+            default: 50
       responses:
         '200':
-          description: 채팅방 조회 성공
+          description: 메시지 목록 조회 성공
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatRoomResponse'
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChatMessage'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: 인증 필요
         '404':
           description: 채팅방을 찾을 수 없음
-        '403':
-          description: 채팅방 접근 권한 없음
-  /api/chat/rooms/users/{user1Name}/{user2Name}:
-    get:
-      tags:
-        - 채팅
-      summary: 두 사용자 간 채팅방 조회
-      description: 두 사용자 간의 채팅방을 조회합니다.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: user1Name
-          in: path
-          required: true
-          description: 사용자1 닉네임
-          schema:
-            type: string
-            example: 홍길동
-        - name: user2Name
-          in: path
-          required: true
-          description: 사용자2 닉네임
-          schema:
-            type: string
-            example: 김철수
-      responses:
-        '200':
-          description: 채팅방 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ChatRoomResponse'
-        '404':
-          description: 채팅방을 찾을 수 없음
-        '403':
-          description: 채팅방 접근 권한 없음
-  /api/chat/rooms/{roomId}/messages:
+
     post:
       tags:
         - 채팅
-      summary: 메시지 전송
+      summary: 채팅 메시지 전송
       description: 채팅방에 메시지를 전송합니다.
       security:
         - bearerAuth: []
@@ -720,37 +1009,26 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/SendMessageRequest'
-            example:
-              content: 안녕하세요!
-              messageType: TEXT
       responses:
-        '200':
+        '201':
           description: 메시지 전송 성공
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ChatMessageResponse'
-              example:
-                id: 1
-                content: 안녕하세요!
-                imageUrl: null
-                messageType: TEXT
-                senderName: 홍길동
-                senderNickname: 홍길동
-                senderProfileImage: https://example.com/profile.jpg
-                createdAt: '2024-01-15T14:25:00'
-                isFromCurrentUser: true
+                $ref: '#/components/schemas/ChatMessage'
         '400':
           description: 잘못된 요청
         '401':
           description: 인증 필요
-        '403':
-          description: 채팅방 접근 권한 없음
-    get:
+        '404':
+          description: 채팅방을 찾을 수 없음
+
+  /api/chat/rooms/{roomId}/read:
+    post:
       tags:
         - 채팅
-      summary: 메시지 목록 조회
-      description: 채팅방의 메시지 목록을 조회합니다. (페이징 지원)
+      summary: 채팅 읽음 처리
+      description: 채팅방의 메시지를 읽음 처리합니다.
       security:
         - bearerAuth: []
       parameters:
@@ -761,46 +1039,504 @@ paths:
           schema:
             type: integer
             example: 1
+      responses:
+        '200':
+          description: 읽음 처리 성공
+        '401':
+          description: 인증 필요
+        '404':
+          description: 채팅방을 찾을 수 없음
+
+  # 건물 정보 관련 API
+  /api/buildings:
+    get:
+      tags:
+        - 건물 정보
+      summary: 모든 건물 조회
+      description: 모든 건물 정보를 페이징으로 조회합니다.
+      parameters:
         - name: page
           in: query
-          description: 페이지 번호 (0부터 시작)
+          description: 페이지 번호
           schema:
             type: integer
             default: 0
-            example: 0
         - name: size
           in: query
-          description: 페이지당 메시지 수
+          description: 페이지당 건물 수
           schema:
             type: integer
             default: 20
-            example: 20
+        - name: sort
+          in: query
+          description: 정렬 기준
+          schema:
+            type: string
+            default: "createdAt,desc"
       responses:
         '200':
-          description: 메시지 목록 조회 성공
+          description: 건물 목록 조회 성공
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ChatMessageResponse'
-        '404':
-          description: 채팅방을 찾을 수 없음
-        '403':
-          description: 채팅방 접근 권한 없음
-  /api/chat/rooms/{roomId}/read:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
     post:
       tags:
-        - 채팅
-      summary: 메시지 읽음 처리
-      description: 채팅방의 메시지를 읽음 처리합니다.
+        - 건물 정보
+      summary: 건물 정보 생성
+      description: 새로운 건물 정보를 생성합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBuildingRequest'
+      responses:
+        '200':
+          description: 건물 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '400':
+          description: 잘못된 요청
+
+  /api/buildings/{buildingId}:
+    get:
+      tags:
+        - 건물 정보
+      summary: 건물 상세 조회
+      description: 특정 건물의 상세 정보를 조회합니다.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 건물 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '404':
+          description: 건물을 찾을 수 없음
+
+    put:
+      tags:
+        - 건물 정보
+      summary: 건물 정보 수정
+      description: 건물 정보를 수정합니다.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateBuildingRequest'
+      responses:
+        '200':
+          description: 건물 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '404':
+          description: 건물을 찾을 수 없음
+
+    delete:
+      tags:
+        - 건물 정보
+      summary: 건물 정보 삭제
+      description: 건물 정보를 삭제합니다.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 건물 삭제 성공
+        '404':
+          description: 건물을 찾을 수 없음
+
+  /api/buildings/search:
+    get:
+      tags:
+        - 건물 정보
+      summary: 키워드로 건물 검색
+      description: 키워드로 건물을 검색합니다.
+      parameters:
+        - name: keyword
+          in: query
+          required: true
+          description: 검색 키워드
+          schema:
+            type: string
+            example: "서울대학교"
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 건물 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 건물 검색 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+  /api/buildings/search/filters:
+    get:
+      tags:
+        - 건물 정보
+      summary: 건물 정보 필터링
+      description: 다양한 조건으로 건물을 필터링합니다.
+      parameters:
+        - name: minDeposit
+          in: query
+          description: 최소 보증금 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 500
+        - name: maxDeposit
+          in: query
+          description: 최대 보증금 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 2000
+        - name: minMonthlyRent
+          in: query
+          description: 최소 월세 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 30
+        - name: maxMonthlyRent
+          in: query
+          description: 최대 월세 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 80
+        - name: minJeonse
+          in: query
+          description: 최소 전세 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 5000
+        - name: maxJeonse
+          in: query
+          description: 최대 전세 (만원)
+          schema:
+            type: number
+            format: decimal
+            example: 30000
+        - name: parkingRequired
+          in: query
+          description: 주차장 필요 여부
+          schema:
+            type: boolean
+            example: true
+        - name: elevatorRequired
+          in: query
+          description: 엘리베이터 필요 여부
+          schema:
+            type: boolean
+            example: true
+        - name: maxWalkingTime
+          in: query
+          description: 최대 도보 시간 (분)
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 건물 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 필터링 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+  /api/buildings/search/filters/station-accessibility:
+    get:
+      tags:
+        - 건물 정보
+      summary: 영통역 접근성 필터
+      description: 영통역까지 걸리는 시간으로 건물을 필터링합니다.
+      parameters:
+        - name: maxWalkingTime
+          in: query
+          required: true
+          description: 최대 도보 시간 (분)
+          schema:
+            type: integer
+            example: 10
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 건물 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 영통역 접근성 필터링 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Building'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+
+  /api/buildings/{buildingId}/scrap:
+    post:
+      tags:
+        - 건물 정보
+      summary: 건물 스크랩
+      description: 건물을 스크랩합니다.
       security:
         - bearerAuth: []
       parameters:
-        - name: roomId
+        - name: buildingId
           in: path
           required: true
-          description: 채팅방 ID
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 스크랩 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingScrap'
+        '400':
+          description: 이미 스크랩한 건물
+        '401':
+          description: 인증 필요
+
+    delete:
+      tags:
+        - 건물 정보
+      summary: 건물 스크랩 취소
+      description: 건물 스크랩을 취소합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 스크랩 취소 성공
+        '400':
+          description: 스크랩하지 않은 건물
+        '401':
+          description: 인증 필요
+
+    get:
+      tags:
+        - 건물 정보
+      summary: 건물 스크랩 여부 확인
+      description: 건물 스크랩 여부를 확인합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          description: 건물 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 스크랩 여부 확인 성공
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '401':
+          description: 인증 필요
+
+  # 스크랩 관련 API
+  /api/scraps/buildings:
+    get:
+      tags:
+        - 스크랩
+      summary: 사용자의 건물 스크랩 목록
+      description: 사용자가 스크랩한 건물 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 스크랩 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 스크랩 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BuildingScrap'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: 인증 필요
+
+  # 알림 관련 API
+  /api/notifications:
+    get:
+      tags:
+        - 알림
+      summary: 사용자 알림 목록 조회
+      description: 사용자의 알림 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 알림 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 알림 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: 인증 필요
+
+  /api/notifications/{notificationId}/read:
+    post:
+      tags:
+        - 알림
+      summary: 알림 읽음 처리
+      description: 특정 알림을 읽음 처리합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: notificationId
+          in: path
+          required: true
+          description: 알림 ID
           schema:
             type: integer
             example: 1
@@ -817,77 +1553,282 @@ paths:
                     example: 읽음 처리 완료
         '401':
           description: 인증 필요
-        '403':
-          description: 채팅방 접근 권한 없음
-  /api/chat/unread-count/{userName}:
-    get:
+        '404':
+          description: 알림을 찾을 수 없음
+
+  /api/notifications/read-all:
+    post:
       tags:
-        - 채팅
-      summary: 읽지 않은 메시지 수 조회
-      description: 사용자의 읽지 않은 메시지 수를 조회합니다.
+        - 알림
+      summary: 모든 알림 읽음 처리
+      description: 사용자의 모든 알림을 읽음 처리합니다.
       security:
         - bearerAuth: []
-      parameters:
-        - name: userName
-          in: path
-          required: true
-          description: 사용자 닉네임
-          schema:
-            type: string
-            example: 홍길동
       responses:
         '200':
-          description: 읽지 않은 메시지 수 조회 성공
+          description: 모든 알림 읽음 처리 성공
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  unreadCount:
-                    type: integer
-                    example: 5
+                  message:
+                    type: string
+                    example: 모든 알림이 읽음 처리되었습니다.
         '401':
           description: 인증 필요
-        '403':
-          description: 다른 사용자의 읽지 않은 메시지 수 조회 권한 없음
-  /api/chat/rooms/{roomId}/unread-count/{userName}:
+
+  # 거주지 인증 관련 API
+  /api/residence-verifications:
+    post:
+      tags:
+        - 거주지 인증
+      summary: 거주지 인증 신청
+      description: 거주지 인증을 신청합니다.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationRequest'
+      responses:
+        '201':
+          description: 인증 신청 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResidenceVerification'
+        '400':
+          description: 잘못된 요청
+        '401':
+          description: 인증 필요
+
     get:
       tags:
-        - 채팅
-      summary: 특정 채팅방 읽지 않은 메시지 수
-      description: 특정 채팅방의 읽지 않은 메시지 수를 조회합니다.
+        - 거주지 인증
+      summary: 사용자 거주지 인증 목록 조회
+      description: 사용자의 거주지 인증 목록을 조회합니다.
       security:
         - bearerAuth: []
       parameters:
-        - name: roomId
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 인증 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 인증 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResidenceVerification'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: 인증 필요
+
+  /api/residence-verifications/admin:
+    get:
+      tags:
+        - 거주지 인증
+      summary: 관리자용 인증 목록 조회
+      description: 관리자가 모든 거주지 인증 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: 인증 상태 필터
+          schema:
+            type: string
+            enum: [PENDING, APPROVED, REJECTED]
+            example: PENDING
+        - name: page
+          in: query
+          description: 페이지 번호
+          schema:
+            type: integer
+            default: 0
+        - name: size
+          in: query
+          description: 페이지당 인증 수
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: 관리자용 인증 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ResidenceVerification'
+                  totalElements:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          description: 인증 필요
+        '403':
+          description: 관리자 권한 필요
+
+  /api/residence-verifications/{verificationId}/admin:
+    post:
+      tags:
+        - 거주지 인증
+      summary: 관리자 인증 처리
+      description: 관리자가 거주지 인증을 승인 또는 거부합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: verificationId
           in: path
           required: true
-          description: 채팅방 ID
+          description: 인증 ID
           schema:
             type: integer
             example: 1
-        - name: userName
-          in: path
-          required: true
-          description: 사용자 닉네임
-          schema:
-            type: string
-            example: 홍길동
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminActionRequest'
       responses:
         '200':
-          description: 읽지 않은 메시지 수 조회 성공
+          description: 인증 처리 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  unreadCount:
-                    type: integer
-                    example: 2
+                $ref: '#/components/schemas/ResidenceVerification'
+        '400':
+          description: 잘못된 요청
         '401':
           description: 인증 필요
         '403':
-          description: 채팅방 접근 권한 없음
+          description: 관리자 권한 필요
+        '404':
+          description: 인증을 찾을 수 없음
+
+  # 캐릭터 관련 API
+  /api/characters:
+    get:
+      tags:
+        - 캐릭터
+      summary: 모든 활성화된 캐릭터 조회
+      description: 모든 활성화된 캐릭터 목록을 조회합니다.
+      responses:
+        '200':
+          description: 캐릭터 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+
+  /api/characters/rarity/{rarity}:
+    get:
+      tags:
+        - 캐릭터
+      summary: 희귀도별 캐릭터 조회
+      description: 특정 희귀도의 캐릭터 목록을 조회합니다.
+      parameters:
+        - name: rarity
+          in: path
+          required: true
+          description: 캐릭터 희귀도
+          schema:
+            type: string
+            enum: [COMMON, RARE, EPIC, LEGENDARY]
+            example: RARE
+      responses:
+        '200':
+          description: 희귀도별 캐릭터 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Character'
+        '400':
+          description: 잘못된 희귀도
+
+  /api/characters/{characterId}:
+    get:
+      tags:
+        - 캐릭터
+      summary: 특정 캐릭터 상세 조회
+      description: 특정 캐릭터의 상세 정보를 조회합니다.
+      parameters:
+        - name: characterId
+          in: path
+          required: true
+          description: 캐릭터 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 캐릭터 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Character'
+        '404':
+          description: 캐릭터를 찾을 수 없음
+
+  /api/characters/user/{userId}:
+    get:
+      tags:
+        - 캐릭터
+      summary: 사용자 보유 캐릭터 조회
+      description: 특정 사용자가 보유한 캐릭터 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: 사용자 ID
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 사용자 캐릭터 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserCharacter'
+        '401':
+          description: 인증 필요
+        '404':
+          description: 사용자를 찾을 수 없음
+
 components:
   securitySchemes:
     bearerAuth:
@@ -896,7 +1837,149 @@ components:
       bearerFormat: JWT
       description: "JWT 토큰을 입력하세요. 예: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
   schemas:
-    # 게시글 관련 스키마
+    RegisterRequest:
+      type: object
+      description: 회원가입 요청
+      required:
+        - email
+        - password
+        - nickname
+        - userType
+      properties:
+        email:
+          type: string
+          format: email
+          description: 이메일
+          example: user@example.com
+        password:
+          type: string
+          description: 비밀번호
+          example: password123
+        nickname:
+          type: string
+          description: 닉네임
+          example: 홍길동
+        userType:
+          type: string
+          enum: [STUDENT, GRADUATE, OTHER]
+          description: 사용자 타입
+          example: STUDENT
+        location:
+          type: string
+          description: 거주 지역
+          example: 서울시강남구
+        university:
+          type: string
+          description: 대학교
+          example: 경희대학교
+        major:
+          type: string
+          description: 전공
+          example: 컴퓨터공학과
+
+    LoginRequest:
+      type: object
+      description: 로그인 요청
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: 이메일
+          example: user@example.com
+        password:
+          type: string
+          description: 비밀번호
+          example: password123
+
+    ChangePasswordRequest:
+      type: object
+      description: 비밀번호 변경 요청
+      required:
+        - currentPassword
+        - newPassword
+      properties:
+        currentPassword:
+          type: string
+          description: 현재 비밀번호
+          example: oldpassword123
+        newPassword:
+          type: string
+          description: 새 비밀번호
+          example: newpassword123
+
+    UpdateProfileRequest:
+      type: object
+      description: 프로필 수정 요청
+      properties:
+        nickname:
+          type: string
+          description: 닉네임
+          example: 수정된닉네임
+        location:
+          type: string
+          description: 거주 지역
+          example: 서울시관악구
+        university:
+          type: string
+          description: 대학교
+          example: 서울대학교
+        major:
+          type: string
+          description: 전공
+          example: 전산학부
+
+    User:
+      type: object
+      description: 사용자 정보
+      properties:
+        id:
+          type: integer
+          description: 사용자 ID
+          example: 1
+        email:
+          type: string
+          format: email
+          description: 이메일
+          example: user@example.com
+        nickname:
+          type: string
+          description: 닉네임
+          example: 홍길동
+        userType:
+          type: string
+          enum: [STUDENT, GRADUATE, OTHER]
+          description: 사용자 타입
+          example: STUDENT
+        location:
+          type: string
+          description: 거주 지역
+          example: 서울시강남구
+        university:
+          type: string
+          description: 대학교
+          example: 경희대학교
+        major:
+          type: string
+          description: 전공
+          example: 컴퓨터공학과
+        profileImage:
+          type: string
+          description: 프로필 이미지 URL
+          example: https://example.com/profile.jpg
+        createdAt:
+          type: string
+          format: date-time
+          description: 가입일시
+          example: "2024-01-01T00:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          description: 수정일시
+          example: "2024-01-01T00:00:00"
+
     CreatePostRequest:
       type: object
       description: 게시글 작성 요청
@@ -907,17 +1990,16 @@ components:
         title:
           type: string
           description: 게시글 제목
-          example: 자취방 구합니다
+          example: "새로운 게시글입니다"
         content:
           type: string
           description: 게시글 내용
-          example: 경기도 성남시 자취방 구합니다. 월세 50만원 이하로...
-        images:
-          type: array
-          description: 첨부 이미지 파일들
-          items:
-            type: string
-            format: binary
+          example: "게시글 내용입니다"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+
     UpdatePostRequest:
       type: object
       description: 게시글 수정 요청
@@ -925,14 +2007,19 @@ components:
         title:
           type: string
           description: 게시글 제목
-          example: 자취방 구합니다 (수정)
+          example: "수정된 게시글 제목"
         content:
           type: string
           description: 게시글 내용
-          example: 경기도 성남시 자취방 구합니다. 월세 50만원 이하로... (수정된 내용)
-    PostResponse:
+          example: "수정된 게시글 내용"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/updated-image.jpg"
+
+    Post:
       type: object
-      description: 게시글 응답 정보
+      description: 게시글 정보
       properties:
         id:
           type: integer
@@ -941,55 +2028,67 @@ components:
         title:
           type: string
           description: 게시글 제목
-          example: 자취방 구합니다
+          example: "새로운 게시글입니다"
         content:
           type: string
           description: 게시글 내용
-          example: 경기도 성남시 자취방 구합니다...
-        authorName:
+          example: "게시글 내용입니다"
+        imageUrl:
           type: string
-          description: 작성자 닉네임
-          example: 홍길동
-        authorProfileImage:
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+        author:
+          $ref: '#/components/schemas/User'
+        boardType:
           type: string
-          description: 작성자 프로필 이미지
-          example: https://example.com/profile.jpg
-        images:
-          type: array
-          description: 첨부 이미지 URLs
-          items:
-            type: string
-          example: ["https://example.com/image1.jpg", "https://example.com/image2.jpg"]
+          enum: [APARTMENT, QUESTION, LOCAL]
+          description: 게시판 타입
+          example: APARTMENT
+        viewCount:
+          type: integer
+          description: 조회수
+          example: 100
         likeCount:
           type: integer
           description: 좋아요 수
           example: 15
-        scrapCount:
-          type: integer
-          description: 스크랩 수
-          example: 8
         commentCount:
           type: integer
           description: 댓글 수
-          example: 23
-        isLiked:
+          example: 5
+        isNew:
           type: boolean
-          description: 현재 사용자가 좋아요를 눌렀는지 여부
+          description: 새 게시글 여부
           example: true
-        isScrapped:
-          type: boolean
-          description: 현재 사용자가 스크랩했는지 여부
-          example: false
         createdAt:
           type: string
           format: date-time
-          description: 작성 시간
-          example: '2024-01-15T10:30:00'
+          description: 작성일시
+          example: "2024-01-01T00:00:00"
         updatedAt:
           type: string
           format: date-time
-          description: 수정 시간
-          example: '2024-01-15T14:25:00'
+          description: 수정일시
+          example: "2024-01-01T00:00:00"
+
+    Bookmark:
+      type: object
+      description: 북마크 정보
+      properties:
+        id:
+          type: integer
+          description: 북마크 ID
+          example: 1
+        user:
+          $ref: '#/components/schemas/User'
+        post:
+          $ref: '#/components/schemas/Post'
+        createdAt:
+          type: string
+          format: date-time
+          description: 북마크 시각
+          example: "2024-01-01T00:00:00"
+
     # 댓글 관련 스키마
     CreateCommentRequest:
       type: object
@@ -1000,7 +2099,8 @@ components:
         content:
           type: string
           description: 댓글 내용
-          example: 좋은 자취방이네요! 연락드릴게요.
+          example: "좋은 게시글입니다!"
+
     UpdateCommentRequest:
       type: object
       description: 댓글 수정 요청
@@ -1010,10 +2110,11 @@ components:
         content:
           type: string
           description: 댓글 내용
-          example: 좋은 자취방이네요! 연락드릴게요. (수정된 내용)
-    CommentResponse:
+          example: "수정된 댓글 내용입니다!"
+
+    Comment:
       type: object
-      description: 댓글 응답 정보
+      description: 댓글 정보
       properties:
         id:
           type: integer
@@ -1022,42 +2123,221 @@ components:
         content:
           type: string
           description: 댓글 내용
-          example: 좋은 자취방이네요! 연락드릴게요.
-        authorName:
-          type: string
-          description: 작성자 닉네임
-          example: 김철수
-        authorProfileImage:
-          type: string
-          description: 작성자 프로필 이미지
-          example: https://example.com/profile.jpg
-        parentCommentId:
-          type: integer
-          description: 부모 댓글 ID (대댓글인 경우)
-          example: null
-        replies:
-          type: array
-          description: 대댓글 목록
-          items:
-            $ref: '#/components/schemas/CommentResponse'
-        isAuthor:
-          type: boolean
-          description: 현재 사용자가 작성자인지 여부
-          example: false
+          example: "좋은 게시글입니다!"
+        author:
+          $ref: '#/components/schemas/User'
+        post:
+          $ref: '#/components/schemas/Post'
         createdAt:
           type: string
           format: date-time
-          description: 작성 시간
-          example: '2024-01-15T14:25:00'
+          description: 작성일시
+          example: "2024-01-01T00:00:00"
         updatedAt:
           type: string
           format: date-time
-          description: 수정 시간
-          example: '2024-01-15T14:25:00'
+          description: 수정일시
+          example: "2024-01-01T00:00:00"
+
+    # 메모 관련 스키마
+    CreateMemoRequest:
+      type: object
+      description: 메모 생성 요청
+      required:
+        - content
+        - type
+      properties:
+        content:
+          type: string
+          description: 메모 내용
+          example: "스터디 모집합니다!"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+        type:
+          type: string
+          enum: [MEETUP, STUDY, SHARE, ETC]
+          description: 메모 타입
+          example: STUDY
+        location:
+          type: string
+          description: 위치
+          example: "서울대학교"
+        maxParticipants:
+          type: integer
+          description: 최대 참여자 수
+          example: 5
+        contactInfo:
+          type: string
+          description: 연락처
+          example: "010-1234-5678"
+        deadline:
+          type: string
+          format: date-time
+          description: 마감일시
+          example: "2024-01-20T18:00:00"
+
+    CreateMemoReplyRequest:
+      type: object
+      description: 메모 답장 작성 요청
+      required:
+        - content
+        - type
+      properties:
+        content:
+          type: string
+          description: 답장 내용
+          example: "참여하고 싶습니다!"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+        type:
+          type: string
+          enum: [REPLY, CHAT]
+          description: 답장 타입
+          example: REPLY
+
+    ParticipateRequest:
+      type: object
+      description: 참여 신청 요청
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: 참여 메시지
+          example: "참여하고 싶습니다!"
+
+    Memo:
+      type: object
+      description: 메모 정보
+      properties:
+        id:
+          type: integer
+          description: 메모 ID
+          example: 1
+        content:
+          type: string
+          description: 메모 내용
+          example: "스터디 모집합니다!"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+        type:
+          type: string
+          enum: [MEETUP, STUDY, SHARE, ETC]
+          description: 메모 타입
+          example: STUDY
+        location:
+          type: string
+          description: 위치
+          example: "서울대학교"
+        maxParticipants:
+          type: integer
+          description: 최대 참여자 수
+          example: 5
+        contactInfo:
+          type: string
+          description: 연락처
+          example: "010-1234-5678"
+        deadline:
+          type: string
+          format: date-time
+          description: 마감일시
+          example: "2024-01-20T18:00:00"
+        isActive:
+          type: boolean
+          description: 활성 상태
+          example: true
+        author:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+          description: 작성일시
+          example: "2024-01-01T00:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          description: 수정일시
+          example: "2024-01-01T00:00:00"
+
+    MemoReply:
+      type: object
+      description: 메모 답장 정보
+      properties:
+        id:
+          type: integer
+          description: 답장 ID
+          example: 1
+        content:
+          type: string
+          description: 답장 내용
+          example: "참여하고 싶습니다!"
+        imageUrl:
+          type: string
+          description: 이미지 URL
+          example: "https://example.com/image.jpg"
+        type:
+          type: string
+          enum: [REPLY, CHAT]
+          description: 답장 타입
+          example: REPLY
+        memo:
+          $ref: '#/components/schemas/Memo'
+        author:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+          description: 작성일시
+          example: "2024-01-01T00:00:00"
+
+    MemoParticipant:
+      type: object
+      description: 메모 참여자 정보
+      properties:
+        id:
+          type: integer
+          description: 참여 ID
+          example: 1
+        memo:
+          $ref: '#/components/schemas/Memo'
+        user:
+          $ref: '#/components/schemas/User'
+        message:
+          type: string
+          description: 참여 메시지
+          example: "참여하고 싶습니다!"
+        status:
+          type: string
+          enum: [PENDING, APPROVED, REJECTED]
+          description: 참여 상태
+          example: PENDING
+        createdAt:
+          type: string
+          format: date-time
+          description: 신청일시
+          example: "2024-01-01T00:00:00"
+
     # 채팅 관련 스키마
+    CreateChatRoomRequest:
+      type: object
+      description: 채팅방 생성 요청
+      required:
+        - otherUserId
+      properties:
+        otherUserId:
+          type: integer
+          description: 상대방 사용자 ID
+          example: 2
+
     ChatRoomResponse:
       type: object
-      description: 채팅방 응답 정보
+      description: 채팅방 응답
       properties:
         id:
           type: integer
@@ -1065,37 +2345,49 @@ components:
           example: 1
         otherUserName:
           type: string
-          description: 상대방 사용자 이름
-          example: 홍길동
+          description: 상대방 이름
+          example: "홍길동"
         otherUserNickname:
           type: string
-          description: 상대방 사용자 닉네임
-          example: 홍길동
+          description: 상대방 닉네임
+          example: "홍길동"
         otherUserProfileImage:
           type: string
-          description: 상대방 프로필 이미지 URL
-          example: https://example.com/profile.jpg
+          description: 상대방 프로필 이미지
+          example: "https://example.com/profile.jpg"
         createdAt:
           type: string
           format: date-time
-          description: 채팅방 생성 시간
-          example: '2024-01-15T10:30:00'
+          description: 생성일시
+          example: "2024-01-15T10:30:00"
         lastMessageTime:
           type: string
           format: date-time
           description: 마지막 메시지 시간
-          example: '2024-01-15T14:25:00'
+          example: "2024-01-15T14:25:00"
         lastMessageContent:
           type: string
           description: 마지막 메시지 내용
-          example: 안녕하세요!
+          example: "안녕하세요!"
         unreadCount:
           type: integer
           description: 읽지 않은 메시지 수
           example: 3
-    ChatMessageResponse:
+
+    SendMessageRequest:
       type: object
-      description: 채팅 메시지 응답 정보
+      description: 메시지 전송 요청
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          description: 메시지 내용
+          example: "안녕하세요!"
+
+    ChatMessage:
+      type: object
+      description: 채팅 메시지 정보
       properties:
         id:
           type: integer
@@ -1104,54 +2396,481 @@ components:
         content:
           type: string
           description: 메시지 내용
-          example: 안녕하세요!
-        imageUrl:
-          type: string
-          description: 이미지 URL
-          example: https://example.com/image.jpg
-        messageType:
-          type: string
-          description: 메시지 타입
-          enum: [TEXT, IMAGE, FILE]
-          example: TEXT
-        senderName:
-          type: string
-          description: 발신자 이름
-          example: 홍길동
-        senderNickname:
-          type: string
-          description: 발신자 닉네임
-          example: 홍길동
-        senderProfileImage:
-          type: string
-          description: 발신자 프로필 이미지 URL
-          example: https://example.com/profile.jpg
+          example: "안녕하세요!"
+        sender:
+          $ref: '#/components/schemas/User'
+        chatRoom:
+          $ref: '#/components/schemas/ChatRoomResponse'
+        isRead:
+          type: boolean
+          description: 읽음 여부
+          example: false
         createdAt:
           type: string
           format: date-time
-          description: 메시지 생성 시간
-          example: '2024-01-15T14:25:00'
-        isFromCurrentUser:
-          type: boolean
-          description: 현재 사용자가 보낸 메시지인지 여부
-          example: true
-    SendMessageRequest:
+          description: 전송일시
+          example: "2024-01-15T14:25:00"
+
+    # 건물 정보 관련 스키마
+    CreateBuildingRequest:
       type: object
-      description: 메시지 전송 요청
+      description: 건물 생성 요청
       required:
-        - content
-        - messageType
+        - buildingName
+        - address
+        - latitude
+        - longitude
+        - deposit
       properties:
+        buildingName:
+          type: string
+          description: 건물명
+          example: "캠퍼스 하우스 A동"
+        address:
+          type: string
+          description: 주소
+          example: "서울시 강남구 테헤란로 123"
+        detailAddress:
+          type: string
+          description: 상세주소
+          example: "101호"
+        latitude:
+          type: number
+          format: double
+          description: 위도
+          example: 37.5665
+        longitude:
+          type: number
+          format: double
+          description: 경도
+          example: 126.9780
+        deposit:
+          type: number
+          format: decimal
+          description: 보증금 (만원)
+          example: 1000
+        monthlyRent:
+          type: number
+          format: decimal
+          description: 월세 (만원)
+          example: 50
+        jeonse:
+          type: number
+          format: decimal
+          description: 전세 (만원)
+          example: 10000
+        managementFee:
+          type: number
+          format: decimal
+          description: 관리비 (만원)
+          example: 5
+        households:
+          type: integer
+          description: 세대수
+          example: 200
+        heatingType:
+          type: string
+          description: 난방방식
+          example: "개별난방"
+        parkingSpaces:
+          type: integer
+          description: 주차대수
+          example: 50
+        elevators:
+          type: integer
+          description: 승강기대수
+          example: 2
+        buildingUsage:
+          type: string
+          description: 건축물용도
+          example: "오피스텔 84%, 기타제2종근린생활시설 16%"
+        approvalDate:
+          type: string
+          format: date-time
+          description: 사용승인일
+          example: "2020-01-15T00:00:00"
+        completionDate:
+          type: string
+          format: date-time
+          description: 준공일
+          example: "2019-12-01T00:00:00"
+        nearbyFacilities:
+          type: string
+          description: 주변 생활시설
+          example: "편의점, 카페, 은행"
+        schoolWalkingTime:
+          type: integer
+          description: 학교까지 걸리는 시간 (분)
+          example: 15
+        stationWalkingTime:
+          type: integer
+          description: 영통역까지 걸리는 시간 (분)
+          example: 8
+
+    UpdateBuildingRequest:
+      type: object
+      description: 건물 수정 요청
+      properties:
+        buildingName:
+          type: string
+          description: 건물명
+          example: "수정된 건물명"
+        address:
+          type: string
+          description: 주소
+          example: "수정된 주소"
+        deposit:
+          type: number
+          format: decimal
+          description: 보증금 (만원)
+          example: 1200
+        monthlyRent:
+          type: number
+          format: decimal
+          description: 월세 (만원)
+          example: 60
+        jeonse:
+          type: number
+          format: decimal
+          description: 전세 (만원)
+          example: 12000
+        managementFee:
+          type: number
+          format: decimal
+          description: 관리비 (만원)
+          example: 7
+        households:
+          type: integer
+          description: 세대수
+          example: 250
+        heatingType:
+          type: string
+          description: 난방방식
+          example: "중앙난방"
+        parkingSpaces:
+          type: integer
+          description: 주차대수
+          example: 60
+        elevators:
+          type: integer
+          description: 승강기대수
+          example: 3
+        buildingUsage:
+          type: string
+          description: 건축물용도
+          example: "오피스텔 90%, 기타제2종근린생활시설 10%"
+        nearbyFacilities:
+          type: string
+          description: 주변 생활시설
+          example: "편의점, 카페, 은행, 마트"
+        schoolWalkingTime:
+          type: integer
+          description: 학교까지 걸리는 시간 (분)
+          example: 12
+        stationWalkingTime:
+          type: integer
+          description: 영통역까지 걸리는 시간 (분)
+          example: 6
+
+    Building:
+      type: object
+      description: 건물 정보
+      properties:
+        id:
+          type: integer
+          description: 건물 ID
+          example: 1
+        buildingName:
+          type: string
+          description: 건물명
+          example: "캠퍼스 하우스 A동"
+        address:
+          type: string
+          description: 주소
+          example: "서울시 강남구 테헤란로 123"
+        detailAddress:
+          type: string
+          description: 상세주소
+          example: "101호"
+        latitude:
+          type: number
+          format: double
+          description: 위도
+          example: 37.5665
+        longitude:
+          type: number
+          format: double
+          description: 경도
+          example: 126.9780
+        deposit:
+          type: number
+          format: decimal
+          description: 보증금 (만원)
+          example: 1000
+        monthlyRent:
+          type: number
+          format: decimal
+          description: 월세 (만원)
+          example: 50
+        jeonse:
+          type: number
+          format: decimal
+          description: 전세 (만원)
+          example: 10000
+        managementFee:
+          type: number
+          format: decimal
+          description: 관리비 (만원)
+          example: 5
+        households:
+          type: integer
+          description: 세대수
+          example: 200
+        heatingType:
+          type: string
+          description: 난방방식
+          example: "개별난방"
+        parkingSpaces:
+          type: integer
+          description: 주차대수
+          example: 50
+        elevators:
+          type: integer
+          description: 승강기대수
+          example: 2
+        buildingUsage:
+          type: string
+          description: 건축물용도
+          example: "오피스텔 84%, 기타제2종근린생활시설 16%"
+        approvalDate:
+          type: string
+          format: date-time
+          description: 사용승인일
+          example: "2020-01-15T00:00:00"
+        completionDate:
+          type: string
+          format: date-time
+          description: 준공일
+          example: "2019-12-01T00:00:00"
+        nearbyFacilities:
+          type: string
+          description: 주변 생활시설
+          example: "편의점, 카페, 은행"
+        schoolWalkingTime:
+          type: integer
+          description: 학교까지 걸리는 시간 (분)
+          example: 15
+        stationWalkingTime:
+          type: integer
+          description: 영통역까지 걸리는 시간 (분)
+          example: 8
+        scrapCount:
+          type: integer
+          description: 스크랩수
+          example: 15
+        createdAt:
+          type: string
+          format: date-time
+          description: 생성일시
+          example: "2024-01-01T00:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          description: 수정일시
+          example: "2024-01-01T00:00:00"
+
+    BuildingScrap:
+      type: object
+      description: 건물 스크랩 정보
+      properties:
+        id:
+          type: integer
+          description: 스크랩 ID
+          example: 1
+        userId:
+          type: integer
+          description: 사용자 ID
+          example: 1
+        buildingId:
+          type: integer
+          description: 건물 ID
+          example: 1
+        building:
+          $ref: '#/components/schemas/Building'
+        createdAt:
+          type: string
+          format: date-time
+          description: 스크랩 시각
+          example: "2024-01-01T00:00:00"
+
+    # 알림 관련 스키마
+    Notification:
+      type: object
+      description: 알림 정보
+      properties:
+        id:
+          type: integer
+          description: 알림 ID
+          example: 1
+        user:
+          $ref: '#/components/schemas/User'
+        type:
+          type: string
+          enum: [COMMENT, LIKE, CHAT, VERIFICATION, MEMO]
+          description: 알림 타입
+          example: COMMENT
+        title:
+          type: string
+          description: 알림 제목
+          example: "새로운 댓글이 달렸습니다"
         content:
           type: string
-          description: 메시지 내용
-          example: 안녕하세요!
+          description: 알림 내용
+          example: "홍길동님이 댓글을 남겼습니다"
+        isRead:
+          type: boolean
+          description: 읽음 여부
+          example: false
+        relatedId:
+          type: integer
+          description: 관련 ID (게시글, 댓글 등)
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          description: 생성일시
+          example: "2024-01-01T00:00:00"
+
+    # 거주지 인증 관련 스키마
+    VerificationRequest:
+      type: object
+      description: 거주지 인증 신청 요청
+      required:
+        - buildingName
+        - address
+        - verificationDocument
+      properties:
+        buildingName:
+          type: string
+          description: 건물명
+          example: "캠퍼스 하우스 A동"
+        address:
+          type: string
+          description: 주소
+          example: "서울시 강남구 테헤란로 123"
+        verificationDocument:
+          type: string
+          description: 인증 서류 (이미지 URL)
+          example: "https://example.com/document.jpg"
+
+    AdminActionRequest:
+      type: object
+      description: 관리자 인증 처리 요청
+      required:
+        - action
+      properties:
+        action:
+          type: string
+          enum: [APPROVE, REJECT]
+          description: 처리 액션
+          example: APPROVE
+        adminComment:
+          type: string
+          description: 관리자 코멘트
+          example: "인증이 승인되었습니다"
+
+    ResidenceVerification:
+      type: object
+      description: 거주지 인증 정보
+      properties:
+        id:
+          type: integer
+          description: 인증 ID
+          example: 1
+        user:
+          $ref: '#/components/schemas/User'
+        buildingName:
+          type: string
+          description: 건물명
+          example: "캠퍼스 하우스 A동"
+        address:
+          type: string
+          description: 주소
+          example: "서울시 강남구 테헤란로 123"
+        verificationDocument:
+          type: string
+          description: 인증 서류
+          example: "https://example.com/document.jpg"
+        status:
+          type: string
+          enum: [PENDING, APPROVED, REJECTED]
+          description: 인증 상태
+          example: PENDING
+        adminComment:
+          type: string
+          description: 관리자 코멘트
+          example: "인증이 승인되었습니다"
+        createdAt:
+          type: string
+          format: date-time
+          description: 신청일시
+          example: "2024-01-01T00:00:00"
+        updatedAt:
+          type: string
+          format: date-time
+          description: 처리일시
+          example: "2024-01-01T00:00:00"
+
+    # 캐릭터 관련 스키마
+    Character:
+      type: object
+      description: 캐릭터 정보
+      properties:
+        id:
+          type: integer
+          description: 캐릭터 ID
+          example: 1
+        name:
+          type: string
+          description: 캐릭터명
+          example: "공부하는 고양이"
+        description:
+          type: string
+          description: 캐릭터 설명
+          example: "열심히 공부하는 귀여운 고양이"
         imageUrl:
           type: string
-          description: 이미지 URL
-          example: https://example.com/image.jpg
-        messageType:
+          description: 캐릭터 이미지 URL
+          example: "https://example.com/cat.jpg"
+        rarity:
           type: string
-          description: 메시지 타입
-          enum: [TEXT, IMAGE, FILE]
-          example: TEXT
+          enum: [COMMON, RARE, EPIC, LEGENDARY]
+          description: 캐릭터 희귀도
+          example: RARE
+        isActive:
+          type: boolean
+          description: 활성 상태
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+          description: 생성일시
+          example: "2024-01-01T00:00:00"
+
+    UserCharacter:
+      type: object
+      description: 사용자 보유 캐릭터 정보
+      properties:
+        id:
+          type: integer
+          description: 보유 ID
+          example: 1
+        user:
+          $ref: '#/components/schemas/User'
+        character:
+          $ref: '#/components/schemas/Character'
+        obtainedAt:
+          type: string
+          format: date-time
+          description: 획득일시
+          example: "2024-01-01T00:00:00"

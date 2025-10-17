@@ -1,9 +1,9 @@
 package com.example.campus_house.controller;
 
+import com.example.campus_house.dto.ApiResponse;
 import com.example.campus_house.entity.User;
 import com.example.campus_house.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,39 +24,32 @@ public class AuthController {
     // 회원가입
     @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청 또는 중복된 이메일/닉네임")
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "회원가입 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청 또는 중복된 이메일/닉네임")
     })
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody RegisterRequest request) {
-        try {
-            User user = authService.register(
-                    request.getEmail(),
-                    request.getPassword(),
-                    request.getNickname(),
-                    request.getUserType(),
-                    request.getLocation(),
-                    request.getUniversity(),
-                    request.getMajor()
-            );
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("message", "회원가입이 완료되었습니다.");
-            response.put("user", Map.of(
-                    "id", user.getId(),
-                    "email", user.getEmail(),
-                    "nickname", user.getNickname(),
-                    "userType", user.getUserType()
-            ));
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+    public ResponseEntity<ApiResponse<Map<String, Object>>> register(@RequestBody RegisterRequest request) {
+        User user = authService.register(
+                request.getEmail(),
+                request.getPassword(),
+                request.getNickname(),
+                request.getUserType(),
+                request.getLocation(),
+                request.getUniversity(),
+                request.getMajor()
+        );
+        
+        Map<String, Object> userInfo = Map.of(
+                "id", user.getId(),
+                "email", user.getEmail(),
+                "nickname", user.getNickname(),
+                "userType", user.getUserType(),
+                "location", user.getLocation(),
+                "university", user.getUniversity(),
+                "major", user.getMajor()
+        );
+        
+        return ResponseEntity.ok(ApiResponse.success("회원가입이 완료되었습니다.", userInfo));
     }
     
     // 로그인

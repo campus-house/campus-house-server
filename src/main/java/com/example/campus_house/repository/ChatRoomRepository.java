@@ -25,14 +25,14 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     
     // 사용자 이름으로 채팅방 조회
     @Query("SELECT cr FROM ChatRoom cr WHERE " +
-           "(cr.user1.userName = :user1Name AND cr.user2.userName = :user2Name) OR " +
-           "(cr.user1.userName = :user2Name AND cr.user2.userName = :user1Name)")
+           "(cr.user1.nickname = :user1Name AND cr.user2.nickname = :user2Name) OR " +
+           "(cr.user1.nickname = :user2Name AND cr.user2.nickname = :user1Name)")
     Optional<ChatRoom> findByUserNames(@Param("user1Name") String user1Name, @Param("user2Name") String user2Name);
     
     // 특정 사용자가 참여한 채팅방 존재 여부 확인
     boolean existsByUser1OrUser2(User user1, User user2);
     
     // 사용자 이름으로 참여한 채팅방 목록 조회
-    @Query("SELECT cr FROM ChatRoom cr WHERE cr.user1.userName = :userName OR cr.user2.userName = :userName ORDER BY cr.createdAt DESC")
+    @Query("SELECT cr FROM ChatRoom cr WHERE cr.user1.nickname = :userName OR cr.user2.nickname = :userName ORDER BY cr.createdAt DESC")
     List<ChatRoom> findByUserNameOrderByCreatedAtDesc(@Param("userName") String userName);
 }

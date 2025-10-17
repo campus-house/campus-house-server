@@ -40,26 +40,26 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     // 특정 사용자 이름의 모든 읽지 않은 메시지 수 조회 (마지막 읽음 시간 기반)
     @Query("SELECT COUNT(cm) FROM ChatMessage cm " +
            "JOIN cm.chatRoom cr " +
-           "WHERE (cr.user1.userName = :userName OR cr.user2.userName = :userName) " +
-           "AND cm.sender.userName != :userName " +
-           "AND ((cr.user1.userName = :userName AND (cr.user1LastReadAt IS NULL OR cm.createdAt > cr.user1LastReadAt)) " +
-           "OR (cr.user2.userName = :userName AND (cr.user2LastReadAt IS NULL OR cm.createdAt > cr.user2LastReadAt)))")
+           "WHERE (cr.user1.nickname = :userName OR cr.user2.nickname = :userName) " +
+           "AND cm.sender.nickname != :userName " +
+           "AND ((cr.user1.nickname = :userName AND (cr.user1LastReadAt IS NULL OR cm.createdAt > cr.user1LastReadAt)) " +
+           "OR (cr.user2.nickname = :userName AND (cr.user2LastReadAt IS NULL OR cm.createdAt > cr.user2LastReadAt)))")
     Long countUnreadMessagesByUserName(@Param("userName") String userName);
     
     // 특정 채팅방에서 특정 사용자의 읽지 않은 메시지 수 조회 (마지막 읽음 시간 기반)
     @Query("SELECT COUNT(cm) FROM ChatMessage cm " +
            "WHERE cm.chatRoom = :chatRoom " +
            "AND cm.sender != :user " +
-           "AND ((:chatRoom.user1 = :user AND (:chatRoom.user1LastReadAt IS NULL OR cm.createdAt > :chatRoom.user1LastReadAt)) " +
-           "OR (:chatRoom.user2 = :user AND (:chatRoom.user2LastReadAt IS NULL OR cm.createdAt > :chatRoom.user2LastReadAt)))")
+           "AND ((cm.chatRoom.user1 = :user AND (cm.chatRoom.user1LastReadAt IS NULL OR cm.createdAt > cm.chatRoom.user1LastReadAt)) " +
+           "OR (cm.chatRoom.user2 = :user AND (cm.chatRoom.user2LastReadAt IS NULL OR cm.createdAt > cm.chatRoom.user2LastReadAt)))")
     Long countUnreadMessagesByChatRoomAndUser(@Param("chatRoom") ChatRoom chatRoom, @Param("user") User user);
     
     // 특정 채팅방에서 특정 사용자 이름의 읽지 않은 메시지 수 조회 (마지막 읽음 시간 기반)
     @Query("SELECT COUNT(cm) FROM ChatMessage cm " +
            "WHERE cm.chatRoom = :chatRoom " +
-           "AND cm.sender.userName != :userName " +
-           "AND ((:chatRoom.user1.userName = :userName AND (:chatRoom.user1LastReadAt IS NULL OR cm.createdAt > :chatRoom.user1LastReadAt)) " +
-           "OR (:chatRoom.user2.userName = :userName AND (:chatRoom.user2LastReadAt IS NULL OR cm.createdAt > :chatRoom.user2LastReadAt)))")
+           "AND cm.sender.nickname != :userName " +
+           "AND ((cm.chatRoom.user1.nickname = :userName AND (cm.chatRoom.user1LastReadAt IS NULL OR cm.createdAt > cm.chatRoom.user1LastReadAt)) " +
+           "OR (cm.chatRoom.user2.nickname = :userName AND (cm.chatRoom.user2LastReadAt IS NULL OR cm.createdAt > cm.chatRoom.user2LastReadAt)))")
     Long countUnreadMessagesByChatRoomAndUserName(@Param("chatRoom") ChatRoom chatRoom, @Param("userName") String userName);
     
     // 특정 채팅방의 마지막 메시지 조회

@@ -1,5 +1,6 @@
 package com.example.campus_house.controller;
 
+import com.example.campus_house.dto.ApiResponse;
 import com.example.campus_house.entity.BoardType;
 import com.example.campus_house.entity.Post;
 import com.example.campus_house.entity.User;
@@ -9,8 +10,6 @@ import com.example.campus_house.service.LikeService;
 import com.example.campus_house.service.BookmarkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,36 +32,30 @@ public class PostController {
     
     // 게시글 작성
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증 필요")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "201", description = "게시글 작성 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
     })
     @PostMapping("/boards/{type}/posts")
-    public ResponseEntity<Post> createPost(
+    public ResponseEntity<ApiResponse<Post>> createPost(
             @Parameter(description = "게시판 타입 (APARTMENT, QUESTION, LOCAL)", required = true)
             @PathVariable String type,
             @RequestBody Post post,
             @RequestHeader("Authorization") String token) {
-        try {
-            User user = authService.getUserFromToken(token.substring(7));
-            BoardType boardType = BoardType.valueOf(type.toUpperCase());
-            post.setAuthor(user);
-            post.setBoardType(boardType);
-            Post createdPost = postService.createPost(post);
-            return ResponseEntity.ok(createdPost);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        User user = authService.getUserFromToken(token.substring(7));
+        BoardType boardType = BoardType.valueOf(type.toUpperCase());
+        post.setAuthor(user);
+        post.setBoardType(boardType);
+        Post createdPost = postService.createPost(post);
+        return ResponseEntity.ok(ApiResponse.success("게시글이 성공적으로 작성되었습니다.", createdPost));
     }
     
     // 모든 게시글 조회 (페이징)
     @Operation(summary = "게시글 목록 조회", description = "특정 게시판의 모든 게시글을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/boards/{type}/posts")
     public ResponseEntity<Page<Post>> getPostsByBoardType(
@@ -80,9 +73,9 @@ public class PostController {
     
     // 특정 게시글 조회
     @Operation(summary = "게시글 상세 조회", description = "특정 게시글의 상세 정보를 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
-            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @GetMapping("/posts/{id}")
     public ResponseEntity<Post> getPostById(
@@ -99,11 +92,11 @@ public class PostController {
     
     // 게시글 수정
     @Operation(summary = "게시글 수정", description = "내가 작성한 게시글을 수정합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증 필요"),
-            @ApiResponse(responseCode = "403", description = "권한 없음")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 수정 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 없음")
     })
     @PutMapping("/posts/{id}")
     public ResponseEntity<Post> updatePost(
@@ -129,11 +122,11 @@ public class PostController {
     
     // 게시글 삭제
     @Operation(summary = "게시글 삭제", description = "내가 작성한 게시글을 삭제합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 필요"),
-            @ApiResponse(responseCode = "403", description = "권한 없음"),
-            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "게시글 삭제 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "권한 없음"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @DeleteMapping("/posts/{id}")
     public ResponseEntity<Void> deletePost(
@@ -158,9 +151,9 @@ public class PostController {
     
     // 최신순 조회
     @Operation(summary = "최신순 게시글 조회", description = "특정 게시판의 최신 게시글을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/boards/{type}/posts/latest")
     public ResponseEntity<Page<Post>> getLatestPosts(
@@ -178,9 +171,9 @@ public class PostController {
     
     // 인기순 조회
     @Operation(summary = "인기순 게시글 조회", description = "좋아요 수 기준으로 인기 게시글을 조회합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/boards/{type}/posts/popular")
     public ResponseEntity<Page<Post>> getPopularPosts(
@@ -198,9 +191,9 @@ public class PostController {
     
     // 게시글 검색
     @Operation(summary = "게시글 검색", description = "제목과 내용에서 키워드를 검색합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "검색 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "검색 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청")
     })
     @GetMapping("/boards/{type}/posts/search")
     public ResponseEntity<Page<Post>> searchPosts(
@@ -220,9 +213,9 @@ public class PostController {
     
     // 좋아요 토글
     @Operation(summary = "게시글 좋아요 토글", description = "게시글에 좋아요를 추가하거나 제거합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "좋아요 토글 성공"),
-            @ApiResponse(responseCode = "401", description = "인증 필요")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "좋아요 토글 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
     })
     @PostMapping("/posts/{postId}/like")
     public ResponseEntity<String> toggleLike(
@@ -240,11 +233,11 @@ public class PostController {
     
     // 게시글 북마크 토글
     @Operation(summary = "게시글 북마크 토글", description = "게시글을 북마크에 추가하거나 제거합니다. 게시글의 스크랩 수가 변경됩니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "북마크 토글 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증 필요"),
-            @ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "북마크 토글 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "게시글을 찾을 수 없음")
     })
     @PostMapping("/posts/{postId}/bookmark")
     public ResponseEntity<BookmarkResponse> toggleBookmark(
@@ -263,10 +256,10 @@ public class PostController {
     
     // 게시글 북마크 상태 확인
     @Operation(summary = "게시글 북마크 상태 확인", description = "특정 게시글이 북마크되어 있는지 확인합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "북마크 상태 조회 성공"),
-            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-            @ApiResponse(responseCode = "401", description = "인증 필요")
+    @io.swagger.v3.oas.annotations.responses.ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "북마크 상태 조회 성공"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "401", description = "인증 필요")
     })
     @GetMapping("/posts/{postId}/bookmark/status")
     public ResponseEntity<Boolean> isBookmarked(

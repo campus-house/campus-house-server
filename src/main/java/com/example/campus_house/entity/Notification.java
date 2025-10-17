@@ -77,6 +77,9 @@ public class Notification {
         POINT_EARNED,       // 포인트 획득
         POINT_USED,         // 포인트 사용
         
+        // 캐릭터 관련
+        CHARACTER_OBTAINED, // 캐릭터 획득
+        
         // 채팅 관련
         CHAT_MESSAGE,       // 새로운 채팅 메시지 도착
         CHAT_ROOM_CREATED,  // 새로운 채팅방 생성
