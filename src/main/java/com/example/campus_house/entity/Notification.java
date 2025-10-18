@@ -84,6 +84,9 @@ public class Notification {
         CHAT_MESSAGE,       // 새로운 채팅 메시지 도착
         CHAT_ROOM_CREATED,  // 새로운 채팅방 생성
 
+        // 건물 질문 관련
+        BUILDING_QUESTION,  // 건물 질문 게시판에 새 질문 등록
+
         // 시스템 관련
         SYSTEM_NOTICE,      // 시스템 공지
         WELCOME            // 환영 메시지

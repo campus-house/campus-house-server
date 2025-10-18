@@ -4,6 +4,7 @@ import com.example.campus_house.entity.BoardType;
 import com.example.campus_house.entity.Post;
 import com.example.campus_house.entity.Building;
 import com.example.campus_house.entity.User;
+import com.example.campus_house.entity.Notification;
 import com.example.campus_house.repository.PostRepository;
 import com.example.campus_house.repository.BuildingRepository;
 import com.example.campus_house.repository.UserRepository;
@@ -22,6 +23,7 @@ public class PostService {
     private final BadgeService badgeService;
     private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
     
     // 게시판 타입별 게시글 조회
     public Page<Post> getPostsByBoardType(BoardType boardType, Pageable pageable) {
@@ -169,6 +171,22 @@ public class PostService {
         // 첫 게시글 작성 시 배지 수여
         if (user.getId() != null) {
             badgeService.awardIfFirstPost(user.getId());
+        }
+        
+        // 건물 거주자들에게 새 질문 알림 전송
+        try {
+            notificationService.notifyBuildingResidents(
+                buildingId,
+                userId,
+                Notification.NotificationType.BUILDING_QUESTION,
+                "새로운 건물 질문이 등록되었습니다",
+                String.format("[%s] %s", building.getBuildingName(), title),
+                saved.getId().toString(),
+                "POST"
+            );
+        } catch (Exception e) {
+            // 알림 전송 실패는 게시글 작성에 영향을 주지 않도록 예외 처리
+            System.err.println("건물 질문 알림 전송 실패: " + e.getMessage());
         }
         
         return saved;

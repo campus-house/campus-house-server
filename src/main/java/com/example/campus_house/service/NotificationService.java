@@ -140,4 +140,27 @@ public class NotificationService {
     public List<Notification> getNotificationsByDateRange(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         return notificationRepository.findByUserIdAndCreatedAtBetweenOrderByCreatedAtDesc(userId, startDate, endDate);
     }
+    
+    // 건물 거주자들에게 알림 전송
+    @Transactional
+    public void notifyBuildingResidents(Long buildingId, Long fromUserId, Notification.NotificationType type,
+                                       String title, String content, String relatedId, String relatedType) {
+        // 해당 건물에 거주지 인증된 사용자들 조회
+        List<User> residents = userRepository.findByVerifiedBuildingIdAndIsVerifiedTrue(buildingId);
+        
+        // 각 거주자에게 알림 전송 (질문 작성자는 제외)
+        for (User resident : residents) {
+            if (!resident.getId().equals(fromUserId)) {
+                createNotificationFromUser(
+                    resident.getId(),
+                    fromUserId,
+                    type,
+                    title,
+                    content,
+                    relatedId,
+                    relatedType
+                );
+            }
+        }
+    }
 }
