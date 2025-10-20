@@ -3,20 +3,25 @@ package com.example.campus_house.service;
 import com.example.campus_house.entity.Building;
 import com.example.campus_house.repository.BuildingRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class BuildingService {
     
     private final BuildingRepository buildingRepository;
+    private final NearbyFacilityService nearbyFacilityService;
     
     // 모든 건물 조회
     public Page<Building> getAllBuildings(Pageable pageable) {
@@ -225,5 +230,117 @@ public class BuildingService {
             building.setScrapCount(building.getScrapCount() - 1);
             buildingRepository.save(building);
         }
+    }
+    
+    // ========== 주변 생활시설 관련 메서드 ==========
+    
+    /**
+     * 특정 건물의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 업데이트된 건물 정보
+     */
+    @Transactional
+    public Building updateNearbyFacilityCounts(Long buildingId) {
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new RuntimeException("건물을 찾을 수 없습니다."));
+        
+        if (building.getLatitude() == null || building.getLongitude() == null) {
+            log.warn("건물 ID {}의 위도/경도 정보가 없어 주변 생활시설 개수를 업데이트할 수 없습니다.", buildingId);
+            return building;
+        }
+        
+        try {
+            Map<String, Integer> facilityCounts = nearbyFacilityService.getNearbyFacilityCounts(
+                building.getLatitude(), building.getLongitude());
+            
+            building.setNearbyConvenienceStores(facilityCounts.get("convenienceStores"));
+            building.setNearbyMarts(facilityCounts.get("marts"));
+            building.setNearbyHospitals(facilityCounts.get("hospitals"));
+            
+            Building updatedBuilding = buildingRepository.save(building);
+            
+            log.info("건물 ID {}의 주변 생활시설 개수 업데이트 완료 - 편의점: {}, 마트: {}, 병원: {}", 
+                buildingId, facilityCounts.get("convenienceStores"), 
+                facilityCounts.get("marts"), facilityCounts.get("hospitals"));
+            
+            return updatedBuilding;
+            
+        } catch (Exception e) {
+            log.error("건물 ID {}의 주변 생활시설 개수 업데이트 중 오류 발생", buildingId, e);
+            throw new RuntimeException("주변 생활시설 개수 업데이트 중 오류가 발생했습니다.", e);
+        }
+    }
+    
+    /**
+     * 모든 건물의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @return 업데이트된 건물 수
+     */
+    @Transactional
+    public int updateAllBuildingsNearbyFacilityCounts() {
+        List<Building> buildings = buildingRepository.findAll();
+        int updatedCount = 0;
+        
+        log.info("전체 {}개 건물의 주변 생활시설 개수 업데이트 시작", buildings.size());
+        
+        for (Building building : buildings) {
+            try {
+                if (building.getLatitude() != null && building.getLongitude() != null) {
+                    updateNearbyFacilityCounts(building.getId());
+                    updatedCount++;
+                } else {
+                    log.warn("건물 ID {}의 위도/경도 정보가 없어 건너뜁니다.", building.getId());
+                }
+            } catch (Exception e) {
+                log.error("건물 ID {} 업데이트 중 오류 발생", building.getId(), e);
+            }
+        }
+        
+        log.info("주변 생활시설 개수 업데이트 완료 - 총 {}개 건물 업데이트됨", updatedCount);
+        return updatedCount;
+    }
+    
+    /**
+     * 특정 건물들의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @param buildingIds 업데이트할 건물 ID 목록
+     * @return 업데이트된 건물 수
+     */
+    @Transactional
+    public int updateBuildingsNearbyFacilityCounts(List<Long> buildingIds) {
+        int updatedCount = 0;
+        
+        log.info("{}개 건물의 주변 생활시설 개수 업데이트 시작", buildingIds.size());
+        
+        for (Long buildingId : buildingIds) {
+            try {
+                updateNearbyFacilityCounts(buildingId);
+                updatedCount++;
+            } catch (Exception e) {
+                log.error("건물 ID {} 업데이트 중 오류 발생", buildingId, e);
+            }
+        }
+        
+        log.info("주변 생활시설 개수 업데이트 완료 - 총 {}개 건물 업데이트됨", updatedCount);
+        return updatedCount;
+    }
+    
+    /**
+     * 특정 건물의 주변 생활시설 개수를 조회합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 주변 생활시설 개수 맵
+     */
+    public Map<String, Integer> getNearbyFacilityCounts(Long buildingId) {
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new RuntimeException("건물을 찾을 수 없습니다."));
+        
+        if (building.getLatitude() == null || building.getLongitude() == null) {
+            throw new RuntimeException("건물의 위도/경도 정보가 없습니다.");
+        }
+        
+        return nearbyFacilityService.getNearbyFacilityCounts(
+            building.getLatitude(), building.getLongitude());
     }
 }

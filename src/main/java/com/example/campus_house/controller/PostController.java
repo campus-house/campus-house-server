@@ -346,22 +346,7 @@ public class PostController {
         return ResponseEntity.ok(questions);
     }
     
-    // 건물별 질문 작성 (QUESTION 게시판에)
-    @Operation(summary = "건물별 질문 작성", description = "특정 건물에 대한 질문을 작성합니다.")
-    @PostMapping("/buildings/{buildingId}/questions")
-    public ResponseEntity<Post> createBuildingQuestion(
-            @Parameter(description = "건물 ID", required = true)
-            @PathVariable Long buildingId,
-            @RequestHeader("Authorization") String token,
-            @RequestBody QuestionRequest request) {
-        try {
-            User user = authService.getUserFromToken(token.substring(7));
-            Post question = postService.createBuildingQuestion(user.getId(), buildingId, request.getTitle(), request.getContent());
-            return ResponseEntity.ok(question);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+    // 건물별 질문 작성은 BuildingController에서 처리
     
     // 건물별 질문 수 조회
     @Operation(summary = "건물별 질문 수 조회", description = "특정 건물에 대한 질문 수를 조회합니다.")

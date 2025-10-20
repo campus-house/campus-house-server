@@ -99,4 +99,7 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     
     // 병원 개수로 검색 (외부 API 연동 예정)
     Page<Building> findByNearbyHospitalsGreaterThanEqual(Integer minHospitals, Pageable pageable);
+    
+    // 특정 건물명이 아닌 건물들 삭제 (샘플 데이터 제외용)
+    int deleteByBuildingNameNotIn(java.util.List<String> buildingNames);
 }

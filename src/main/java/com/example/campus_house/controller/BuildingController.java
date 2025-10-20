@@ -19,6 +19,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -380,6 +382,76 @@ public class BuildingController {
             return ResponseEntity.ok(transfer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    // ========== 주변 생활시설 관련 API ==========
+    
+    /**
+     * 특정 건물의 주변 생활시설 개수를 조회합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 주변 생활시설 개수
+     */
+    @GetMapping("/{buildingId}/nearby-facilities")
+    public ResponseEntity<Map<String, Integer>> getNearbyFacilityCounts(@PathVariable Long buildingId) {
+        try {
+            Map<String, Integer> counts = buildingService.getNearbyFacilityCounts(buildingId);
+            return ResponseEntity.ok(counts);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * 특정 건물의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 업데이트된 건물 정보
+     */
+    @PostMapping("/{buildingId}/nearby-facilities/update")
+    public ResponseEntity<Building> updateNearbyFacilityCounts(@PathVariable Long buildingId) {
+        try {
+            Building updatedBuilding = buildingService.updateNearbyFacilityCounts(buildingId);
+            return ResponseEntity.ok(updatedBuilding);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * 모든 건물의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @return 업데이트된 건물 수
+     */
+    @PostMapping("/nearby-facilities/update-all")
+    public ResponseEntity<Map<String, Object>> updateAllBuildingsNearbyFacilityCounts() {
+        try {
+            int updatedCount = buildingService.updateAllBuildingsNearbyFacilityCounts();
+            return ResponseEntity.ok(Map.of("updatedCount", updatedCount, "message", "업데이트 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * 특정 건물들의 주변 생활시설 개수를 업데이트합니다.
+     * 
+     * @param buildingIds 업데이트할 건물 ID 목록
+     * @return 업데이트된 건물 수
+     */
+    @PostMapping("/nearby-facilities/update-selected")
+    public ResponseEntity<Map<String, Object>> updateSelectedBuildingsNearbyFacilityCounts(
+            @RequestBody List<Long> buildingIds) {
+        try {
+            int updatedCount = buildingService.updateBuildingsNearbyFacilityCounts(buildingIds);
+            return ResponseEntity.ok(Map.of("updatedCount", updatedCount, "message", "업데이트 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

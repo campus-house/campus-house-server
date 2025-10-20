@@ -1,5 +1,7 @@
 package com.example.campus_house.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,6 +91,28 @@ public class Building {
     @Column
     private Integer scrapCount; // 스크랩 수
     
+    // 추가된 필드들 (CSV 데이터 처리용)
+    @Column
+    private Integer floorsGround; // 지상층수
+    
+    @Column
+    private Boolean hasElevator; // 엘리베이터 유무
+    
+    @Column
+    private Double area; // 전용면적 (m²)
+    
+    @Column
+    private Integer constructionYear; // 건축년도
+    
+    @Column
+    private String roadName; // 도로명
+    
+    @Column
+    private Integer sampleCount; // 샘플 수 (평균 계산에 사용된 데이터 수)
+    
+    @Column
+    private BigDecimal avgPrice; // 평균 거래가격
+    
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -100,21 +124,29 @@ public class Building {
     // 건물 후기
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private List<BuildingReview> reviews = new ArrayList<>();
     
     // 건물 관련 질문 (Post 엔티티의 QUESTION 게시판)
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private List<Post> questions = new ArrayList<>();
     
     // 양도 정보 (Post 엔티티의 TRANSFER 게시판)
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private List<Post> transfers = new ArrayList<>();
     
     // 스크랩
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnore
     private List<BuildingScrap> scraps = new ArrayList<>();
     
     // 학교 접근성 enum

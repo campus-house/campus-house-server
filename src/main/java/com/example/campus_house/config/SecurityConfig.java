@@ -39,6 +39,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/comments/**").permitAll()
                 .requestMatchers("/api/likes/**").permitAll()
                 .requestMatchers("/api/bookmarks/**").permitAll()
+                .requestMatchers("/api/buildings/**").permitAll() // 건물 API 허용
+                .requestMatchers("/api/facilities/**").permitAll() // 생활시설 API 허용
+                .requestMatchers("/api/data/**").permitAll() // 데이터 로드 API 허용
                 .requestMatchers("/api/chat/**").authenticated() // 채팅 API는 인증 필요
                 .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
