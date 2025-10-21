@@ -57,8 +57,6 @@ public class Building {
     @Column
     private String heatingType; // 난방방식
     
-    @Column
-    private Integer parkingSpaces; // 주차대수
     
     @Column
     private Integer elevators; // 승강기대수

@@ -3114,10 +3114,6 @@ components:
           type: string
           description: 난방방식
           example: "개별난방"
-        parkingSpaces:
-          type: integer
-          description: 주차대수
-          example: 50
         elevators:
           type: integer
           description: 승강기대수
@@ -3189,10 +3185,6 @@ components:
           type: string
           description: 난방방식
           example: "중앙난방"
-        parkingSpaces:
-          type: integer
-          description: 주차대수
-          example: 60
         elevators:
           type: integer
           description: 승강기대수
@@ -3272,10 +3264,6 @@ components:
           type: string
           description: 난방방식
           example: "개별난방"
-        parkingSpaces:
-          type: integer
-          description: 주차대수
-          example: 50
         elevators:
           type: integer
           description: 승강기대수

@@ -138,7 +138,6 @@ public class BuildingDataLoaderService {
             .jeonse(null) // 전세는 별도 계산 필요
             .households(getIntegerValue(data.get("households")))
             .heatingType((String) data.getOrDefault("heating_type", "개별난방"))
-            .parkingSpaces(getIntegerValue(data.get("parking_spaces")))
             .elevators(getIntegerValue(data.get("elevators")))
             .buildingUsage((String) data.getOrDefault("building_usage", "기타"))
             .nearbyConvenienceStores(0) // 나중에 업데이트

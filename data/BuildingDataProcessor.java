@@ -266,7 +266,6 @@ public class BuildingDataProcessor {
                 .jeonse(BigDecimal.ZERO)
                 .households(50) // 기본값
                 .heatingType("개별난방") // 기본값
-                .parkingSpaces(10) // 기본값
                 .elevators(1) // 기본값
                 .buildingUsage(data.getBuildingType())
                 .approvalDate(LocalDateTime.now().minusYears(5)) // 기본값

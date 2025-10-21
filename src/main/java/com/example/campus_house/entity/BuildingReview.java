@@ -78,8 +78,6 @@ public class BuildingReview {
     @Column(name = "keyword")
     private List<ReviewKeyword> keywords; // 키워드 리스트
     
-    @Column
-    private Integer likeCount; // 좋아요 수
     
     @CreatedDate
     @Column(nullable = false, updatable = false)

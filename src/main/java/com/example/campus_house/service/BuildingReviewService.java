@@ -92,18 +92,17 @@ public class BuildingReviewService {
         BuildingReview newReview = BuildingReview.builder()
                 .building(building)
                 .user(user)
-                .title(review.getTitle())
                 .content(review.getContent())
                 .imageUrl(review.getImageUrl())
-                .rating(review.getRating())
-                .noiseLevel(review.getNoiseLevel())
-                .safetyLevel(review.getSafetyLevel())
-                .convenienceLevel(review.getConvenienceLevel())
-                .managementLevel(review.getManagementLevel())
-                .pros(review.getPros())
-                .cons(review.getCons())
-                .livingPeriod(review.getLivingPeriod())
-                .likeCount(0)
+                .satisfaction(review.getSatisfaction())
+                .residenceType(review.getResidenceType())
+                .residencePeriod(review.getResidencePeriod())
+                .direction(review.getDirection())
+                .noiseRating(review.getNoiseRating())
+                .facilityRating(review.getFacilityRating())
+                .parkingRating(review.getParkingRating())
+                .bugRating(review.getBugRating())
+                .keywords(review.getKeywords())
                 .build();
         
         return buildingReviewRepository.save(newReview);
@@ -121,38 +120,38 @@ public class BuildingReviewService {
         }
         
         // 필드 업데이트
-        if (updatedReview.getTitle() != null) {
-            review.setTitle(updatedReview.getTitle());
-        }
         if (updatedReview.getContent() != null) {
             review.setContent(updatedReview.getContent());
         }
         if (updatedReview.getImageUrl() != null) {
             review.setImageUrl(updatedReview.getImageUrl());
         }
-        if (updatedReview.getRating() != null) {
-            review.setRating(updatedReview.getRating());
+        if (updatedReview.getSatisfaction() != null) {
+            review.setSatisfaction(updatedReview.getSatisfaction());
         }
-        if (updatedReview.getNoiseLevel() != null) {
-            review.setNoiseLevel(updatedReview.getNoiseLevel());
+        if (updatedReview.getResidenceType() != null) {
+            review.setResidenceType(updatedReview.getResidenceType());
         }
-        if (updatedReview.getSafetyLevel() != null) {
-            review.setSafetyLevel(updatedReview.getSafetyLevel());
+        if (updatedReview.getResidencePeriod() != null) {
+            review.setResidencePeriod(updatedReview.getResidencePeriod());
         }
-        if (updatedReview.getConvenienceLevel() != null) {
-            review.setConvenienceLevel(updatedReview.getConvenienceLevel());
+        if (updatedReview.getDirection() != null) {
+            review.setDirection(updatedReview.getDirection());
         }
-        if (updatedReview.getManagementLevel() != null) {
-            review.setManagementLevel(updatedReview.getManagementLevel());
+        if (updatedReview.getNoiseRating() != null) {
+            review.setNoiseRating(updatedReview.getNoiseRating());
         }
-        if (updatedReview.getPros() != null) {
-            review.setPros(updatedReview.getPros());
+        if (updatedReview.getFacilityRating() != null) {
+            review.setFacilityRating(updatedReview.getFacilityRating());
         }
-        if (updatedReview.getCons() != null) {
-            review.setCons(updatedReview.getCons());
+        if (updatedReview.getParkingRating() != null) {
+            review.setParkingRating(updatedReview.getParkingRating());
         }
-        if (updatedReview.getLivingPeriod() != null) {
-            review.setLivingPeriod(updatedReview.getLivingPeriod());
+        if (updatedReview.getBugRating() != null) {
+            review.setBugRating(updatedReview.getBugRating());
+        }
+        if (updatedReview.getKeywords() != null) {
+            review.setKeywords(updatedReview.getKeywords());
         }
         
         return buildingReviewRepository.save(review);
@@ -172,15 +171,6 @@ public class BuildingReviewService {
         buildingReviewRepository.delete(review);
     }
     
-    // 후기 좋아요
-    @Transactional
-    public void likeReview(Long reviewId) {
-        BuildingReview review = buildingReviewRepository.findById(reviewId)
-                .orElseThrow(() -> new RuntimeException("후기를 찾을 수 없습니다."));
-        
-        review.setLikeCount(review.getLikeCount() != null ? review.getLikeCount() + 1 : 1);
-        buildingReviewRepository.save(review);
-    }
     
     // 건물별 후기 키워드 통계 조회
     public BuildingReviewStatsDto getReviewKeywordStats(Long buildingId) {

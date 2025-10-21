@@ -44,8 +44,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     // 전세 범위 검색
     Page<Building> findByJeonseBetween(BigDecimal minJeonse, BigDecimal maxJeonse, Pageable pageable);
     
-    // 주차장 필터 (주차대수가 0보다 큰 경우)
-    Page<Building> findByParkingSpacesGreaterThan(Integer minParkingSpaces, Pageable pageable);
     
     // 엘리베이터 필터 (승강기대수가 0보다 큰 경우)
     Page<Building> findByElevatorsGreaterThan(Integer minElevators, Pageable pageable);
@@ -61,7 +59,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
            "(:maxMonthlyRent IS NULL OR b.monthlyRent <= :maxMonthlyRent) AND " +
            "(:minJeonse IS NULL OR b.jeonse >= :minJeonse) AND " +
            "(:maxJeonse IS NULL OR b.jeonse <= :maxJeonse) AND " +
-           "(:parkingRequired IS NULL OR (:parkingRequired = true AND b.parkingSpaces > 0)) AND " +
            "(:elevatorRequired IS NULL OR (:elevatorRequired = true AND b.elevators > 0)) AND " +
            "(:maxWalkingTime IS NULL OR b.schoolWalkingTime <= :maxWalkingTime) AND " +
            "(:buildingUsage IS NULL OR b.buildingUsage LIKE %:buildingUsage%)")
@@ -71,7 +68,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
                                 @Param("maxMonthlyRent") BigDecimal maxMonthlyRent,
                                 @Param("minJeonse") BigDecimal minJeonse,
                                 @Param("maxJeonse") BigDecimal maxJeonse,
-                                @Param("parkingRequired") Boolean parkingRequired,
                                 @Param("elevatorRequired") Boolean elevatorRequired,
                                 @Param("maxWalkingTime") Integer maxWalkingTime,
                                 @Param("buildingUsage") String buildingUsage,

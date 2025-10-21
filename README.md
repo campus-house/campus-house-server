@@ -625,7 +625,6 @@ Content-Type: application/json
   "managementFee": 5,
   "households": 200,
   "heatingType": "개별난방",
-  "parkingSpaces": 50,
   "elevators": 2,
   "buildingUsage": "오피스텔 84%, 기타제2종근린생활시설 16%",
   "approvalDate": "2020-01-15T00:00:00",
@@ -1077,7 +1076,6 @@ Authorization: Bearer {token}
 - `jeonse`: 전세 (만원)
 - `households`: 세대수
 - `heatingType`: 난방방식
-- `parkingSpaces`: 주차대수
 - `elevators`: 승강기대수
 - `buildingUsage`: 건축물용도
 - `approvalDate`: 사용승인일

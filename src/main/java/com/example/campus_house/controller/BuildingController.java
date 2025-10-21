@@ -92,7 +92,6 @@ public class BuildingController {
             @RequestParam(required = false) BigDecimal maxMonthlyRent,
             @RequestParam(required = false) BigDecimal minJeonse,
             @RequestParam(required = false) BigDecimal maxJeonse,
-            @RequestParam(required = false) Boolean parkingRequired,
             @RequestParam(required = false) Boolean elevatorRequired,
             @RequestParam(required = false) Integer maxWalkingTime,
             @RequestParam(required = false) String buildingUsage,
@@ -100,7 +99,7 @@ public class BuildingController {
         
         Page<Building> buildings = buildingService.searchBuildingsWithFilters(
                 minDeposit, maxDeposit, minMonthlyRent, maxMonthlyRent,
-                minJeonse, maxJeonse, parkingRequired, elevatorRequired,
+                minJeonse, maxJeonse, elevatorRequired,
                 maxWalkingTime, buildingUsage, pageable);
         return ResponseEntity.ok(buildings);
     }
@@ -135,14 +134,6 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
     
-    // 주차장 필터
-    @GetMapping("/search/filters/parking")
-    public ResponseEntity<Page<Building>> searchBuildingsByParking(
-            @RequestParam Boolean parkingRequired,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.searchBuildingsByParking(parkingRequired, pageable);
-        return ResponseEntity.ok(buildings);
-    }
     
     // 엘리베이터 필터
     @GetMapping("/search/filters/elevator")
@@ -332,6 +323,62 @@ public class BuildingController {
             @PageableDefault(size = 20) Pageable pageable) {
         Page<BuildingReview> reviews = buildingReviewService.getReviewsByBuildingId(buildingId, sortBy, pageable);
         return ResponseEntity.ok(reviews);
+    }
+    
+    // 후기 작성
+    @PostMapping("/{buildingId}/reviews")
+    public ResponseEntity<BuildingReview> createBuildingReview(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long buildingId,
+            @RequestBody BuildingReview review) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            
+            // 거주지 인증 여부 확인
+            postService.checkResidenceVerification(user.getId());
+            
+            BuildingReview createdReview = buildingReviewService.createReview(buildingId, user.getId(), review);
+            return ResponseEntity.ok(createdReview);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
+    // 후기 수정
+    @PutMapping("/reviews/{reviewId}")
+    public ResponseEntity<BuildingReview> updateBuildingReview(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long reviewId,
+            @RequestBody BuildingReview updatedReview) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            
+            BuildingReview review = buildingReviewService.updateReview(reviewId, user.getId(), updatedReview);
+            return ResponseEntity.ok(review);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).body(null);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
+    // 후기 삭제
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteBuildingReview(
+            @RequestHeader("Authorization") String token,
+            @PathVariable Long reviewId) {
+        try {
+            User user = authService.getUserFromToken(token.substring(7));
+            
+            buildingReviewService.deleteReview(reviewId, user.getId());
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
     
     // 질문하기 탭 (Post 기반)

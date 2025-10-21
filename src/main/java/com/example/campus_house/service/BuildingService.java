@@ -68,13 +68,6 @@ public class BuildingService {
         return buildingRepository.findByJeonseBetween(minJeonse, maxJeonse, pageable);
     }
     
-    // 주차장 필터
-    public Page<Building> searchBuildingsByParking(Boolean parkingRequired, Pageable pageable) {
-        if (parkingRequired != null && parkingRequired) {
-            return buildingRepository.findByParkingSpacesGreaterThan(0, pageable);
-        }
-        return buildingRepository.findAll(pageable);
-    }
     
     // 엘리베이터 필터
     public Page<Building> searchBuildingsByElevator(Boolean elevatorRequired, Pageable pageable) {
@@ -89,10 +82,10 @@ public class BuildingService {
     public Page<Building> searchBuildingsWithFilters(BigDecimal minDeposit, BigDecimal maxDeposit,
                                                     BigDecimal minMonthlyRent, BigDecimal maxMonthlyRent,
                                                     BigDecimal minJeonse, BigDecimal maxJeonse,
-                                                    Boolean parkingRequired, Boolean elevatorRequired,
+                                                    Boolean elevatorRequired,
                                                     Integer maxWalkingTime, String buildingUsage, Pageable pageable) {
         return buildingRepository.findByFilters(minDeposit, maxDeposit, minMonthlyRent, maxMonthlyRent,
-                                              minJeonse, maxJeonse, parkingRequired, elevatorRequired,
+                                              minJeonse, maxJeonse, elevatorRequired,
                                               maxWalkingTime, buildingUsage, pageable);
     }
     
@@ -174,9 +167,6 @@ public class BuildingService {
         }
         if (updatedBuilding.getHeatingType() != null) {
             building.setHeatingType(updatedBuilding.getHeatingType());
-        }
-        if (updatedBuilding.getParkingSpaces() != null) {
-            building.setParkingSpaces(updatedBuilding.getParkingSpaces());
         }
         if (updatedBuilding.getElevators() != null) {
             building.setElevators(updatedBuilding.getElevators());

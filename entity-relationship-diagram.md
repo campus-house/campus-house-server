@@ -91,7 +91,6 @@ erDiagram
         double longitude
         int households
         int elevators
-        int parkingSpaces
         varchar heatingType
         decimal deposit
         decimal jeonse
