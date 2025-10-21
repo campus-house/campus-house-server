@@ -95,8 +95,6 @@ public class Building {
     @Column
     private Integer floorsGround; // 지상층수
     
-    @Column
-    private Boolean hasElevator; // 엘리베이터 유무
     
     @Column
     private Double area; // 전용면적 (m²)

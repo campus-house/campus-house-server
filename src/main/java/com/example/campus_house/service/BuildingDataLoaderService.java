@@ -148,7 +148,6 @@ public class BuildingDataLoaderService {
             .stationWalkingTime(stationTime)
             .scrapCount(0)
             .floorsGround(getIntegerValue(data.get("ground_floors")))
-            .hasElevator(getIntegerValue(data.get("elevators")) > 0)
             .area(area)
             .constructionYear(getIntegerValue(data.get("construction_year")))
             .roadName((String) data.getOrDefault("road_name", ""))

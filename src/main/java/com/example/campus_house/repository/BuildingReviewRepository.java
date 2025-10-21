@@ -29,12 +29,15 @@ public interface BuildingReviewRepository extends JpaRepository<BuildingReview, 
     // 특정 사용자의 후기 수
     Long countByUserId(Long userId);
     
-    // 평점별 후기 조회
-    Page<BuildingReview> findByBuildingIdAndRating(Long buildingId, Integer rating, Pageable pageable);
-    
     // 최신순 후기 조회
     Page<BuildingReview> findByBuildingIdOrderByCreatedAtDesc(Long buildingId, Pageable pageable);
     
-    // 인기순 후기 조회 (좋아요 수 기준)
-    Page<BuildingReview> findByBuildingIdOrderByLikeCountDesc(Long buildingId, Pageable pageable);
+    // 오래된 순 후기 조회
+    Page<BuildingReview> findByBuildingIdOrderByCreatedAtAsc(Long buildingId, Pageable pageable);
+    
+    // 높은 별점순 후기 조회 (만족도 기준)
+    Page<BuildingReview> findByBuildingIdOrderBySatisfactionDesc(Long buildingId, Pageable pageable);
+    
+    // 낮은 별점순 후기 조회 (만족도 기준)
+    Page<BuildingReview> findByBuildingIdOrderBySatisfactionAsc(Long buildingId, Pageable pageable);
 }

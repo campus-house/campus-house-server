@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "building_reviews")
@@ -32,38 +33,50 @@ public class BuildingReview {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
     
-    @Column(nullable = false)
-    private String title; // 후기 제목
-    
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content; // 후기 내용
     
     @Column
     private String imageUrl; // 후기 이미지
     
+    // 만족도 (1-5)
     @Column(nullable = false)
-    private Integer rating; // 평점 (1-5)
+    private Integer satisfaction; // 만족도 (1-5)
     
-    @Column
-    private Integer noiseLevel; // 소음 수준 (1-5)
+    // 거주 유형
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ResidenceType residenceType; // 거주 유형 {아파트, 오피스텔, 주택/빌라, 원투룸}
     
-    @Column
-    private Integer safetyLevel; // 안전 수준 (1-5)
+    // 거주 기간
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ResidencePeriod residencePeriod; // 거주 기간 {2023년 이전, 2024년까지, 2025년까지}
     
-    @Column
-    private Integer convenienceLevel; // 편의성 수준 (1-5)
+    // 방향
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Direction direction; // 방향 {남향, 남동/남서향, 동향, 서향, 북향, 남북/동서향}
     
-    @Column
-    private Integer managementLevel; // 관리 수준 (1-5)
+    // 세부 평점들 (1-5)
+    @Column(nullable = false)
+    private Integer noiseRating; // 소음 (1-5)
     
-    @Column(columnDefinition = "TEXT")
-    private String pros; // 장점
+    @Column(nullable = false)
+    private Integer facilityRating; // 편의시설 (1-5)
     
-    @Column(columnDefinition = "TEXT")
-    private String cons; // 단점
+    @Column(nullable = false)
+    private Integer parkingRating; // 주차장 (1-5)
     
-    @Column
-    private String livingPeriod; // 거주 기간
+    @Column(nullable = false)
+    private Integer bugRating; // 벌레 (1-5)
+    
+    // 키워드 (중복 선택 가능)
+    @ElementCollection(targetClass = ReviewKeyword.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "review_keywords", joinColumns = @JoinColumn(name = "review_id"))
+    @Column(name = "keyword")
+    private List<ReviewKeyword> keywords; // 키워드 리스트
     
     @Column
     private Integer likeCount; // 좋아요 수

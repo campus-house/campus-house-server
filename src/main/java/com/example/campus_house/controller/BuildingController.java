@@ -6,6 +6,8 @@ import com.example.campus_house.entity.BuildingReview;
 import com.example.campus_house.entity.Post;
 import com.example.campus_house.entity.User;
 import com.example.campus_house.dto.QuestionRequest;
+import com.example.campus_house.dto.BuildingReviewStatsDto;
+import com.example.campus_house.dto.BuildingRatingStatsDto;
 import com.example.campus_house.service.AuthService;
 import com.example.campus_house.service.BuildingService;
 import com.example.campus_house.service.BuildingScrapService;
@@ -326,8 +328,9 @@ public class BuildingController {
     @GetMapping("/{buildingId}/reviews")
     public ResponseEntity<Page<BuildingReview>> getBuildingReviews(
             @PathVariable Long buildingId,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<BuildingReview> reviews = buildingReviewService.getReviewsByBuildingId(buildingId, pageable);
+            @RequestParam(value = "sort", defaultValue = "newest") String sortBy,
+            @PageableDefault(size = 20) Pageable pageable) {
+        Page<BuildingReview> reviews = buildingReviewService.getReviewsByBuildingId(buildingId, sortBy, pageable);
         return ResponseEntity.ok(reviews);
     }
     
@@ -450,6 +453,40 @@ public class BuildingController {
         try {
             int updatedCount = buildingService.updateBuildingsNearbyFacilityCounts(buildingIds);
             return ResponseEntity.ok(Map.of("updatedCount", updatedCount, "message", "업데이트 완료"));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * 특정 건물의 후기 키워드 통계를 조회합니다.
+     * 좋은 점과 아쉬운 점 각각의 Top3 키워드와 비율을 반환합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 후기 키워드 통계 정보
+     */
+    @GetMapping("/{buildingId}/review-stats")
+    public ResponseEntity<BuildingReviewStatsDto> getBuildingReviewStats(@PathVariable Long buildingId) {
+        try {
+            BuildingReviewStatsDto stats = buildingReviewService.getReviewKeywordStats(buildingId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * 특정 건물의 후기 평점 통계를 조회합니다.
+     * 만족도 평균과 각 카테고리별 평균 퍼센트를 반환합니다.
+     * 
+     * @param buildingId 건물 ID
+     * @return 후기 평점 통계 정보
+     */
+    @GetMapping("/{buildingId}/rating-stats")
+    public ResponseEntity<BuildingRatingStatsDto> getBuildingRatingStats(@PathVariable Long buildingId) {
+        try {
+            BuildingRatingStatsDto stats = buildingReviewService.getBuildingRatingStats(buildingId);
+            return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

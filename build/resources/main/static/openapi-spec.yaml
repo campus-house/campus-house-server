@@ -1166,7 +1166,7 @@ paths:
       tags:
         - 건물 정보
       summary: 건물 후기 목록 조회
-      description: 특정 건물의 실거주자 후기 목록을 조회합니다.
+      description: 특정 건물의 실거주자 후기 목록을 조회합니다. 정렬 옵션을 지원합니다.
       parameters:
         - name: buildingId
           in: path
@@ -1175,6 +1175,13 @@ paths:
           schema:
             type: integer
             example: 1
+        - name: sort
+          in: query
+          description: 정렬 기준
+          schema:
+            type: string
+            enum: [newest, oldest, highest_rating, lowest_rating]
+            default: newest
         - name: page
           in: query
           description: 페이지 번호
@@ -3524,18 +3531,21 @@ components:
       description: 건물 후기 작성 요청
       required:
         - buildingId
-        - title
         - content
-        - rating
+        - satisfaction
+        - residenceType
+        - residencePeriod
+        - direction
+        - noiseRating
+        - facilityRating
+        - parkingRating
+        - bugRating
+        - keywords
       properties:
         buildingId:
           type: integer
           description: 건물 ID
           example: 1
-        title:
-          type: string
-          description: 후기 제목
-          example: "캠퍼스 하우스 A동 후기"
         content:
           type: string
           description: 후기 내용
@@ -3544,57 +3554,63 @@ components:
           type: string
           description: 후기 이미지 URL
           example: "https://example.com/review-image.jpg"
-        rating:
+        satisfaction:
           type: integer
           minimum: 1
           maximum: 5
-          description: 평점 (1-5)
+          description: 만족도 (1-5)
           example: 5
-        noiseLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 소음 수준 (1-5)
-          example: 3
-        safetyLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 안전 수준 (1-5)
-          example: 4
-        convenienceLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 편의성 수준 (1-5)
-          example: 5
-        managementLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 관리 수준 (1-5)
-          example: 4
-        pros:
+        residenceType:
           type: string
-          description: 장점
-          example: "교통편이 좋고, 편의시설이 많음"
-        cons:
+          enum: [APARTMENT, OFFICETEL, HOUSE_VILLA, ONE_TWO_ROOM]
+          description: 거주 유형
+          example: "APARTMENT"
+        residencePeriod:
           type: string
-          description: 단점
-          example: "소음이 조금 있음"
-        livingPeriod:
-          type: string
+          enum: [BEFORE_2023, UNTIL_2024, UNTIL_2025]
           description: 거주 기간
-          example: "1년"
+          example: "UNTIL_2024"
+        direction:
+          type: string
+          enum: [SOUTH, SOUTH_EAST_WEST, EAST, WEST, NORTH, NORTH_SOUTH_EAST_WEST]
+          description: 방향
+          example: "SOUTH"
+        noiseRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 소음 (1-5)
+          example: 3
+        facilityRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 편의시설 (1-5)
+          example: 5
+        parkingRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 주차장 (1-5)
+          example: 4
+        bugRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 벌레 (1-5)
+          example: 4
+        keywords:
+          type: array
+          items:
+            type: string
+            enum: [NEAR_STATION, FAR_FROM_STATION, NEAR_SCHOOL, FAR_FROM_SCHOOL, CONVENIENT_FACILITIES, FAR_FROM_FACILITIES, WIFI_AVAILABLE, NO_WIFI, PARKING_AVAILABLE, NO_PARKING, ELEVATOR_AVAILABLE, NO_ELEVATOR, CLEAN, OLD, NO_BUGS, MANY_BUGS, GOOD_LIGHTING, HUMID, GOOD_VALUE, EXPENSIVE, QUIET, NOISY, SECURE, INSECURE]
+          description: 키워드 리스트 (중복 선택 가능)
+          example: ["NEAR_STATION", "CONVENIENT_FACILITIES", "CLEAN"]
 
     UpdateBuildingReviewRequest:
       type: object
       description: 건물 후기 수정 요청
       properties:
-        title:
-          type: string
-          description: 후기 제목
-          example: "수정된 후기 제목"
         content:
           type: string
           description: 후기 내용
@@ -3603,48 +3619,58 @@ components:
           type: string
           description: 후기 이미지 URL
           example: "https://example.com/updated-review-image.jpg"
-        rating:
+        satisfaction:
           type: integer
           minimum: 1
           maximum: 5
-          description: 평점 (1-5)
+          description: 만족도 (1-5)
           example: 4
-        noiseLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 소음 수준 (1-5)
-          example: 2
-        safetyLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 안전 수준 (1-5)
-          example: 5
-        convenienceLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 편의성 수준 (1-5)
-          example: 4
-        managementLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 관리 수준 (1-5)
-          example: 5
-        pros:
+        residenceType:
           type: string
-          description: 장점
-          example: "수정된 장점"
-        cons:
+          enum: [APARTMENT, OFFICETEL, HOUSE_VILLA, ONE_TWO_ROOM]
+          description: 거주 유형
+          example: "APARTMENT"
+        residencePeriod:
           type: string
-          description: 단점
-          example: "수정된 단점"
-        livingPeriod:
-          type: string
+          enum: [BEFORE_2023, UNTIL_2024, UNTIL_2025]
           description: 거주 기간
-          example: "2년"
+          example: "UNTIL_2025"
+        direction:
+          type: string
+          enum: [SOUTH, SOUTH_EAST_WEST, EAST, WEST, NORTH, NORTH_SOUTH_EAST_WEST]
+          description: 방향
+          example: "SOUTH"
+        noiseRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 소음 (1-5)
+          example: 2
+        facilityRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 편의시설 (1-5)
+          example: 4
+        parkingRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 주차장 (1-5)
+          example: 3
+        bugRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 벌레 (1-5)
+          example: 3
+        keywords:
+          type: array
+          items:
+            type: string
+            enum: [NEAR_STATION, FAR_FROM_STATION, NEAR_SCHOOL, FAR_FROM_SCHOOL, CONVENIENT_FACILITIES, FAR_FROM_FACILITIES, WIFI_AVAILABLE, NO_WIFI, PARKING_AVAILABLE, NO_PARKING, ELEVATOR_AVAILABLE, NO_ELEVATOR, CLEAN, OLD, NO_BUGS, MANY_BUGS, GOOD_LIGHTING, HUMID, GOOD_VALUE, EXPENSIVE, QUIET, NOISY, SECURE, INSECURE]
+          description: 키워드 리스트 (중복 선택 가능)
+          example: ["NEAR_STATION", "CONVENIENT_FACILITIES", "CLEAN", "QUIET"]
 
     BuildingReview:
       type: object
@@ -3658,10 +3684,6 @@ components:
           $ref: '#/components/schemas/Building'
         user:
           $ref: '#/components/schemas/User'
-        title:
-          type: string
-          description: 후기 제목
-          example: "캠퍼스 하우스 A동 후기"
         content:
           type: string
           description: 후기 내용
@@ -3670,48 +3692,58 @@ components:
           type: string
           description: 후기 이미지 URL
           example: "https://example.com/review-image.jpg"
-        rating:
+        satisfaction:
           type: integer
           minimum: 1
           maximum: 5
-          description: 평점 (1-5)
+          description: 만족도 (1-5)
           example: 5
-        noiseLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 소음 수준 (1-5)
-          example: 3
-        safetyLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 안전 수준 (1-5)
-          example: 4
-        convenienceLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 편의성 수준 (1-5)
-          example: 5
-        managementLevel:
-          type: integer
-          minimum: 1
-          maximum: 5
-          description: 관리 수준 (1-5)
-          example: 4
-        pros:
+        residenceType:
           type: string
-          description: 장점
-          example: "교통편이 좋고, 편의시설이 많음"
-        cons:
+          enum: [APARTMENT, OFFICETEL, HOUSE_VILLA, ONE_TWO_ROOM]
+          description: 거주 유형
+          example: "APARTMENT"
+        residencePeriod:
           type: string
-          description: 단점
-          example: "소음이 조금 있음"
-        livingPeriod:
-          type: string
+          enum: [BEFORE_2023, UNTIL_2024, UNTIL_2025]
           description: 거주 기간
-          example: "1년"
+          example: "UNTIL_2024"
+        direction:
+          type: string
+          enum: [SOUTH, SOUTH_EAST_WEST, EAST, WEST, NORTH, NORTH_SOUTH_EAST_WEST]
+          description: 방향
+          example: "SOUTH"
+        noiseRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 소음 (1-5)
+          example: 3
+        facilityRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 편의시설 (1-5)
+          example: 5
+        parkingRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 주차장 (1-5)
+          example: 4
+        bugRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: 벌레 (1-5)
+          example: 4
+        keywords:
+          type: array
+          items:
+            type: string
+            enum: [NEAR_STATION, FAR_FROM_STATION, NEAR_SCHOOL, FAR_FROM_SCHOOL, CONVENIENT_FACILITIES, FAR_FROM_FACILITIES, WIFI_AVAILABLE, NO_WIFI, PARKING_AVAILABLE, NO_PARKING, ELEVATOR_AVAILABLE, NO_ELEVATOR, CLEAN, OLD, NO_BUGS, MANY_BUGS, GOOD_LIGHTING, HUMID, GOOD_VALUE, EXPENSIVE, QUIET, NOISY, SECURE, INSECURE]
+          description: 키워드 리스트
+          example: ["NEAR_STATION", "CONVENIENT_FACILITIES", "CLEAN"]
         likeCount:
           type: integer
           description: 좋아요 수
@@ -3726,3 +3758,81 @@ components:
           format: date-time
           description: 수정일시
           example: "2024-01-01T00:00:00"
+
+    # 후기 키워드 통계 관련 스키마
+    ReviewKeywordStats:
+      type: object
+      description: 후기 키워드 통계 정보
+      properties:
+        keyword:
+          type: string
+          enum: [NEAR_STATION, FAR_FROM_STATION, NEAR_SCHOOL, FAR_FROM_SCHOOL, CONVENIENT_FACILITIES, FAR_FROM_FACILITIES, WIFI_AVAILABLE, NO_WIFI, PARKING_AVAILABLE, NO_PARKING, ELEVATOR_AVAILABLE, NO_ELEVATOR, CLEAN, OLD, NO_BUGS, MANY_BUGS, GOOD_LIGHTING, HUMID, GOOD_VALUE, EXPENSIVE, QUIET, NOISY, SECURE, INSECURE]
+          description: 키워드
+          example: "CLEAN"
+        description:
+          type: string
+          description: 키워드 설명
+          example: "깨끗해요"
+        count:
+          type: integer
+          description: 해당 키워드가 언급된 후기 수
+          example: 9
+        percentage:
+          type: number
+          format: double
+          description: 전체 후기 대비 비율 (%)
+          example: 90.0
+
+    BuildingReviewStats:
+      type: object
+      description: 건물 후기 키워드 통계
+      properties:
+        goodPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewKeywordStats'
+          description: 좋은 점 Top3
+        disappointingPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReviewKeywordStats'
+          description: 아쉬운 점 Top3
+        totalReviewCount:
+          type: integer
+          description: 전체 후기 수
+          example: 10
+
+    # 건물 후기 평점 통계 관련 스키마
+    BuildingRatingStats:
+      type: object
+      description: 건물 후기 평점 통계
+      properties:
+        averageSatisfaction:
+          type: number
+          format: double
+          description: 만족도 평균 (1-5)
+          example: 4.0
+        totalReviewCount:
+          type: integer
+          description: 전체 후기 수
+          example: 12
+        noisePercentage:
+          type: number
+          format: double
+          description: 소음 평균 퍼센트 (0-100)
+          example: 90.0
+        facilityPercentage:
+          type: number
+          format: double
+          description: 편의시설 평균 퍼센트 (0-100)
+          example: 88.0
+        parkingPercentage:
+          type: number
+          format: double
+          description: 주차장 평균 퍼센트 (0-100)
+          example: 72.0
+        bugPercentage:
+          type: number
+          format: double
+          description: 벌레 평균 퍼센트 (0-100)
+          example: 36.0
