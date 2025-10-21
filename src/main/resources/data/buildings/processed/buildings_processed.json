@@ -19,7 +19,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 2,
@@ -41,7 +42,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 3,
@@ -63,7 +65,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 4,
@@ -85,7 +88,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 5,
@@ -107,7 +111,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 6,
@@ -129,7 +134,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 7,
@@ -151,7 +157,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 8,
@@ -173,7 +180,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 9,
@@ -195,7 +203,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 10,
@@ -217,7 +226,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 11,
@@ -239,7 +249,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 12,
@@ -261,7 +272,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 13,
@@ -283,7 +295,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 14,
@@ -305,7 +318,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 15,
@@ -327,7 +341,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 16,
@@ -349,7 +364,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 17,
@@ -371,7 +387,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 18,
@@ -393,7 +410,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 19,
@@ -415,7 +433,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 20,
@@ -437,7 +456,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 21,
@@ -459,7 +479,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 22,
@@ -481,7 +502,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 23,
@@ -503,7 +525,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 24,
@@ -525,7 +548,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 25,
@@ -547,7 +571,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 26,
@@ -569,7 +594,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "",
-    "completion_date": ""
+    "completion_date": "",
+    "parking_spaces": 0
   },
   {
     "id": 27,
@@ -591,7 +617,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20121217",
-    "completion_date": "20121217"
+    "completion_date": "20121217",
+    "parking_spaces": 0
   },
   {
     "id": 28,
@@ -613,7 +640,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20110614",
-    "completion_date": "20110614"
+    "completion_date": "20110614",
+    "parking_spaces": 0
   },
   {
     "id": 29,
@@ -635,7 +663,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20160226",
-    "completion_date": "20160226"
+    "completion_date": "20160226",
+    "parking_spaces": 0
   },
   {
     "id": 30,
@@ -657,7 +686,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20121217",
-    "completion_date": "20121217"
+    "completion_date": "20121217",
+    "parking_spaces": 0
   },
   {
     "id": 31,
@@ -679,7 +709,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20160929",
-    "completion_date": "20160929"
+    "completion_date": "20160929",
+    "parking_spaces": 0
   },
   {
     "id": 32,
@@ -701,7 +732,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20021121",
-    "completion_date": "20021121"
+    "completion_date": "20021121",
+    "parking_spaces": 0
   },
   {
     "id": 33,
@@ -723,7 +755,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20171101",
-    "completion_date": "20171101"
+    "completion_date": "20171101",
+    "parking_spaces": 0
   },
   {
     "id": 34,
@@ -745,7 +778,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170629",
-    "completion_date": "20170629"
+    "completion_date": "20170629",
+    "parking_spaces": 0
   },
   {
     "id": 35,
@@ -767,7 +801,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20121217",
-    "completion_date": "20121217"
+    "completion_date": "20121217",
+    "parking_spaces": 0
   },
   {
     "id": 36,
@@ -789,7 +824,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20110614",
-    "completion_date": "20110614"
+    "completion_date": "20110614",
+    "parking_spaces": 0
   },
   {
     "id": 37,
@@ -811,7 +847,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20110614",
-    "completion_date": "20110614"
+    "completion_date": "20110614",
+    "parking_spaces": 0
   },
   {
     "id": 38,
@@ -833,7 +870,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20160929",
-    "completion_date": "20160929"
+    "completion_date": "20160929",
+    "parking_spaces": 0
   },
   {
     "id": 39,
@@ -855,7 +893,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20021121",
-    "completion_date": "20021121"
+    "completion_date": "20021121",
+    "parking_spaces": 0
   },
   {
     "id": 40,
@@ -877,7 +916,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20090930",
-    "completion_date": "20090930"
+    "completion_date": "20090930",
+    "parking_spaces": 0
   },
   {
     "id": 41,
@@ -899,7 +939,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020520",
-    "completion_date": "20020520"
+    "completion_date": "20020520",
+    "parking_spaces": 0
   },
   {
     "id": 42,
@@ -921,7 +962,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170629",
-    "completion_date": "20170629"
+    "completion_date": "20170629",
+    "parking_spaces": 0
   },
   {
     "id": 43,
@@ -943,7 +985,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20090930",
-    "completion_date": "20090930"
+    "completion_date": "20090930",
+    "parking_spaces": 0
   },
   {
     "id": 44,
@@ -965,7 +1008,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20121217",
-    "completion_date": "20121217"
+    "completion_date": "20121217",
+    "parking_spaces": 0
   },
   {
     "id": 45,
@@ -987,7 +1031,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20021121",
-    "completion_date": "20021121"
+    "completion_date": "20021121",
+    "parking_spaces": 0
   },
   {
     "id": 46,
@@ -1009,7 +1054,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020520",
-    "completion_date": "20020520"
+    "completion_date": "20020520",
+    "parking_spaces": 0
   },
   {
     "id": 47,
@@ -1031,7 +1077,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020520",
-    "completion_date": "20020520"
+    "completion_date": "20020520",
+    "parking_spaces": 0
   },
   {
     "id": 48,
@@ -1053,7 +1100,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 49,
@@ -1075,7 +1123,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 50,
@@ -1097,7 +1146,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 51,
@@ -1119,7 +1169,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 52,
@@ -1141,7 +1192,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020330",
-    "completion_date": "20020330"
+    "completion_date": "20020330",
+    "parking_spaces": 0
   },
   {
     "id": 53,
@@ -1163,7 +1215,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 54,
@@ -1185,7 +1238,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020330",
-    "completion_date": "20020330"
+    "completion_date": "20020330",
+    "parking_spaces": 0
   },
   {
     "id": 55,
@@ -1207,7 +1261,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971210",
-    "completion_date": "19971210"
+    "completion_date": "19971210",
+    "parking_spaces": 0
   },
   {
     "id": 56,
@@ -1229,7 +1284,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20011030",
-    "completion_date": "20011030"
+    "completion_date": "20011030",
+    "parking_spaces": 0
   },
   {
     "id": 57,
@@ -1251,7 +1307,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170926",
-    "completion_date": "20170926"
+    "completion_date": "20170926",
+    "parking_spaces": 0
   },
   {
     "id": 58,
@@ -1273,7 +1330,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980528",
-    "completion_date": "19980528"
+    "completion_date": "19980528",
+    "parking_spaces": 0
   },
   {
     "id": 59,
@@ -1295,7 +1353,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980623",
-    "completion_date": "19980623"
+    "completion_date": "19980623",
+    "parking_spaces": 0
   },
   {
     "id": 60,
@@ -1317,7 +1376,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990503",
-    "completion_date": "19990503"
+    "completion_date": "19990503",
+    "parking_spaces": 0
   },
   {
     "id": 61,
@@ -1339,7 +1399,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20021025",
-    "completion_date": "20021025"
+    "completion_date": "20021025",
+    "parking_spaces": 0
   },
   {
     "id": 62,
@@ -1361,7 +1422,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980126",
-    "completion_date": "19980126"
+    "completion_date": "19980126",
+    "parking_spaces": 0
   },
   {
     "id": 63,
@@ -1383,7 +1445,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971215",
-    "completion_date": "19971215"
+    "completion_date": "19971215",
+    "parking_spaces": 0
   },
   {
     "id": 64,
@@ -1405,7 +1468,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 65,
@@ -1427,7 +1491,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991110",
-    "completion_date": "19991110"
+    "completion_date": "19991110",
+    "parking_spaces": 0
   },
   {
     "id": 66,
@@ -1449,7 +1514,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 67,
@@ -1471,7 +1537,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20080609",
-    "completion_date": "20080609"
+    "completion_date": "20080609",
+    "parking_spaces": 0
   },
   {
     "id": 68,
@@ -1493,7 +1560,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 69,
@@ -1515,7 +1583,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971210",
-    "completion_date": "19971210"
+    "completion_date": "19971210",
+    "parking_spaces": 0
   },
   {
     "id": 70,
@@ -1537,7 +1606,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971231",
-    "completion_date": "19971231"
+    "completion_date": "19971231",
+    "parking_spaces": 0
   },
   {
     "id": 71,
@@ -1559,7 +1629,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 72,
@@ -1581,7 +1652,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980310",
-    "completion_date": "19980310"
+    "completion_date": "19980310",
+    "parking_spaces": 0
   },
   {
     "id": 73,
@@ -1603,7 +1675,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 74,
@@ -1625,7 +1698,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971231",
-    "completion_date": "19971231"
+    "completion_date": "19971231",
+    "parking_spaces": 0
   },
   {
     "id": 75,
@@ -1647,7 +1721,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990930",
-    "completion_date": "19990930"
+    "completion_date": "19990930",
+    "parking_spaces": 0
   },
   {
     "id": 76,
@@ -1669,7 +1744,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20020330",
-    "completion_date": "20020330"
+    "completion_date": "20020330",
+    "parking_spaces": 0
   },
   {
     "id": 77,
@@ -1691,7 +1767,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 78,
@@ -1713,7 +1790,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990930",
-    "completion_date": "19990930"
+    "completion_date": "19990930",
+    "parking_spaces": 0
   },
   {
     "id": 79,
@@ -1735,7 +1813,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971215",
-    "completion_date": "19971215"
+    "completion_date": "19971215",
+    "parking_spaces": 0
   },
   {
     "id": 80,
@@ -1757,7 +1836,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980126",
-    "completion_date": "19980126"
+    "completion_date": "19980126",
+    "parking_spaces": 0
   },
   {
     "id": 81,
@@ -1779,7 +1859,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 82,
@@ -1801,7 +1882,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 83,
@@ -1823,7 +1905,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 84,
@@ -1845,7 +1928,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 85,
@@ -1867,7 +1951,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991110",
-    "completion_date": "19991110"
+    "completion_date": "19991110",
+    "parking_spaces": 0
   },
   {
     "id": 86,
@@ -1889,7 +1974,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20190823",
-    "completion_date": "20190823"
+    "completion_date": "20190823",
+    "parking_spaces": 0
   },
   {
     "id": 87,
@@ -1911,7 +1997,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 88,
@@ -1933,7 +2020,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991110",
-    "completion_date": "19991110"
+    "completion_date": "19991110",
+    "parking_spaces": 0
   },
   {
     "id": 89,
@@ -1955,7 +2043,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 90,
@@ -1977,7 +2066,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20011030",
-    "completion_date": "20011030"
+    "completion_date": "20011030",
+    "parking_spaces": 0
   },
   {
     "id": 91,
@@ -1999,7 +2089,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20011030",
-    "completion_date": "20011030"
+    "completion_date": "20011030",
+    "parking_spaces": 0
   },
   {
     "id": 92,
@@ -2021,7 +2112,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990503",
-    "completion_date": "19990503"
+    "completion_date": "19990503",
+    "parking_spaces": 0
   },
   {
     "id": 93,
@@ -2043,7 +2135,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980623",
-    "completion_date": "19980623"
+    "completion_date": "19980623",
+    "parking_spaces": 0
   },
   {
     "id": 94,
@@ -2065,7 +2158,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990218",
-    "completion_date": "19990218"
+    "completion_date": "19990218",
+    "parking_spaces": 0
   },
   {
     "id": 95,
@@ -2087,7 +2181,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971212",
-    "completion_date": "19971212"
+    "completion_date": "19971212",
+    "parking_spaces": 0
   },
   {
     "id": 96,
@@ -2109,7 +2204,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 97,
@@ -2131,7 +2227,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 98,
@@ -2153,7 +2250,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 99,
@@ -2175,7 +2273,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20021025",
-    "completion_date": "20021025"
+    "completion_date": "20021025",
+    "parking_spaces": 0
   },
   {
     "id": 100,
@@ -2197,7 +2296,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20060728",
-    "completion_date": "20060728"
+    "completion_date": "20060728",
+    "parking_spaces": 0
   },
   {
     "id": 101,
@@ -2219,7 +2319,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20150316",
-    "completion_date": "20150316"
+    "completion_date": "20150316",
+    "parking_spaces": 0
   },
   {
     "id": 102,
@@ -2241,7 +2342,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20000720",
-    "completion_date": "20000720"
+    "completion_date": "20000720",
+    "parking_spaces": 0
   },
   {
     "id": 103,
@@ -2263,7 +2365,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170117",
-    "completion_date": "20170117"
+    "completion_date": "20170117",
+    "parking_spaces": 0
   },
   {
     "id": 104,
@@ -2285,7 +2388,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991229",
-    "completion_date": "19991229"
+    "completion_date": "19991229",
+    "parking_spaces": 0
   },
   {
     "id": 105,
@@ -2307,7 +2411,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20000720",
-    "completion_date": "20000720"
+    "completion_date": "20000720",
+    "parking_spaces": 0
   },
   {
     "id": 106,
@@ -2329,7 +2434,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20150316",
-    "completion_date": "20150316"
+    "completion_date": "20150316",
+    "parking_spaces": 0
   },
   {
     "id": 107,
@@ -2351,7 +2457,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990930",
-    "completion_date": "19990930"
+    "completion_date": "19990930",
+    "parking_spaces": 0
   },
   {
     "id": 108,
@@ -2373,7 +2480,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19971216",
-    "completion_date": "19971216"
+    "completion_date": "19971216",
+    "parking_spaces": 0
   },
   {
     "id": 109,
@@ -2395,7 +2503,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20181221",
-    "completion_date": "20181221"
+    "completion_date": "20181221",
+    "parking_spaces": 0
   },
   {
     "id": 110,
@@ -2417,7 +2526,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20130604",
-    "completion_date": "20130604"
+    "completion_date": "20130604",
+    "parking_spaces": 0
   },
   {
     "id": 111,
@@ -2439,7 +2549,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20140530",
-    "completion_date": "20140530"
+    "completion_date": "20140530",
+    "parking_spaces": 0
   },
   {
     "id": 112,
@@ -2461,7 +2572,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991229",
-    "completion_date": "19991229"
+    "completion_date": "19991229",
+    "parking_spaces": 0
   },
   {
     "id": 113,
@@ -2483,7 +2595,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170117",
-    "completion_date": "20170117"
+    "completion_date": "20170117",
+    "parking_spaces": 0
   },
   {
     "id": 114,
@@ -2505,7 +2618,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980528",
-    "completion_date": "19980528"
+    "completion_date": "19980528",
+    "parking_spaces": 0
   },
   {
     "id": 115,
@@ -2527,7 +2641,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20000720",
-    "completion_date": "20000720"
+    "completion_date": "20000720",
+    "parking_spaces": 0
   },
   {
     "id": 116,
@@ -2549,7 +2664,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20131226",
-    "completion_date": "20131226"
+    "completion_date": "20131226",
+    "parking_spaces": 0
   },
   {
     "id": 117,
@@ -2571,7 +2687,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991229",
-    "completion_date": "19991229"
+    "completion_date": "19991229",
+    "parking_spaces": 0
   },
   {
     "id": 118,
@@ -2593,7 +2710,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990503",
-    "completion_date": "19990503"
+    "completion_date": "19990503",
+    "parking_spaces": 0
   },
   {
     "id": 119,
@@ -2615,7 +2733,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990930",
-    "completion_date": "19990930"
+    "completion_date": "19990930",
+    "parking_spaces": 0
   },
   {
     "id": 120,
@@ -2637,7 +2756,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990218",
-    "completion_date": "19990218"
+    "completion_date": "19990218",
+    "parking_spaces": 0
   },
   {
     "id": 121,
@@ -2659,7 +2779,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980623",
-    "completion_date": "19980623"
+    "completion_date": "19980623",
+    "parking_spaces": 0
   },
   {
     "id": 122,
@@ -2681,7 +2802,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20140530",
-    "completion_date": "20140530"
+    "completion_date": "20140530",
+    "parking_spaces": 0
   },
   {
     "id": 123,
@@ -2703,7 +2825,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20181221",
-    "completion_date": "20181221"
+    "completion_date": "20181221",
+    "parking_spaces": 0
   },
   {
     "id": 124,
@@ -2725,7 +2848,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980623",
-    "completion_date": "19980623"
+    "completion_date": "19980623",
+    "parking_spaces": 0
   },
   {
     "id": 125,
@@ -2747,7 +2871,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980623",
-    "completion_date": "19980623"
+    "completion_date": "19980623",
+    "parking_spaces": 0
   },
   {
     "id": 126,
@@ -2769,7 +2894,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980528",
-    "completion_date": "19980528"
+    "completion_date": "19980528",
+    "parking_spaces": 0
   },
   {
     "id": 127,
@@ -2791,7 +2917,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20080609",
-    "completion_date": "20080609"
+    "completion_date": "20080609",
+    "parking_spaces": 0
   },
   {
     "id": 128,
@@ -2813,7 +2940,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19991229",
-    "completion_date": "19991229"
+    "completion_date": "19991229",
+    "parking_spaces": 0
   },
   {
     "id": 129,
@@ -2835,7 +2963,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19990218",
-    "completion_date": "19990218"
+    "completion_date": "19990218",
+    "parking_spaces": 0
   },
   {
     "id": 130,
@@ -2857,7 +2986,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "19980126",
-    "completion_date": "19980126"
+    "completion_date": "19980126",
+    "parking_spaces": 0
   },
   {
     "id": 131,
@@ -2879,7 +3009,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20130604",
-    "completion_date": "20130604"
+    "completion_date": "20130604",
+    "parking_spaces": 0
   },
   {
     "id": 132,
@@ -2901,7 +3032,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20070803",
-    "completion_date": "20070803"
+    "completion_date": "20070803",
+    "parking_spaces": 0
   },
   {
     "id": 133,
@@ -2923,7 +3055,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20181221",
-    "completion_date": "20181221"
+    "completion_date": "20181221",
+    "parking_spaces": 0
   },
   {
     "id": 134,
@@ -2945,7 +3078,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20080602",
-    "completion_date": "20080602"
+    "completion_date": "20080602",
+    "parking_spaces": 0
   },
   {
     "id": 135,
@@ -2967,7 +3101,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20011030",
-    "completion_date": "20011030"
+    "completion_date": "20011030",
+    "parking_spaces": 0
   },
   {
     "id": 136,
@@ -2989,7 +3124,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20181221",
-    "completion_date": "20181221"
+    "completion_date": "20181221",
+    "parking_spaces": 0
   },
   {
     "id": 137,
@@ -3011,7 +3147,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170926",
-    "completion_date": "20170926"
+    "completion_date": "20170926",
+    "parking_spaces": 0
   },
   {
     "id": 138,
@@ -3033,51 +3170,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20170524",
-    "completion_date": "20170524"
-  },
-  {
-    "id": 139,
-    "building_name": "훼미리타워",
-    "address": "경기도 수원시 영통구 영통동 958-2",
-    "building_type": "오피스텔",
-    "room_type": "투룸",
-    "area": 31.7,
-    "avg_deposit": 1692.3076923076924,
-    "avg_monthly_rent": 41.92307692307692,
-    "construction_year": 2000,
-    "road_name": "봉영로 1617",
-    "sample_count": 13,
-    "households": 0,
-    "ground_floors": 16,
-    "elevators": 5,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20000131",
-    "completion_date": "20000131"
-  },
-  {
-    "id": 140,
-    "building_name": "영통역아이파크",
-    "address": "경기도 수원시 영통구 영통동 1012-1",
-    "building_type": "오피스텔",
-    "room_type": "쓰리룸",
-    "area": 54.02,
-    "avg_deposit": 7416.1,
-    "avg_monthly_rent": 50.7,
-    "construction_year": 2017,
-    "road_name": "반달로35번길 30",
-    "sample_count": 30,
-    "households": 0,
-    "ground_floors": 20,
-    "elevators": 5,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20170926",
-    "completion_date": "20170926"
+    "completion_date": "20170524",
+    "parking_spaces": 0
   },
   {
     "id": 141,
@@ -3099,7 +3193,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20060621",
-    "completion_date": "20060621"
+    "completion_date": "20060621",
+    "parking_spaces": 0
   },
   {
     "id": 142,
@@ -3121,29 +3216,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20030121",
-    "completion_date": "20030121"
-  },
-  {
-    "id": 143,
-    "building_name": "경희유니빌",
-    "address": "경기도 수원시 영통구 영통동 1024-14",
-    "building_type": "오피스텔",
-    "room_type": "투룸",
-    "area": 31.28,
-    "avg_deposit": 812.5,
-    "avg_monthly_rent": 57.5,
-    "construction_year": 2003,
-    "road_name": "덕영대로 1709",
-    "sample_count": 8,
-    "households": 0,
-    "ground_floors": 13,
-    "elevators": 1,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20031002",
-    "completion_date": "20031002"
+    "completion_date": "20030121",
+    "parking_spaces": 0
   },
   {
     "id": 144,
@@ -3165,7 +3239,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20000131",
-    "completion_date": "20000131"
+    "completion_date": "20000131",
+    "parking_spaces": 0
   },
   {
     "id": 145,
@@ -3187,7 +3262,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20080609",
-    "completion_date": "20080609"
+    "completion_date": "20080609",
+    "parking_spaces": 0
   },
   {
     "id": 146,
@@ -3209,7 +3285,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20031002",
-    "completion_date": "20031002"
+    "completion_date": "20031002",
+    "parking_spaces": 0
   },
   {
     "id": 147,
@@ -3231,7 +3308,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20040708",
-    "completion_date": "20040708"
+    "completion_date": "20040708",
+    "parking_spaces": 0
   },
   {
     "id": 148,
@@ -3253,7 +3331,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20010120",
-    "completion_date": "20010120"
+    "completion_date": "20010120",
+    "parking_spaces": 0
   },
   {
     "id": 149,
@@ -3275,7 +3354,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20130927",
-    "completion_date": "20130927"
+    "completion_date": "20130927",
+    "parking_spaces": 0
   },
   {
     "id": 150,
@@ -3297,7 +3377,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20220111",
-    "completion_date": "20220111"
+    "completion_date": "20220111",
+    "parking_spaces": 0
   },
   {
     "id": 151,
@@ -3319,29 +3400,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20220906",
-    "completion_date": "20220906"
-  },
-  {
-    "id": 152,
-    "building_name": "스테이블경희",
-    "address": "경기도 용인시 기흥구 서천동 7-6",
-    "building_type": "오피스텔",
-    "room_type": "미니원룸",
-    "area": 18.87,
-    "avg_deposit": 3500.0,
-    "avg_monthly_rent": 52.25,
-    "construction_year": 2022,
-    "road_name": "덕영대로 1698",
-    "sample_count": 12,
-    "households": 29,
-    "ground_floors": 10,
-    "elevators": 3,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20220111",
-    "completion_date": "20220111"
+    "completion_date": "20220906",
+    "parking_spaces": 0
   },
   {
     "id": 153,
@@ -3363,51 +3423,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20230328",
-    "completion_date": "20230328"
-  },
-  {
-    "id": 154,
-    "building_name": "서천더캐슬",
-    "address": "경기도 용인시 기흥구 서천동 399-1",
-    "building_type": "오피스텔",
-    "room_type": "쓰리룸",
-    "area": 58.31,
-    "avg_deposit": 19400.0,
-    "avg_monthly_rent": 5.0,
-    "construction_year": 2023,
-    "road_name": "서그내로53번길 40-1",
-    "sample_count": 5,
-    "households": 11,
-    "ground_floors": 4,
-    "elevators": 1,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20230328",
-    "completion_date": "20230328"
-  },
-  {
-    "id": 155,
-    "building_name": "(265-14)",
-    "address": "경기도 용인시 기흥구 서천동 265-14",
-    "building_type": "오피스텔",
-    "room_type": "쓰리룸",
-    "area": 64.66,
-    "avg_deposit": 20000.0,
-    "avg_monthly_rent": 0.0,
-    "construction_year": 2022,
-    "road_name": "서그내로 63",
-    "sample_count": 2,
-    "households": 20,
-    "ground_floors": 4,
-    "elevators": 1,
-    "emergency_elevators": 0,
-    "main_use_code": "",
-    "building_usage": "기타",
-    "heating_type": "개별난방",
-    "approval_date": "20220321",
-    "completion_date": "20220321"
+    "completion_date": "20230328",
+    "parking_spaces": 0
   },
   {
     "id": 156,
@@ -3429,7 +3446,8 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20220321",
-    "completion_date": "20220321"
+    "completion_date": "20220321",
+    "parking_spaces": 0
   },
   {
     "id": 157,
@@ -3451,6 +3469,7 @@
     "building_usage": "기타",
     "heating_type": "개별난방",
     "approval_date": "20240208",
-    "completion_date": "20240208"
+    "completion_date": "20240208",
+    "parking_spaces": 0
   }
 ]
