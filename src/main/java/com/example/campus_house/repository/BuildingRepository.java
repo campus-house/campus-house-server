@@ -98,4 +98,10 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     
     // 특정 건물명이 아닌 건물들 삭제 (샘플 데이터 제외용)
     int deleteByBuildingNameNotIn(java.util.List<String> buildingNames);
+    
+    // 좌표가 없는 건물들 조회
+    java.util.List<Building> findByLatitudeIsNullOrLongitudeIsNull();
+    
+    // 좌표가 있는 건물 수 조회
+    long countByLatitudeIsNotNullAndLongitudeIsNotNull();
 }

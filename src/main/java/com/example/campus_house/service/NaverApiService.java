@@ -12,13 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class NaverApiService {
     
     private final WebClient naverMapWebClient;
     private final WebClient naverSearchWebClient;
     // private final NaverApiConfig naverApiConfig; // 현재 사용하지 않음
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    
+    public NaverApiService(WebClient naverMapWebClient, WebClient naverSearchWebClient) {
+        this.naverMapWebClient = naverMapWebClient;
+        this.naverSearchWebClient = naverSearchWebClient;
+    }
     
     /**
      * 주소를 좌표로 변환 (Geocoding)
