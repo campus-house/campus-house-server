@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +22,6 @@ public class BuildingDataLoaderService {
     
     private final BuildingRepository buildingRepository;
     private final ObjectMapper objectMapper;
-    private final Random random = new Random();
     
     /**
      * JSON 파일에서 건물 데이터를 로드하여 데이터베이스에 저장
@@ -112,15 +110,12 @@ public class BuildingDataLoaderService {
      * JSON 데이터를 Building 엔티티로 변환
      */
     private Building convertToBuilding(Map<String, Object> data) {
-        // 주소에서 좌표 계산
+        // JSON 파일에서 실제 좌표와 도보 시간 데이터 사용
         String address = (String) data.get("address");
-        double[] coordinates = calculateCoordinates(address);
-        
-        // 건물 타입과 면적을 기반으로 걸리는 시간 계산
-        String buildingType = (String) data.get("building_type");
-        Double area = getDoubleValue(data.get("area"));
-        int schoolTime = calculateWalkingTime(buildingType, area);
-        int stationTime = Math.max(3, schoolTime - 2);
+        Double latitude = getDoubleValue(data.get("latitude"));
+        Double longitude = getDoubleValue(data.get("longitude"));
+        Integer schoolWalkingTime = getIntegerValue(data.get("school_walking_time"));
+        Integer stationWalkingTime = getIntegerValue(data.get("station_walking_time"));
         
         // 기본값 설정
         String buildingName = (String) data.get("building_name");
@@ -128,11 +123,26 @@ public class BuildingDataLoaderService {
             buildingName = "알 수 없는 건물";
         }
         
+        // 좌표가 없는 경우 기본 좌표 사용 (수원시 영통구 중심)
+        if (latitude == null || longitude == null || latitude == 0.0 || longitude == 0.0) {
+            latitude = 37.2636;
+            longitude = 127.0286;
+        }
+        
+        // 도보 시간이 없는 경우 기본값 설정
+        if (schoolWalkingTime == null || schoolWalkingTime == 0) {
+            schoolWalkingTime = 10; // 기본 10분
+        }
+        
+        if (stationWalkingTime == null || stationWalkingTime == 0) {
+            stationWalkingTime = Math.max(3, schoolWalkingTime - 2);
+        }
+        
         return Building.builder()
             .buildingName(buildingName)
             .address(address != null ? address : "주소 정보 없음")
-            .latitude(coordinates[0])
-            .longitude(coordinates[1])
+            .latitude(latitude)
+            .longitude(longitude)
             .deposit(convertToBigDecimal(getDoubleValue(data.get("avg_deposit")) * 10000))
             .monthlyRent(convertToBigDecimal(getDoubleValue(data.get("avg_monthly_rent")) * 10000))
             .jeonse(null) // 전세는 별도 계산 필요
@@ -143,11 +153,11 @@ public class BuildingDataLoaderService {
             .nearbyConvenienceStores(0) // 나중에 업데이트
             .nearbyMarts(0)
             .nearbyHospitals(0)
-            .schoolWalkingTime(schoolTime)
-            .stationWalkingTime(stationTime)
+            .schoolWalkingTime(schoolWalkingTime)
+            .stationWalkingTime(stationWalkingTime)
             .scrapCount(0)
             .floorsGround(getIntegerValue(data.get("ground_floors")))
-            .area(area)
+            .area(getDoubleValue(data.get("area")))
             .constructionYear(getIntegerValue(data.get("construction_year")))
             .roadName((String) data.getOrDefault("road_name", ""))
             .sampleCount(getIntegerValue(data.get("sample_count")))
@@ -155,62 +165,6 @@ public class BuildingDataLoaderService {
             .build();
     }
     
-    /**
-     * 주소를 기반으로 위도/경도 좌표 계산
-     */
-    private double[] calculateCoordinates(String address) {
-        // 수원시 영통구의 대략적인 중심 좌표
-        double baseLat = 37.2636;
-        double baseLng = 127.0286;
-        
-        if (address == null) {
-            return new double[]{baseLat, baseLng};
-        }
-        
-        // 주소에 따라 약간의 오프셋 추가
-        double latOffset, lngOffset;
-        
-        if (address.contains("영통동")) {
-            latOffset = (address.hashCode() % 100) / 10000.0; // ±0.01도 범위
-            lngOffset = ((address + "1").hashCode() % 100) / 10000.0;
-        } else if (address.contains("서천동")) {
-            latOffset = (address.hashCode() % 50) / 10000.0 + 0.005; // 약간 남쪽
-            lngOffset = ((address + "2").hashCode() % 50) / 10000.0 + 0.005; // 약간 동쪽
-        } else {
-            latOffset = (address.hashCode() % 200) / 10000.0 - 0.01;
-            lngOffset = ((address + "3").hashCode() % 200) / 10000.0 - 0.01;
-        }
-        
-        return new double[]{baseLat + latOffset, baseLng + lngOffset};
-    }
-    
-    /**
-     * 건물 타입과 면적을 기반으로 걸리는 시간 계산
-     */
-    private int calculateWalkingTime(String buildingType, Double area) {
-        int baseTime = 10; // 기본 10분
-        
-        // 건물 타입별 조정
-        if ("아파트".equals(buildingType)) {
-            baseTime += 2; // 아파트는 보통 조금 더 멀리
-        } else if ("오피스텔".equals(buildingType)) {
-            baseTime -= 1; // 오피스텔은 보통 중심가에 위치
-        }
-        
-        // 면적별 조정 (큰 건물일수록 중심가에 위치할 가능성)
-        if (area != null) {
-            if (area > 50) {
-                baseTime -= 2;
-            } else if (area > 30) {
-                baseTime -= 1;
-            }
-        }
-        
-        // 랜덤 요소 추가
-        int randomFactor = random.nextInt(7) - 3; // -3 ~ +3
-        
-        return Math.max(3, Math.min(25, baseTime + randomFactor)); // 3-25분 범위
-    }
     
     /**
      * Double 값 안전하게 가져오기
