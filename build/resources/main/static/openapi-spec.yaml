@@ -360,67 +360,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildingPage'
 
-  /api/buildings/search/building:
-    get:
-      tags:
-        - 건물
-      summary: 건물명으로 검색
-      description: 건물명을 사용하여 건물을 검색합니다.
-      parameters:
-        - name: buildingName
-          in: query
-          required: true
-          schema:
-            type: string
-          description: 건물명
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 검색 결과 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuildingPage'
-
-  /api/buildings/search/address:
-    get:
-      tags:
-        - 건물
-      summary: 주소로 검색
-      description: 주소를 사용하여 건물을 검색합니다.
-      parameters:
-        - name: address
-          in: query
-          required: true
-          schema:
-            type: string
-          description: 주소
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 검색 결과 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuildingPage'
 
   /api/buildings/nearby:
     get:
@@ -544,55 +483,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/BuildingPage'
 
-  /api/buildings/recent:
-    get:
-      tags:
-        - 건물
-      summary: 최근 등록된 건물 조회
-      description: 최근에 등록된 건물 목록을 조회합니다.
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 최근 건물 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuildingPage'
-
-  /api/buildings/popular:
-    get:
-      tags:
-        - 건물
-      summary: 인기 건물 조회
-      description: 스크랩 수 기준으로 인기 건물을 조회합니다.
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-            default: 0
-        - name: size
-          in: query
-          schema:
-            type: integer
-            default: 20
-      responses:
-        '200':
-          description: 인기 건물 조회 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BuildingPage'
 
   /api/buildings/building-usages:
     get:
@@ -2094,15 +1984,30 @@ components:
         deposit:
           type: number
           format: decimal
-          example: 2000.00
+          example: 2000
+          description: 보증금 (만원 단위, 소수점 제외)
         monthlyRent:
           type: number
           format: decimal
-          example: 50.00
+          example: 50
+          description: 월세 (만원 단위, 소수점 제외)
         jeonse:
           type: number
           format: decimal
-          example: 1000.00
+          example: 1000
+          description: 전세 (만원 단위, 소수점 제외)
+        formattedDeposit:
+          type: string
+          example: "2억"
+          description: 포맷팅된 보증금 (예: 2억, 1억5천, 30만)
+        formattedMonthlyRent:
+          type: string
+          example: "30만"
+          description: 포맷팅된 월세 (예: 30만, 50만)
+        formattedJeonse:
+          type: string
+          example: "1억"
+          description: 포맷팅된 전세 (예: 1억, 2억5천)
         households:
           type: integer
           example: 100

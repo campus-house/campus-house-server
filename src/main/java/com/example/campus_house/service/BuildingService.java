@@ -80,15 +80,6 @@ public class BuildingService {
                                               maxWalkingTime, buildingUsage, pageable);
     }
     
-    // 최근 등록된 건물 조회
-    public Page<Building> getRecentBuildings(Pageable pageable) {
-        return buildingRepository.findByOrderByCreatedAtDesc(pageable);
-    }
-    
-    // 인기 건물 조회 (스크랩 수 기준)
-    public Page<Building> getPopularBuildings(Pageable pageable) {
-        return buildingRepository.findByOrderByScrapCountDesc(pageable);
-    }
     
     
     // 건물 용도별 필터
@@ -323,5 +314,46 @@ public class BuildingService {
         
         return nearbyFacilityService.getNearbyFacilityCounts(
             building.getLatitude(), building.getLongitude());
+    }
+    
+    /**
+     * 포맷팅된 건물 정보를 반환합니다.
+     * 금액은 정수로 변환하고 약식 표기를 적용합니다.
+     * 
+     * @param building 원본 건물 정보
+     * @return 포맷팅된 건물 정보
+     */
+    public Building getFormattedBuilding(Building building) {
+        if (building == null) return null;
+        
+        // 소수점 제거하고 정수로 변환
+        if (building.getDeposit() != null) {
+            building.setDeposit(building.getDeposit().setScale(0, java.math.RoundingMode.DOWN));
+        }
+        if (building.getMonthlyRent() != null) {
+            building.setMonthlyRent(building.getMonthlyRent().setScale(0, java.math.RoundingMode.DOWN));
+        }
+        if (building.getJeonse() != null) {
+            building.setJeonse(building.getJeonse().setScale(0, java.math.RoundingMode.DOWN));
+        }
+        
+        return building;
+    }
+    
+    /**
+     * 포맷팅된 건물 목록을 반환합니다.
+     * 
+     * @param buildings 원본 건물 목록
+     * @return 포맷팅된 건물 목록
+     */
+    public Page<Building> getFormattedBuildings(Page<Building> buildings) {
+        if (buildings == null || buildings.getContent().isEmpty()) {
+            return buildings;
+        }
+        
+        // 각 건물에 대해 포맷팅 적용
+        buildings.getContent().forEach(this::getFormattedBuilding);
+        
+        return buildings;
     }
 }

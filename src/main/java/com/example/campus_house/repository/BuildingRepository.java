@@ -68,11 +68,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
                                 @Param("buildingUsage") String buildingUsage,
                                 Pageable pageable);
     
-    // 최근 등록된 건물 조회
-    Page<Building> findByOrderByCreatedAtDesc(Pageable pageable);
-    
-    // 인기 건물 조회 (스크랩 수 기준)
-    Page<Building> findByOrderByScrapCountDesc(Pageable pageable);
     
     
     // 건물 용도별 검색

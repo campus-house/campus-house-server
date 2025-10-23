@@ -159,4 +159,53 @@ public class Building {
         WALKING_15MIN,  // 도보 15분 이내
         WALKING_20MIN   // 도보 20분 이내
     }
+    
+    // 금액 포맷팅 메서드들
+    public String getFormattedDeposit() {
+        if (deposit == null) return null;
+        return formatAmount(deposit);
+    }
+    
+    public String getFormattedMonthlyRent() {
+        if (monthlyRent == null) return null;
+        return formatAmount(monthlyRent);
+    }
+    
+    public String getFormattedJeonse() {
+        if (jeonse == null) return null;
+        return formatAmount(jeonse);
+    }
+    
+    private String formatAmount(BigDecimal amount) {
+        if (amount == null) return null;
+        
+        long amountLong = amount.longValue();
+        
+        if (amountLong >= 10000) {
+            // 억 단위
+            long eok = amountLong / 10000;
+            long remainder = amountLong % 10000;
+            
+            if (remainder == 0) {
+                return eok + "억";
+            } else if (remainder >= 1000) {
+                long cheon = remainder / 1000;
+                return eok + "억" + cheon + "천";
+            } else {
+                return eok + "억" + remainder;
+            }
+        } else if (amountLong >= 1000) {
+            // 천 단위
+            long cheon = amountLong / 1000;
+            long remainder = amountLong % 1000;
+            
+            if (remainder == 0) {
+                return cheon + "천";
+            } else {
+                return cheon + "천" + remainder;
+            }
+        } else {
+            return String.valueOf(amountLong);
+        }
+    }
 }

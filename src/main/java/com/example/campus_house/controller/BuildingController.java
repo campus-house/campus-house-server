@@ -41,7 +41,8 @@ public class BuildingController {
     public ResponseEntity<Page<Building>> getAllBuildings(
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.getAllBuildings(pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     
@@ -51,7 +52,8 @@ public class BuildingController {
             @RequestParam String keyword,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByKeyword(keyword, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     
@@ -63,7 +65,8 @@ public class BuildingController {
             @RequestParam(defaultValue = "1.0") Double radiusKm,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByLocation(latitude, longitude, radiusKm, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     // 건물 정보 필터링
@@ -84,7 +87,8 @@ public class BuildingController {
                 minDeposit, maxDeposit, minMonthlyRent, maxMonthlyRent,
                 minJeonse, maxJeonse, elevatorRequired,
                 maxWalkingTime, buildingUsage, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     // 보증금 범위 필터
@@ -94,7 +98,8 @@ public class BuildingController {
             @RequestParam BigDecimal maxDeposit,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByDepositRange(minDeposit, maxDeposit, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     // 월세 범위 필터
@@ -104,7 +109,8 @@ public class BuildingController {
             @RequestParam BigDecimal maxMonthlyRent,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByMonthlyRentRange(minMonthlyRent, maxMonthlyRent, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     // 전세 범위 필터
@@ -114,7 +120,8 @@ public class BuildingController {
             @RequestParam BigDecimal maxJeonse,
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         Page<Building> buildings = buildingService.searchBuildingsByJeonseRange(minJeonse, maxJeonse, pageable);
-        return ResponseEntity.ok(buildings);
+        Page<Building> formattedBuildings = buildingService.getFormattedBuildings(buildings);
+        return ResponseEntity.ok(formattedBuildings);
     }
     
     
@@ -128,21 +135,6 @@ public class BuildingController {
     }
     
     
-    // 최근 등록된 건물 조회
-    @GetMapping("/recent")
-    public ResponseEntity<Page<Building>> getRecentBuildings(
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.getRecentBuildings(pageable);
-        return ResponseEntity.ok(buildings);
-    }
-    
-    // 인기 건물 조회 (스크랩 수 기준)
-    @GetMapping("/popular")
-    public ResponseEntity<Page<Building>> getPopularBuildings(
-            @PageableDefault(size = 20, sort = "scrapCount", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.getPopularBuildings(pageable);
-        return ResponseEntity.ok(buildings);
-    }
     
     
     // 건물 용도별 필터 (오피스텔, 아파트, 원룸 등)
@@ -266,7 +258,8 @@ public class BuildingController {
     public ResponseEntity<Building> getBuildingInfo(@PathVariable Long buildingId) {
         Optional<Building> building = buildingService.getBuildingById(buildingId);
         if (building.isPresent()) {
-            return ResponseEntity.ok(building.get());
+            Building formattedBuilding = buildingService.getFormattedBuilding(building.get());
+            return ResponseEntity.ok(formattedBuilding);
         }
         return ResponseEntity.notFound().build();
     }
