@@ -19,11 +19,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
            "b.address LIKE %:keyword%")
     Page<Building> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
     
-    // 건물명으로 검색
-    Page<Building> findByBuildingNameContaining(String buildingName, Pageable pageable);
-    
-    // 주소로 검색
-    Page<Building> findByAddressContaining(String address, Pageable pageable);
     
     // 위치 기반 검색 (반경 내)
     @Query("SELECT b FROM Building b WHERE " +

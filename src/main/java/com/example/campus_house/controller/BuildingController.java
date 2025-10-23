@@ -13,7 +13,6 @@ import com.example.campus_house.service.BuildingService;
 import com.example.campus_house.service.BuildingScrapService;
 import com.example.campus_house.service.BuildingReviewService;
 import com.example.campus_house.service.PostService;
-import com.example.campus_house.service.BuildingGeocodingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +35,6 @@ public class BuildingController {
     private final BuildingReviewService buildingReviewService;
     private final PostService postService;
     private final AuthService authService;
-    private final BuildingGeocodingService buildingGeocodingService;
     
     // 모든 건물 조회
     @GetMapping
@@ -56,23 +54,6 @@ public class BuildingController {
         return ResponseEntity.ok(buildings);
     }
     
-    // 건물명으로 검색
-    @GetMapping("/search/building")
-    public ResponseEntity<Page<Building>> searchBuildingsByName(
-            @RequestParam String buildingName,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.searchBuildingsByName(buildingName, pageable);
-        return ResponseEntity.ok(buildings);
-    }
-    
-    // 주소로 검색
-    @GetMapping("/search/address")
-    public ResponseEntity<Page<Building>> searchBuildingsByAddress(
-            @RequestParam String address,
-            @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
-        Page<Building> buildings = buildingService.searchBuildingsByAddress(address, pageable);
-        return ResponseEntity.ok(buildings);
-    }
     
     // 위치 기반 검색
     @GetMapping("/nearby")
@@ -235,33 +216,6 @@ public class BuildingController {
         }
     }
     
-    // 네이버 API 연동 - 주소를 좌표로 변환
-    @GetMapping("/geocode")
-    public ResponseEntity<?> geocodeAddress(@RequestParam String address) {
-        // TODO: 네이버 지도 API 연동 구현
-        return ResponseEntity.ok().build();
-    }
-    
-    // 네이버 API 연동 - 좌표를 주소로 변환
-    @GetMapping("/reverse-geocode")
-    public ResponseEntity<?> reverseGeocode(@RequestParam Double latitude, @RequestParam Double longitude) {
-        // TODO: 네이버 지도 API 연동 구현
-        return ResponseEntity.ok().build();
-    }
-    
-    // 네이버 API 연동 - 장소 검색
-    @GetMapping("/search/places")
-    public ResponseEntity<?> searchPlaces(@RequestParam String query, @RequestParam(defaultValue = "10") Integer display) {
-        // TODO: 네이버 지도 API 연동 구현
-        return ResponseEntity.ok().build();
-    }
-    
-    // 학교까지 걸리는 시간 계산
-    @GetMapping("/{buildingId}/school-walking-time")
-    public ResponseEntity<?> getSchoolWalkingTime(@PathVariable Long buildingId, @RequestParam Long schoolId) {
-        // TODO: 지도 API를 통한 길찾기 구현
-        return ResponseEntity.ok().build();
-    }
     
     // 건물 스크랩
     @PostMapping("/{buildingId}/scrap")
@@ -541,88 +495,4 @@ public class BuildingController {
         }
     }
     
-    // ========== 지오코딩 관련 엔드포인트 ==========
-    
-    /**
-     * 특정 건물의 좌표를 업데이트합니다.
-     * 
-     * @param buildingId 건물 ID
-     * @return 업데이트된 건물 정보
-     */
-    @PostMapping("/{buildingId}/geocode")
-    public ResponseEntity<Building> updateBuildingCoordinates(@PathVariable Long buildingId) {
-        try {
-            Building updatedBuilding = buildingGeocodingService.updateBuildingCoordinates(buildingId);
-            return ResponseEntity.ok(updatedBuilding);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    /**
-     * 모든 건물의 좌표를 업데이트합니다.
-     * 
-     * @return 업데이트된 건물 수
-     */
-    @PostMapping("/geocode/update-all")
-    public ResponseEntity<Map<String, Object>> updateAllBuildingsCoordinates() {
-        try {
-            int updatedCount = buildingGeocodingService.updateAllBuildingsCoordinates();
-            return ResponseEntity.ok(Map.of("updatedCount", updatedCount, "message", "좌표 업데이트 완료"));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    /**
-     * 특정 건물의 도보 시간을 조회합니다.
-     * 
-     * @param buildingId 건물 ID
-     * @return 도보 시간 정보 (학교까지, 영통역까지)
-     */
-    @GetMapping("/{buildingId}/walking-times")
-    public ResponseEntity<Map<String, Integer>> getBuildingWalkingTimes(@PathVariable Long buildingId) {
-        try {
-            Map<String, Integer> walkingTimes = buildingGeocodingService.getWalkingTimes(buildingId);
-            return ResponseEntity.ok(walkingTimes);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    /**
-     * 좌표가 없는 건물들을 조회합니다.
-     * 
-     * @return 좌표가 없는 건물 목록
-     */
-    @GetMapping("/without-coordinates")
-    public ResponseEntity<List<Building>> getBuildingsWithoutCoordinates() {
-        try {
-            List<Building> buildings = buildingGeocodingService.getBuildingsWithoutCoordinates();
-            return ResponseEntity.ok(buildings);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-    
-    /**
-     * 좌표 통계를 조회합니다.
-     * 
-     * @return 좌표가 있는/없는 건물 수
-     */
-    @GetMapping("/coordinates/stats")
-    public ResponseEntity<Map<String, Object>> getCoordinatesStats() {
-        try {
-            long withCoordinates = buildingGeocodingService.getBuildingsWithCoordinatesCount();
-            List<Building> withoutCoordinates = buildingGeocodingService.getBuildingsWithoutCoordinates();
-            
-            return ResponseEntity.ok(Map.of(
-                "withCoordinates", withCoordinates,
-                "withoutCoordinates", withoutCoordinates.size(),
-                "total", withCoordinates + withoutCoordinates.size()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 }

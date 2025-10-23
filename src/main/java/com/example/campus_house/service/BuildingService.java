@@ -38,15 +38,6 @@ public class BuildingService {
         return buildingRepository.findByKeyword(keyword, pageable);
     }
     
-    // 건물명으로 검색
-    public Page<Building> searchBuildingsByName(String buildingName, Pageable pageable) {
-        return buildingRepository.findByBuildingNameContaining(buildingName, pageable);
-    }
-    
-    // 주소로 검색
-    public Page<Building> searchBuildingsByAddress(String address, Pageable pageable) {
-        return buildingRepository.findByAddressContaining(address, pageable);
-    }
     
     // 위치 기반 검색
     public Page<Building> searchBuildingsByLocation(Double latitude, Double longitude, Double radiusKm, Pageable pageable) {
