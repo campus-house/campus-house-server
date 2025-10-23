@@ -1,4 +1,4 @@
-id,building_name,address,building_type,room_type,area,avg_deposit,avg_monthly_rent,construction_year,road_name,sample_count,households,ground_floors,elevators,emergency_elevators,main_use_code,building_usage,heating_type,approval_date,completion_date,latitude,longitude,school_walking_time,station_walking_time
+﻿id,building_name,address,building_type,room_type,area,avg_deposit,avg_monthly_rent,construction_year,road_name,sample_count,households,ground_floors,elevators,emergency_elevators,main_use_code,building_usage,heating_type,approval_date,completion_date,latitude,longitude,school_walking_time,station_walking_time
 1,단독다가구_4*,경기도 용인시 기흥구 서천동 4*,단독다가구,투룸형,30.0,2000.0,50.0,1996,경기 용인시 기흥구 서그내로53번길,1,0,0,0,0,,기타,개별난방,,,37.2415169034264,127.071726204875,20,31
 2,서천2차IPARK,경기 용인시 기흥구 서천동 755,아파트,22평형,75.26,24972.222222222223,54.11764705882353,2016,경기 용인시 기흥구 서천동로21번길 11-22,18,52,13,0,0,,기타,개별난방,20160226,20160226,37.2408724145884,127.076850798216,17,34
 3,힐스테이트서천,경기 용인시 기흥구 서천동 801,아파트,25평형,84.9986,31105.882352941175,42.78787878787879,2016,경기 용인시 기흥구 서천동로 22,34,68,18,0,0,,기타,개별난방,20160929,20160929,37.2377769687384,127.075013629887,20,38

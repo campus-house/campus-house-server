@@ -23,5 +23,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     long countByPostId(Long postId);
     
     // 특정 사용자의 댓글 조회
-    List<Comment> findByAuthorIdOrderByCreatedAtDesc(Long authorId);
+    @Query("SELECT c FROM Comment c WHERE c.author.userId = :authorId ORDER BY c.createdAt DESC")
+    List<Comment> findByAuthorIdOrderByCreatedAtDesc(@Param("authorId") Long authorId);
 }

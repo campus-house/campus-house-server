@@ -40,8 +40,8 @@ public class PostService {
     @Transactional
     public Post createPost(Post post) {
         Post saved = postRepository.save(post);
-        if (post.getAuthor() != null && post.getAuthor().getId() != null) {
-            badgeService.awardIfFirstPost(post.getAuthor().getId());
+        if (post.getAuthor() != null && post.getAuthor().getUserId() != null) {
+            badgeService.awardIfFirstPost(post.getAuthor().getUserId());
         }
         return saved;
     }
@@ -169,8 +169,8 @@ public class PostService {
         Post saved = postRepository.save(question);
         
         // 첫 게시글 작성 시 배지 수여
-        if (user.getId() != null) {
-            badgeService.awardIfFirstPost(user.getId());
+        if (user.getUserId() != null) {
+            badgeService.awardIfFirstPost(user.getUserId());
         }
         
         // 건물 거주자들에게 새 질문 알림 전송
@@ -301,8 +301,8 @@ public class PostService {
         Post saved = postRepository.save(transfer);
         
         // 첫 게시글 작성 시 배지 수여
-        if (user.getId() != null) {
-            badgeService.awardIfFirstPost(user.getId());
+        if (user.getUserId() != null) {
+            badgeService.awardIfFirstPost(user.getUserId());
         }
         
         return saved;

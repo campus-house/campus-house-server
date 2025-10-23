@@ -105,7 +105,7 @@ public class MemoService {
                 .orElseThrow(() -> new RuntimeException("메모를 찾을 수 없습니다."));
         
         // 작성자만 삭제 가능
-        if (!memo.getUser().getId().equals(userId)) {
+        if (!memo.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("메모를 삭제할 권한이 없습니다.");
         }
         

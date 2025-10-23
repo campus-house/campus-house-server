@@ -20,7 +20,8 @@ class BuildingDataLoader:
             'database': 'campus_house',
             'user': 'postgres',
             'password': 'password',
-            'port': '5432'
+            'port': '5432',
+            'client_encoding': 'utf8'
         }
         self.conn = None
         
@@ -218,7 +219,7 @@ def main():
     loader = BuildingDataLoader()
     
     # JSON 파일 경로
-    json_file_path = "/Users/yejun/GitHub/campus-house-server/data/buildings/processed/buildings_processed.json"
+    json_file_path = "buildings/processed/buildings_processed.json"
     
     if not os.path.exists(json_file_path):
         print(f"❌ JSON 파일을 찾을 수 없습니다: {json_file_path}")

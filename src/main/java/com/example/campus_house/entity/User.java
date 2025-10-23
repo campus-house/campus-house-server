@@ -24,10 +24,14 @@ public class User extends BaseEntity {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id")
+    private Long userId;
     
     @Column(unique = true, nullable = false)
     private String email;
+    
+    @Column(unique = true, nullable = false)
+    private String username; // 로그인용 아이디
     
     @Column(nullable = false)
     private String password;
@@ -115,6 +119,44 @@ public class User extends BaseEntity {
     
     public enum UserType {
         RESIDENT, NON_RESIDENT
+    }
+    
+    /**
+     * 대표 캐릭터 ID에 따른 프로필 이미지를 반환합니다.
+     * 대표 캐릭터가 설정되어 있으면 해당 캐릭터의 이미지를,
+     * 그렇지 않으면 기본 프로필 이미지를 반환합니다.
+     * 
+     * @return 프로필 이미지 URL
+     */
+    public String getEffectiveProfileImage() {
+        if (mainCharacterId != null) {
+            // 대표 캐릭터가 설정된 경우, 해당 캐릭터의 이미지를 찾아서 반환
+            return userCharacters.stream()
+                    .filter(uc -> uc.getCharacter().getId().equals(mainCharacterId))
+                    .filter(uc -> uc.getIsMain())
+                    .map(uc -> uc.getCharacter().getImageUrl())
+                    .findFirst()
+                    .orElse(profileImage); // 대표 캐릭터를 찾지 못한 경우 기본 프로필 이미지 반환
+        }
+        return profileImage; // 대표 캐릭터가 설정되지 않은 경우 기본 프로필 이미지 반환
+    }
+    
+    /**
+     * 대표 캐릭터 정보를 반환합니다.
+     * 
+     * @return 대표 캐릭터 정보 (없으면 null)
+     */
+    public Character getMainCharacter() {
+        if (mainCharacterId == null) {
+            return null;
+        }
+        
+        return userCharacters.stream()
+                .filter(uc -> uc.getCharacter().getId().equals(mainCharacterId))
+                .filter(uc -> uc.getIsMain())
+                .map(UserCharacter::getCharacter)
+                .findFirst()
+                .orElse(null);
     }
     
 }

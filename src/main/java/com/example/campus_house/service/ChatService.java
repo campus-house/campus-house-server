@@ -44,7 +44,7 @@ public class ChatService {
         }
         
         Long userId = jwtUtil.getUserIdFromToken(token);
-        return userRepository.findById(userId)
+        return userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
     }
     
@@ -215,8 +215,8 @@ public class ChatService {
         User receiver = chatRoom.getUser1().equals(currentUser) ? chatRoom.getUser2() : chatRoom.getUser1();
         try {
             notificationService.createNotificationFromUser(
-                    receiver.getId(),
-                    currentUser.getId(),
+                    receiver.getUserId(),
+                    currentUser.getUserId(),
                     com.example.campus_house.entity.Notification.NotificationType.CHAT_MESSAGE,
                     "새 메시지", // title
                     request.getContent(), // content 미리보기

@@ -16,5 +16,6 @@ public interface MemoReplyRepository extends JpaRepository<MemoReply, Long> {
     List<MemoReply> findByMemoIdOrderByCreatedAtAsc(@Param("memoId") Long memoId);
     
     // 특정 사용자의 메모 답장 조회
-    List<MemoReply> findByUserIdOrderByCreatedAtDesc(Long userId);
+    @Query("SELECT mr FROM MemoReply mr WHERE mr.user.userId = :userId ORDER BY mr.createdAt DESC")
+    List<MemoReply> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
 }

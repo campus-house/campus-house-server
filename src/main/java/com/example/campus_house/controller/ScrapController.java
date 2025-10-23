@@ -26,7 +26,7 @@ public class ScrapController {
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<BuildingScrap> scraps = buildingScrapService.getScrapedBuildingsByUserId(user.getId(), pageable);
+            Page<BuildingScrap> scraps = buildingScrapService.getScrapedBuildingsByUserId(user.getUserId(), pageable);
             return ResponseEntity.ok(scraps);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -40,7 +40,7 @@ public class ScrapController {
             @PathVariable Long buildingId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            BuildingScrap scrap = buildingScrapService.scrapBuilding(user.getId(), buildingId);
+            BuildingScrap scrap = buildingScrapService.scrapBuilding(user.getUserId(), buildingId);
             return ResponseEntity.ok(scrap);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -54,7 +54,7 @@ public class ScrapController {
             @PathVariable Long buildingId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            buildingScrapService.unscrapBuilding(user.getId(), buildingId);
+            buildingScrapService.unscrapBuilding(user.getUserId(), buildingId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

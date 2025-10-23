@@ -216,7 +216,7 @@ public class BuildingController {
             @PathVariable Long buildingId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            BuildingScrap scrap = buildingScrapService.scrapBuilding(user.getId(), buildingId);
+            BuildingScrap scrap = buildingScrapService.scrapBuilding(user.getUserId(), buildingId);
             return ResponseEntity.ok(scrap);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -230,7 +230,7 @@ public class BuildingController {
             @PathVariable Long buildingId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            buildingScrapService.unscrapBuilding(user.getId(), buildingId);
+            buildingScrapService.unscrapBuilding(user.getUserId(), buildingId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -244,7 +244,7 @@ public class BuildingController {
             @PathVariable Long buildingId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            boolean isScraped = buildingScrapService.isScraped(user.getId(), buildingId);
+            boolean isScraped = buildingScrapService.isScraped(user.getUserId(), buildingId);
             return ResponseEntity.ok(isScraped);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -284,9 +284,9 @@ public class BuildingController {
             User user = authService.getUserFromToken(token.substring(7));
             
             // 거주지 인증 여부 확인
-            postService.checkResidenceVerification(user.getId());
+            postService.checkResidenceVerification(user.getUserId());
             
-            BuildingReview createdReview = buildingReviewService.createReview(buildingId, user.getId(), review);
+            BuildingReview createdReview = buildingReviewService.createReview(buildingId, user.getUserId(), review);
             return ResponseEntity.ok(createdReview);
         } catch (RuntimeException e) {
             return ResponseEntity.status(403).body(null);
@@ -304,7 +304,7 @@ public class BuildingController {
         try {
             User user = authService.getUserFromToken(token.substring(7));
             
-            BuildingReview review = buildingReviewService.updateReview(reviewId, user.getId(), updatedReview);
+            BuildingReview review = buildingReviewService.updateReview(reviewId, user.getUserId(), updatedReview);
             return ResponseEntity.ok(review);
         } catch (RuntimeException e) {
             return ResponseEntity.status(403).body(null);
@@ -321,7 +321,7 @@ public class BuildingController {
         try {
             User user = authService.getUserFromToken(token.substring(7));
             
-            buildingReviewService.deleteReview(reviewId, user.getId());
+            buildingReviewService.deleteReview(reviewId, user.getUserId());
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
             return ResponseEntity.status(403).build();
@@ -349,9 +349,9 @@ public class BuildingController {
             User user = authService.getUserFromToken(token.substring(7));
             
             // 거주지 인증 여부 확인
-            postService.checkResidenceVerification(user.getId());
+            postService.checkResidenceVerification(user.getUserId());
             
-            Post question = postService.createBuildingQuestion(user.getId(), buildingId, request.getTitle(), request.getContent());
+            Post question = postService.createBuildingQuestion(user.getUserId(), buildingId, request.getTitle(), request.getContent());
             return ResponseEntity.ok(question);
         } catch (RuntimeException e) {
             return ResponseEntity.status(403).build();
@@ -377,7 +377,7 @@ public class BuildingController {
             @RequestBody QuestionRequest request) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Post transfer = postService.createBuildingTransfer(user.getId(), buildingId, request.getTitle(), request.getContent());
+            Post transfer = postService.createBuildingTransfer(user.getUserId(), buildingId, request.getTitle(), request.getContent());
             return ResponseEntity.ok(transfer);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

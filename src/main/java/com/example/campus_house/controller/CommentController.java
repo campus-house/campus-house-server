@@ -41,7 +41,7 @@ public class CommentController {
             User user = authService.getUserFromToken(token.substring(7));
             Comment comment = commentService.createComment(
                     postId,
-                    user.getId(),
+                    user.getUserId(),
                     request.getContent(),
                     request.getParentId()
             );
@@ -68,7 +68,7 @@ public class CommentController {
             User user = authService.getUserFromToken(token.substring(7));
             Comment comment = commentService.createComment(
                     request.getPostId(),
-                    user.getId(),
+                    user.getUserId(),
                     request.getContent(),
                     parentCommentId
             );
@@ -114,7 +114,7 @@ public class CommentController {
             User user = authService.getUserFromToken(token.substring(7));
             Comment comment = commentService.updateComment(
                     commentId,
-                    user.getId(),
+                    user.getUserId(),
                     request.getContent()
             );
             return ResponseEntity.ok(comment);
@@ -138,7 +138,7 @@ public class CommentController {
             @RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            commentService.deleteComment(commentId, user.getId());
+            commentService.deleteComment(commentId, user.getUserId());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

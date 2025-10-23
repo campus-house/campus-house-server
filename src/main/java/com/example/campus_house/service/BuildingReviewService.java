@@ -115,7 +115,7 @@ public class BuildingReviewService {
                 .orElseThrow(() -> new RuntimeException("후기를 찾을 수 없습니다."));
         
         // 작성자 확인
-        if (!review.getUser().getId().equals(userId)) {
+        if (!review.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("본인이 작성한 후기만 수정할 수 있습니다.");
         }
         
@@ -164,7 +164,7 @@ public class BuildingReviewService {
                 .orElseThrow(() -> new RuntimeException("후기를 찾을 수 없습니다."));
         
         // 작성자 확인
-        if (!review.getUser().getId().equals(userId)) {
+        if (!review.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("본인이 작성한 후기만 삭제할 수 있습니다.");
         }
         

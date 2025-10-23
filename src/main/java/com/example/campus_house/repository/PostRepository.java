@@ -27,7 +27,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByKeywordAndBoardType(@Param("keyword") String keyword, @Param("boardType") BoardType boardType, Pageable pageable);
     
     // 특정 사용자의 게시글 조회
-    Page<Post> findByAuthorIdOrderByCreatedAtDesc(Long authorId, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE p.author.userId = :authorId ORDER BY p.createdAt DESC")
+    Page<Post> findByAuthorIdOrderByCreatedAtDesc(@Param("authorId") Long authorId, Pageable pageable);
     
     // 인기 게시글 조회 (좋아요 수 기준)
     @Query("SELECT p FROM Post p WHERE p.boardType = :boardType ORDER BY p.likeCount DESC, p.createdAt DESC")
@@ -44,5 +45,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Long countByBuildingIdAndBoardType(Long buildingId, BoardType boardType);
     
     // 특정 사용자의 건물별 질문 게시글 조회
-    Page<Post> findByAuthorIdAndBuildingIdAndBoardTypeOrderByCreatedAtDesc(Long authorId, Long buildingId, BoardType boardType, Pageable pageable);
+    @Query("SELECT p FROM Post p WHERE p.author.userId = :authorId AND p.building.id = :buildingId AND p.boardType = :boardType ORDER BY p.createdAt DESC")
+    Page<Post> findByAuthorIdAndBuildingIdAndBoardTypeOrderByCreatedAtDesc(@Param("authorId") Long authorId, @Param("buildingId") Long buildingId, @Param("boardType") BoardType boardType, Pageable pageable);
 }

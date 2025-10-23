@@ -49,9 +49,9 @@ public class LikeService {
             badgeService.awardIfFirstLike(userId);
             
             // 게시글 작성자에게 좋아요 알림 전송 (자신의 게시글이 아닌 경우)
-            if (!post.getAuthor().getId().equals(userId)) {
+            if (!post.getAuthor().getUserId().equals(userId)) {
                 notificationService.createNotification(
-                        post.getAuthor().getId(),
+                        post.getAuthor().getUserId(),
                         com.example.campus_house.entity.Notification.NotificationType.POST_LIKE,
                         "게시글에 좋아요가 달렸습니다",
                         user.getNickname() + "님이 '" + post.getTitle() + "' 게시글에 좋아요를 눌렀습니다.",

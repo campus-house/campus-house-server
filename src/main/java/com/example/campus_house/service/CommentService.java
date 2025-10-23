@@ -66,9 +66,9 @@ public class CommentService {
         badgeService.awardIfFirstComment(userId);
         
         // 알림 생성 (게시글 작성자에게)
-        if (!post.getAuthor().getId().equals(userId)) {
+        if (!post.getAuthor().getUserId().equals(userId)) {
             notificationService.createNotification(
-                    post.getAuthor().getId(),
+                    post.getAuthor().getUserId(),
                     Notification.NotificationType.POST_COMMENT,
                     "새로운 댓글이 달렸습니다.",
                     "게시글에 새로운 댓글이 달렸습니다.",
@@ -78,9 +78,9 @@ public class CommentService {
         }
         
         // 대댓글인 경우 부모 댓글 작성자에게도 알림
-        if (parent != null && !parent.getAuthor().getId().equals(userId)) {
+        if (parent != null && !parent.getAuthor().getUserId().equals(userId)) {
             notificationService.createNotification(
-                    parent.getAuthor().getId(),
+                    parent.getAuthor().getUserId(),
                     Notification.NotificationType.COMMENT_REPLY,
                     "댓글에 답글이 달렸습니다.",
                     "댓글에 답글이 달렸습니다.",
@@ -103,7 +103,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
         
-        if (!comment.getAuthor().getId().equals(userId)) {
+        if (!comment.getAuthor().getUserId().equals(userId)) {
             throw new RuntimeException("댓글을 수정할 권한이 없습니다.");
         }
         
@@ -117,7 +117,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("댓글을 찾을 수 없습니다."));
         
-        if (!comment.getAuthor().getId().equals(userId)) {
+        if (!comment.getAuthor().getUserId().equals(userId)) {
             throw new RuntimeException("댓글을 삭제할 권한이 없습니다.");
         }
         

@@ -123,7 +123,7 @@ public class ResidenceVerificationService {
         ResidenceVerification verification = verificationRepository.findById(verificationId)
                 .orElseThrow(() -> new RuntimeException("인증 신청을 찾을 수 없습니다."));
         
-        if (!verification.getUser().getId().equals(userId)) {
+        if (!verification.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("본인의 인증 신청만 취소할 수 있습니다.");
         }
         

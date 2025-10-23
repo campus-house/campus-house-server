@@ -21,7 +21,8 @@ public interface MemoRepository extends JpaRepository<Memo, Long> {
     List<Memo> findExpiredMemos(@Param("now") LocalDateTime now);
     
     // 특정 사용자의 메모 조회
-    List<Memo> findByUserIdAndStatusOrderByCreatedAtDesc(Long userId, Memo.MemoStatus status);
+    @Query("SELECT m FROM Memo m WHERE m.user.userId = :userId AND m.status = :status ORDER BY m.createdAt DESC")
+    List<Memo> findByUserIdAndStatusOrderByCreatedAtDesc(@Param("userId") Long userId, @Param("status") Memo.MemoStatus status);
     
     // 특정 타입의 활성 메모 조회
     @Query("SELECT m FROM Memo m WHERE m.type = :type AND m.status = 'ACTIVE' AND m.expiresAt > :now ORDER BY m.createdAt DESC")

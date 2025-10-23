@@ -27,7 +27,7 @@ public class NotificationController {
             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             Page<Notification> notifications = notificationService.getUserNotifications(userId, pageable);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class NotificationController {
             @RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             List<Notification> notifications = notificationService.getUnreadNotifications(userId);
             return ResponseEntity.ok(notifications);
         } catch (Exception e) {
@@ -55,7 +55,7 @@ public class NotificationController {
             @RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             Long count = notificationService.getUnreadNotificationCount(userId);
             return ResponseEntity.ok(count);
         } catch (Exception e) {
@@ -70,7 +70,7 @@ public class NotificationController {
             @PathVariable Long notificationId) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             notificationService.markAsRead(notificationId, userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public class NotificationController {
             @RequestHeader("Authorization") String token) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             notificationService.markAllAsRead(userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -99,7 +99,7 @@ public class NotificationController {
             @PathVariable Long notificationId) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             notificationService.deleteNotification(notificationId, userId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class NotificationController {
             @PathVariable String type) {
         try {
             String jwtToken = token.substring(7);
-            Long userId = authService.getUserFromToken(jwtToken).getId();
+            Long userId = authService.getUserFromToken(jwtToken).getUserId();
             Notification.NotificationType notificationType = Notification.NotificationType.valueOf(type.toUpperCase());
             List<Notification> notifications = notificationService.getNotificationsByType(userId, notificationType);
             return ResponseEntity.ok(notifications);

@@ -50,7 +50,7 @@ public class PostController {
             BoardType boardType = BoardType.valueOf(type.toUpperCase());
             
             // APARTMENT와 QUESTION 게시판은 거주지 인증 필요
-            postService.checkBoardAccessPermission(user.getId(), boardType);
+            postService.checkBoardAccessPermission(user.getUserId(), boardType);
             
             post.setAuthor(user);
             post.setBoardType(boardType);
@@ -86,17 +86,17 @@ public class PostController {
                 
                 try {
                     User user = authService.getUserFromToken(token.substring(7));
-                    postService.checkBoardAccessPermission(user.getId(), boardType);
+                    postService.checkBoardAccessPermission(user.getUserId(), boardType);
                     
                     // QUESTION 게시판인 경우 거주지 기반 필터링 적용
                     if (boardType == BoardType.QUESTION) {
-                        Page<Post> posts = postService.getQuestionsForResident(user.getId(), pageable);
+                        Page<Post> posts = postService.getQuestionsForResident(user.getUserId(), pageable);
                         return ResponseEntity.ok(posts);
                     }
                     
                     // APARTMENT 게시판인 경우 거주지 기반 필터링 적용
                     if (boardType == BoardType.APARTMENT) {
-                        Page<Post> posts = postService.getApartmentPostsForResident(user.getId(), pageable);
+                        Page<Post> posts = postService.getApartmentPostsForResident(user.getUserId(), pageable);
                         return ResponseEntity.ok(posts);
                     }
                     
@@ -154,7 +154,7 @@ public class PostController {
             Post existingPost = postService.getPostById(id);
             
             // 작성자만 수정 가능
-            if (!existingPost.getAuthor().getId().equals(user.getId())) {
+            if (!existingPost.getAuthor().getUserId().equals(user.getUserId())) {
                 return ResponseEntity.status(403).build();
             }
             
@@ -183,7 +183,7 @@ public class PostController {
             Post existingPost = postService.getPostById(id);
             
             // 작성자만 삭제 가능
-            if (!existingPost.getAuthor().getId().equals(user.getId())) {
+            if (!existingPost.getAuthor().getUserId().equals(user.getUserId())) {
                 return ResponseEntity.status(403).build();
             }
             
@@ -269,7 +269,7 @@ public class PostController {
             @RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            boolean isLiked = likeService.toggleLike(postId, user.getId());
+            boolean isLiked = likeService.toggleLike(postId, user.getUserId());
             return ResponseEntity.ok(isLiked ? "좋아요 추가됨" : "좋아요 취소됨");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
@@ -365,7 +365,7 @@ public class PostController {
             @RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Long count = postService.getQuestionCountForResident(user.getId());
+            Long count = postService.getQuestionCountForResident(user.getUserId());
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -379,7 +379,7 @@ public class PostController {
             @RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Long count = postService.getApartmentPostCountForResident(user.getId());
+            Long count = postService.getApartmentPostCountForResident(user.getUserId());
             return ResponseEntity.ok(count);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

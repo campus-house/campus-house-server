@@ -32,7 +32,9 @@ public class DataInitializer implements CommandLineRunner {
         initUsers();
         
         // 건물 데이터 초기화
-        createSampleBuildings();
+        // createSampleBuildings(); // 실제 건물 데이터는 별도 스크립트로 로드
+        System.out.println("🏢 건물 데이터는 별도 스크립트를 통해 로드됩니다.");
+        System.out.println("   - 건물: data/buildings/processed/buildings_processed.json (1,804개 건물)");
         
         // 캐릭터 데이터 초기화
         createSampleCharacters();
@@ -41,7 +43,7 @@ public class DataInitializer implements CommandLineRunner {
         createSampleNotifications();
         
         // 생활시설 데이터 초기화
-        initFacilities();
+        // initFacilities(); // 실제 생활시설 데이터는 별도 스크립트로 로드
     }
     
     private void initUsers() {
@@ -53,6 +55,7 @@ public class DataInitializer implements CommandLineRunner {
         // 시연용 계정 1: 거주지 인증 완료된 거주자
         User verifiedResident = User.builder()
                 .email("resident@example.com")
+                .username("resident")
                 .password(passwordUtil.encodePassword("password123"))
                 .nickname("기숙사생")
                 .userType(User.UserType.RESIDENT)
@@ -72,6 +75,7 @@ public class DataInitializer implements CommandLineRunner {
         // 시연용 계정 2: 거주지 인증 안 된 사용자
         User nonVerifiedUser = User.builder()
                 .email("nonresident@example.com")
+                .username("nonresident")
                 .password(passwordUtil.encodePassword("password123"))
                 .nickname("외부거주생")
                 .userType(User.UserType.NON_RESIDENT)
@@ -88,6 +92,7 @@ public class DataInitializer implements CommandLineRunner {
         // 시연용 계정 3: 거주지 인증 완료된 거주자 2
         User verifiedResident2 = User.builder()
                 .email("resident2@example.com")
+                .username("resident2")
                 .password(passwordUtil.encodePassword("password123"))
                 .nickname("선배")
                 .userType(User.UserType.RESIDENT)
@@ -103,6 +108,26 @@ public class DataInitializer implements CommandLineRunner {
                 .build();
         
         userRepository.save(verifiedResident2);
+        
+        // 시연용 계정 4: 방미오 계정
+        User bangmio = User.builder()
+                .email("bangmiooo1@khu.ac.kr")
+                .username("miomio")
+                .password(passwordUtil.encodePassword("miomio"))
+                .nickname("방미오")
+                .userType(User.UserType.RESIDENT)
+                .isVerified(true)
+                .verifiedBuildingId(48L)
+                .verifiedBuildingName("영통역아이파크")
+                .verifiedAt(java.time.LocalDateTime.now())
+                .location("경기도 수원시")
+                .university("경희대학교")
+                .major("컴퓨터공학과")
+                .introduction("이번에 이사 온 미오라고 해요!! ^-^")
+                .rewards(2000)
+                .build();
+        
+        userRepository.save(bangmio);
         
         System.out.println("=== 시연용 계정이 생성되었습니다 ===");
         System.out.println();
@@ -126,6 +151,14 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("  닉네임: 외부거주생");
         System.out.println("  인증 상태: ❌ 거주지 인증 안 됨");
         System.out.println("  접근 가능: 동네 게시판, 아파트 질문 게시판 (아파트 일반 게시판 접근 불가)");
+        System.out.println();
+        System.out.println("🌟 방미오 계정");
+        System.out.println("  이메일: bangmiooo1@khu.ac.kr");
+        System.out.println("  아이디: miomio");
+        System.out.println("  비밀번호: miomio");
+        System.out.println("  닉네임: 방미오");
+        System.out.println("  인증 상태: ✅ 거주지 인증 완료 (영통역아이파크)");
+        System.out.println("  접근 가능: 동네 게시판, 아파트 일반 게시판, 아파트 질문 게시판");
         System.out.println();
         System.out.println("📋 게시판 구조:");
         System.out.println("  - 동네 게시판: 일반 게시판만 (모든 사용자 접근 가능)");
@@ -300,287 +333,15 @@ public class DataInitializer implements CommandLineRunner {
         System.out.println("  - 캐릭터 획득 알림");
     }
     
-    private void createSampleBuildings() {
-        // 건물이 이미 있는지 확인
-        if (buildingRepository.count() > 0) {
-            return;
-        }
-        
-        // 샘플 건물 데이터 생성
-        Building campusHouseA = Building.builder()
-                .buildingName("캠퍼스 하우스 A동")
-                .address("서울시 관악구 관악로 1")
-                .latitude(37.5665)
-                .longitude(126.9780)
-                .deposit(new java.math.BigDecimal("1000"))
-                .monthlyRent(new java.math.BigDecimal("50"))
-                .jeonse(new java.math.BigDecimal("10000"))
-                .households(80)
-                .heatingType("개별난방")
-                .elevators(2)
-                .buildingUsage("오피스텔")
-                .approvalDate(java.time.LocalDateTime.now().minusYears(5))
-                .completionDate(java.time.LocalDateTime.now().minusYears(5))
-                .nearbyConvenienceStores(5)
-                .nearbyMarts(2)
-                .nearbyHospitals(1)
-                .schoolWalkingTime(15)
-                .stationWalkingTime(8)
-                .scrapCount(0)
-                .floorsGround(15)
-                .area(42.7)
-                .constructionYear(2019)
-                .roadName("관악로")
-                .sampleCount(6)
-                .avgPrice(new java.math.BigDecimal("2000"))
-                .build();
-        
-        buildingRepository.save(campusHouseA);
-        
-        Building campusHouseB = Building.builder()
-                .buildingName("캠퍼스 하우스 B동")
-                .address("서울시 관악구 관악로 2")
-                .latitude(37.5666)
-                .longitude(126.9781)
-                .deposit(new java.math.BigDecimal("1500"))
-                .monthlyRent(new java.math.BigDecimal("38"))
-                .jeonse(new java.math.BigDecimal("15000"))
-                .households(30)
-                .heatingType("중앙난방")
-                .elevators(0)
-                .buildingUsage("아파트")
-                .approvalDate(java.time.LocalDateTime.now().minusYears(3))
-                .completionDate(java.time.LocalDateTime.now().minusYears(3))
-                .nearbyConvenienceStores(3)
-                .nearbyMarts(1)
-                .nearbyHospitals(1)
-                .schoolWalkingTime(12)
-                .stationWalkingTime(6)
-                .scrapCount(0)
-                .floorsGround(12)
-                .area(38.5)
-                .constructionYear(2021)
-                .roadName("관악로")
-                .sampleCount(3)
-                .avgPrice(new java.math.BigDecimal("1500"))
-                .build();
-        
-        buildingRepository.save(campusHouseB);
-        
-        Building hiVille = Building.builder()
-                .buildingName("하이빌 영통")
-                .address("경기 수원시 영통구 영통동 1012-1")
-                .latitude(37.2636)
-                .longitude(127.0286)
-                .deposit(new java.math.BigDecimal("2300"))
-                .monthlyRent(new java.math.BigDecimal("50"))
-                .jeonse(new java.math.BigDecimal("23000"))
-                .households(250)
-                .heatingType("개별난방")
-                .elevators(4)
-                .buildingUsage("오피스텔")
-                .approvalDate(java.time.LocalDateTime.now().minusYears(2))
-                .completionDate(java.time.LocalDateTime.now().minusYears(2))
-                .nearbyConvenienceStores(8)
-                .nearbyMarts(3)
-                .nearbyHospitals(2)
-                .schoolWalkingTime(5)
-                .stationWalkingTime(3)
-                .scrapCount(0)
-                .floorsGround(20)
-                .area(50.1)
-                .constructionYear(2022)
-                .roadName("영통로")
-                .sampleCount(12)
-                .avgPrice(new java.math.BigDecimal("2300"))
-                .build();
-        
-        buildingRepository.save(hiVille);
-        
-        System.out.println("🏢 시연용 건물 데이터가 생성되었습니다!");
-        System.out.println("  - 캠퍼스 하우스 A동 (오피스텔)");
-        System.out.println("  - 캠퍼스 하우스 B동 (아파트)");
-        System.out.println("  - 하이빌 영통 (오피스텔)");
-        System.out.println("  - 총 3개 건물 데이터 생성 완료");
-    }
+    // 실제 건물 데이터는 data/buildings/processed/buildings_processed.json 파일을 통해 로드됩니다.
+    // 시연용 건물 데이터는 생성하지 않습니다.
     
     private void initFacilities() {
-        // 병원 데이터가 없으면 초기화
-        if (facilityRepository.count() == 0) {
-            System.out.println("🏥 생활시설 데이터 초기화 시작");
-            
-            // 더웰병원
-            Facility hospital1 = Facility.builder()
-                .businessName("더웰병원")
-                .address("경기도 수원시 영통구 영통동 996-3번지 대우월드마크영통 3,5,6,7,8층")
-                .roadAddress("경기도 수원시 영통구 봉영로 1620 (영통동, 대우월드마크영통 3,5,6,7,8층)")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.HOSPITAL.name())
-                .subCategory("소아과")
-                .latitude(37.2550152411)
-                .longitude(127.0756344537)
-                .description("내과, 정신건강의학과, 성형외과, 마취통증의학과, 소아청소년과, 이비인후과, 피부과, 영상의학과, 가정의학과")
-                .build();
-            
-            // 베데스다병원
-            Facility hospital2 = Facility.builder()
-                .businessName("베데스다병원")
-                .address("경기도 수원시 영통구 영통동 958-1 드림피아빌딩")
-                .roadAddress("경기도 수원시 영통구 봉영로 1623, 드림피아빌딩 6층일부,7,8,9층 (영통동)")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.HOSPITAL.name())
-                .subCategory("한의원")
-                .latitude(37.2559223973)
-                .longitude(127.0747272211)
-                .description("내과, 피부과, 재활의학과, 가정의학과, 한방내과, 한방부인과, 한방소아과, 한방안·이비인후·피부과, 한방재활의학과, 침구과")
-                .build();
-            
-            facilityRepository.save(hospital1);
-            facilityRepository.save(hospital2);
-            
-            // 편의점 데이터 추가 (샘플 5개)
-            Facility convenience1 = Facility.builder()
-                .businessName("세븐일레븐 영통경희대점")
-                .address("경기도 수원시 영통구 영통동 996-3")
-                .roadAddress("경기도 수원시 영통구 봉영로 1620")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.CONVENIENCE_STORE.name())
-                .subCategory("세븐일레븐")
-                .latitude(37.2550152411)
-                .longitude(127.0756344537)
-                .description("편의점")
-                .build();
-            
-            Facility convenience2 = Facility.builder()
-                .businessName("씨유 영통중앙점")
-                .address("경기도 수원시 영통구 영통동 958-1")
-                .roadAddress("경기도 수원시 영통구 봉영로 1623")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.CONVENIENCE_STORE.name())
-                .subCategory("CU")
-                .latitude(37.2559223973)
-                .longitude(127.0747272211)
-                .description("편의점")
-                .build();
-            
-            Facility convenience3 = Facility.builder()
-                .businessName("GS25 영통럭키점")
-                .address("경기도 수원시 영통구 영통동 1000-1")
-                .roadAddress("경기도 수원시 영통구 봉영로 1625")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.CONVENIENCE_STORE.name())
-                .subCategory("GS25")
-                .latitude(37.2560152411)
-                .longitude(127.0766344537)
-                .description("편의점")
-                .build();
-            
-            Facility convenience4 = Facility.builder()
-                .businessName("세븐일레븐 용인서천본점")
-                .address("경기도 용인시 기흥구 서천동 123-4")
-                .roadAddress("경기도 용인시 기흥구 서천로 123")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.CONVENIENCE_STORE.name())
-                .subCategory("세븐일레븐")
-                .latitude(37.2636)
-                .longitude(127.0286)
-                .description("편의점")
-                .build();
-            
-            Facility convenience5 = Facility.builder()
-                .businessName("씨유서천파크원점")
-                .address("경기도 용인시 기흥구 서천동 456-7")
-                .roadAddress("경기도 용인시 기흥구 서천로 456")
-                .businessStatus("영업/정상")
-                .category(Facility.Category.CONVENIENCE_STORE.name())
-                .subCategory("CU")
-                .latitude(37.2646)
-                .longitude(127.0296)
-                .description("편의점")
-                .build();
-            
-            facilityRepository.save(convenience1);
-            facilityRepository.save(convenience2);
-            facilityRepository.save(convenience3);
-            facilityRepository.save(convenience4);
-            facilityRepository.save(convenience5);
-            
-            System.out.println("🏥 생활시설 데이터 초기화 완료: 2개 병원, 5개 편의점 저장");
-        } else {
-            // 편의점 데이터가 없으면 추가
-            long convenienceStoreCount = facilityRepository.countByCategory(Facility.Category.CONVENIENCE_STORE.name());
-            if (convenienceStoreCount == 0) {
-                System.out.println("🏪 편의점 데이터 추가 시작");
-                
-                // 편의점 데이터 추가 (샘플 5개)
-                Facility convenience1 = Facility.builder()
-                    .businessName("세븐일레븐 영통경희대점")
-                    .address("경기도 수원시 영통구 영통동 996-3")
-                    .roadAddress("경기도 수원시 영통구 봉영로 1620")
-                    .businessStatus("영업/정상")
-                    .category(Facility.Category.CONVENIENCE_STORE.name())
-                    .subCategory("세븐일레븐")
-                    .latitude(37.2550152411)
-                    .longitude(127.0756344537)
-                    .description("편의점")
-                    .build();
-                
-                Facility convenience2 = Facility.builder()
-                    .businessName("씨유 영통중앙점")
-                    .address("경기도 수원시 영통구 영통동 958-1")
-                    .roadAddress("경기도 수원시 영통구 봉영로 1623")
-                    .businessStatus("영업/정상")
-                    .category(Facility.Category.CONVENIENCE_STORE.name())
-                    .subCategory("CU")
-                    .latitude(37.2559223973)
-                    .longitude(127.0747272211)
-                    .description("편의점")
-                    .build();
-                
-                Facility convenience3 = Facility.builder()
-                    .businessName("GS25 영통럭키점")
-                    .address("경기도 수원시 영통구 영통동 1000-1")
-                    .roadAddress("경기도 수원시 영통구 봉영로 1625")
-                    .businessStatus("영업/정상")
-                    .category(Facility.Category.CONVENIENCE_STORE.name())
-                    .subCategory("GS25")
-                    .latitude(37.2560152411)
-                    .longitude(127.0766344537)
-                    .description("편의점")
-                    .build();
-                
-                Facility convenience4 = Facility.builder()
-                    .businessName("세븐일레븐 용인서천본점")
-                    .address("경기도 용인시 기흥구 서천동 123-4")
-                    .roadAddress("경기도 용인시 기흥구 서천로 123")
-                    .businessStatus("영업/정상")
-                    .category(Facility.Category.CONVENIENCE_STORE.name())
-                    .subCategory("세븐일레븐")
-                    .latitude(37.2636)
-                    .longitude(127.0286)
-                    .description("편의점")
-                    .build();
-                
-                Facility convenience5 = Facility.builder()
-                    .businessName("씨유서천파크원점")
-                    .address("경기도 용인시 기흥구 서천동 456-7")
-                    .roadAddress("경기도 용인시 기흥구 서천로 456")
-                    .businessStatus("영업/정상")
-                    .category(Facility.Category.CONVENIENCE_STORE.name())
-                    .subCategory("CU")
-                    .latitude(37.2646)
-                    .longitude(127.0296)
-                    .description("편의점")
-                    .build();
-                
-                facilityRepository.save(convenience1);
-                facilityRepository.save(convenience2);
-                facilityRepository.save(convenience3);
-                facilityRepository.save(convenience4);
-                facilityRepository.save(convenience5);
-                
-                System.out.println("🏪 편의점 데이터 추가 완료: 5개 편의점 저장");
-            }
-        }
+        // 실제 생활시설 데이터는 data/facilities/processed/ 폴더의 JSON/CSV 파일을 통해 로드됩니다.
+        // 시연용 데이터는 생성하지 않습니다.
+        System.out.println("📁 생활시설 데이터는 별도 스크립트를 통해 로드됩니다.");
+        System.out.println("   - 편의점: data/facilities/processed/convenience_stores_processed.json");
+        System.out.println("   - 병원: data/facilities/processed/hospitals_processed.json");
+        System.out.println("   - 마트: data/facilities/processed/marts_processed.json");
     }
 }

@@ -32,7 +32,7 @@ public class MyPageController {
         try {
             User user = authService.getUserFromToken(token.substring(7));
             UserProfile profile = UserProfile.builder()
-                    .id(user.getId())
+                    .id(user.getUserId())
                     .email(user.getEmail())
                     .nickname(user.getNickname())
                     .profileImage(user.getProfileImage())
@@ -95,7 +95,7 @@ public class MyPageController {
                                                @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<Post> posts = postService.getPostsByAuthor(user.getId(), pageable);
+            Page<Post> posts = postService.getPostsByAuthor(user.getUserId(), pageable);
             return ResponseEntity.ok(posts);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -107,7 +107,7 @@ public class MyPageController {
     public ResponseEntity<List<Comment>> getMyComments(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            List<Comment> comments = commentService.getCommentsByAuthor(user.getId());
+            List<Comment> comments = commentService.getCommentsByAuthor(user.getUserId());
             return ResponseEntity.ok(comments);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -119,7 +119,7 @@ public class MyPageController {
     public ResponseEntity<List<Bookmark>> getMyBookmarks(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            List<Bookmark> bookmarks = bookmarkService.getAllBookmarkedPostsByUserId(user.getId());
+            List<Bookmark> bookmarks = bookmarkService.getAllBookmarkedPostsByUserId(user.getUserId());
             return ResponseEntity.ok(bookmarks);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -133,7 +133,7 @@ public class MyPageController {
     public ResponseEntity<List<UserCharacter>> getMyCharacters(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            List<UserCharacter> characters = characterService.getUserCharacters(user.getId());
+            List<UserCharacter> characters = characterService.getUserCharacters(user.getUserId());
             return ResponseEntity.ok(characters);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -146,7 +146,7 @@ public class MyPageController {
                                                @PathVariable Long characterId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            characterService.setMainCharacter(user.getId(), characterId);
+            characterService.setMainCharacter(user.getUserId(), characterId);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -158,7 +158,7 @@ public class MyPageController {
     public ResponseEntity<com.example.campus_house.entity.Character> performGacha(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            com.example.campus_house.entity.Character result = characterService.performGacha(user.getId());
+            com.example.campus_house.entity.Character result = characterService.performGacha(user.getUserId());
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -171,7 +171,7 @@ public class MyPageController {
                                                                                      @PathVariable Long characterId) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            com.example.campus_house.entity.Character result = characterService.purchaseCharacter(user.getId(), characterId);
+            com.example.campus_house.entity.Character result = characterService.purchaseCharacter(user.getUserId(), characterId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -184,7 +184,7 @@ public class MyPageController {
                                                             @PageableDefault(size = 20, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC) Pageable pageable) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            Page<RewardHistory> history = rewardService.getRewardHistory(user.getId(), pageable);
+            Page<RewardHistory> history = rewardService.getRewardHistory(user.getUserId(), pageable);
             return ResponseEntity.ok(history);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -196,7 +196,7 @@ public class MyPageController {
     public ResponseEntity<RewardService.UserRewardStats> getRewardStats(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            RewardService.UserRewardStats stats = rewardService.getUserRewardStats(user.getId());
+            RewardService.UserRewardStats stats = rewardService.getUserRewardStats(user.getUserId());
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -210,7 +210,7 @@ public class MyPageController {
             User user = authService.getUserFromToken(token.substring(7));
             java.util.Optional<ResidenceVerification> approved =
                     residenceVerificationRepository.findByUserIdAndStatus(
-                            user.getId(), ResidenceVerification.VerificationStatus.APPROVED);
+                            user.getUserId(), ResidenceVerification.VerificationStatus.APPROVED);
             if (approved.isEmpty()) {
                 return ResponseEntity.noContent().build();
             }
@@ -259,7 +259,7 @@ public class MyPageController {
     public ResponseEntity<CharacterService.UserCharacterStats> getCharacterStats(@RequestHeader("Authorization") String token) {
         try {
             User user = authService.getUserFromToken(token.substring(7));
-            CharacterService.UserCharacterStats stats = characterService.getUserCharacterStats(user.getId());
+            CharacterService.UserCharacterStats stats = characterService.getUserCharacterStats(user.getUserId());
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();

@@ -117,7 +117,7 @@ public class NotificationService {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new RuntimeException("알림을 찾을 수 없습니다."));
         
-        if (!notification.getUser().getId().equals(userId)) {
+        if (!notification.getUser().getUserId().equals(userId)) {
             throw new RuntimeException("본인의 알림만 삭제할 수 있습니다.");
         }
         
@@ -150,9 +150,9 @@ public class NotificationService {
         
         // 각 거주자에게 알림 전송 (질문 작성자는 제외)
         for (User resident : residents) {
-            if (!resident.getId().equals(fromUserId)) {
+            if (!resident.getUserId().equals(fromUserId)) {
                 createNotificationFromUser(
-                    resident.getId(),
+                    resident.getUserId(),
                     fromUserId,
                     type,
                     title,
