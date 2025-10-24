@@ -19,7 +19,7 @@ class BuildingDataLoader:
             'host': 'localhost',
             'database': 'campus_house',
             'user': 'postgres',
-            'password': 'password',
+            'password': 'helloworld2682',
             'port': '5432',
             'client_encoding': 'utf8'
         }
@@ -57,6 +57,19 @@ class BuildingDataLoader:
         except Exception as e:
             print(f"❌ 기존 데이터 삭제 실패: {e}")
             self.conn.rollback()
+    
+    def load_buildings_from_csv(self, csv_file_path: str):
+        """CSV 파일에서 건물 데이터 로드"""
+        try:
+            df = pd.read_csv(csv_file_path, encoding='utf-8')
+            print(f"📄 CSV 파일 로드 완료: {len(df)}개 건물")
+            
+            # DataFrame을 딕셔너리 리스트로 변환
+            buildings_data = df.to_dict('records')
+            return buildings_data
+        except Exception as e:
+            print(f"❌ CSV 파일 로드 실패: {e}")
+            return []
     
     def load_buildings_from_json(self, json_file_path: str):
         """JSON 파일에서 건물 데이터 로드"""
@@ -115,24 +128,25 @@ class BuildingDataLoader:
         try:
             cursor = self.conn.cursor()
             
-            # 주소에서 좌표 계산
-            latitude, longitude = self.get_coordinates_for_address(building_data['address'])
+            # 실제 좌표 사용 (CSV에서 가져온 좌표)
+            latitude = building_data.get('latitude', 37.2636)
+            longitude = building_data.get('longitude', 127.0286)
             
-            # 걸리는 시간 계산
-            school_time = self.calculate_walking_time(building_data['building_type'], building_data.get('area', 30))
-            station_time = max(3, school_time - 2)  # 역은 보통 학교보다 가까움
+            # 걸리는 시간 계산 (CSV에서 직접 가져오거나 계산)
+            school_time = building_data.get('school_walking_time', self.calculate_walking_time(building_data['building_type'], building_data.get('area', 30)))
+            station_time = building_data.get('station_walking_time', max(3, school_time - 2))
             
             # SQL 쿼리
             insert_query = """
                 INSERT INTO buildings (
                     building_name, address, latitude, longitude,
                     deposit, monthly_rent, jeonse, households, heating_type,
-                    parking_spaces, elevators, building_usage, nearby_convenience_stores,
+                    elevators, building_usage, nearby_convenience_stores,
                     nearby_marts, nearby_hospitals, school_walking_time, station_walking_time,
-                    scrap_count, floors_ground, has_elevator, area, construction_year,
+                    scrap_count, floors_ground, area, construction_year,
                     road_name, sample_count, avg_price, created_at, updated_at
                 ) VALUES (
-                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW()
+                    %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW(), NOW()
                 )
             """
             
@@ -147,7 +161,6 @@ class BuildingDataLoader:
                 None,  # 전세는 별도 계산 필요
                 building_data.get('households', 0),
                 building_data.get('heating_type', '개별난방'),
-                building_data.get('parking_spaces', 0),
                 building_data.get('elevators', 0),
                 building_data.get('building_usage', '기타'),
                 0,  # nearby_convenience_stores (나중에 업데이트)
@@ -157,7 +170,6 @@ class BuildingDataLoader:
                 station_time,
                 0,  # scrap_count
                 building_data.get('ground_floors', 0),
-                building_data.get('elevators', 0) > 0,  # has_elevator
                 building_data.get('area', 0),
                 building_data.get('construction_year', 2000),
                 building_data.get('road_name', ''),
@@ -175,7 +187,7 @@ class BuildingDataLoader:
             self.conn.rollback()
             return False
     
-    def load_all_buildings(self, json_file_path: str):
+    def load_all_buildings(self, csv_file_path: str):
         """모든 건물 데이터를 DB에 로드"""
         if not self.connect_db():
             return False
@@ -184,8 +196,8 @@ class BuildingDataLoader:
             # 기존 데이터 삭제
             self.clear_existing_data()
             
-            # JSON 데이터 로드
-            buildings_data = self.load_buildings_from_json(json_file_path)
+            # CSV 데이터 로드
+            buildings_data = self.load_buildings_from_csv(csv_file_path)
             if not buildings_data:
                 return False
             
@@ -218,15 +230,15 @@ class BuildingDataLoader:
 def main():
     loader = BuildingDataLoader()
     
-    # JSON 파일 경로
-    json_file_path = "buildings/processed/buildings_processed.json"
+    # CSV 파일 경로
+    csv_file_path = "buildings_data.csv"
     
-    if not os.path.exists(json_file_path):
-        print(f"❌ JSON 파일을 찾을 수 없습니다: {json_file_path}")
+    if not os.path.exists(csv_file_path):
+        print(f"❌ CSV 파일을 찾을 수 없습니다: {csv_file_path}")
         return
     
     # 건물 데이터 로드
-    success = loader.load_all_buildings(json_file_path)
+    success = loader.load_all_buildings(csv_file_path)
     
     if success:
         print("\n🎉 모든 건물 데이터가 성공적으로 로드되었습니다!")

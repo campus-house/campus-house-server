@@ -1,5 +1,6 @@
 package com.example.campus_house.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,11 +26,20 @@ public class BuildingScrap {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "building_id", nullable = false)
+    @JsonIgnore
     private Building building;
+    
+    // Building 정보를 직접 포함 (Lazy Loading 문제 해결)
+    @Column(name = "building_name")
+    private String buildingName;
+    
+    @Column(name = "building_address")
+    private String buildingAddress;
     
     @CreatedDate
     @Column(nullable = false, updatable = false)

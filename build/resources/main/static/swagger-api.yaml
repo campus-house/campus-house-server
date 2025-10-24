@@ -1,0 +1,836 @@
+openapi: 3.0.3
+info:
+  title: 캠퍼스 하우스 API
+  description: 대학생 자취 커뮤니티 앱의 백엔드 API 문서
+  version: 2.0.0
+  contact:
+    name: Campus House Team
+    email: contact@campushouse.com
+    url: https://campushouse.com
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8080
+    description: 개발 서버
+  - url: http://172.21.59.114:8080
+    description: 모바일 테스트 서버
+  - url: https://api.campushouse.com
+    description: 프로덕션 서버
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ========== 인증 관련 API ==========
+  /api/auth/register:
+    post:
+      tags:
+        - 인증
+      summary: 회원가입
+      description: 새로운 사용자를 등록합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: 회원가입 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 회원가입이 완료되었습니다.
+                  data:
+                    type: object
+                    properties:
+                      userId:
+                        type: integer
+                        example: 1
+                      email:
+                        type: string
+                        example: user@example.com
+                      username:
+                        type: string
+                        example: miomio
+                      nickname:
+                        type: string
+                        example: 방미오
+                      userType:
+                        type: string
+                        example: STUDENT
+                      location:
+                        type: string
+                        example: 경기도 수원시
+                      university:
+                        type: string
+                        example: 경희대학교
+                      major:
+                        type: string
+                        example: 컴퓨터공학과
+        '400':
+          description: 회원가입 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      tags:
+        - 인증
+      summary: 로그인
+      description: 사용자 로그인을 수행합니다.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 로그인에 성공했습니다.
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtaW9taW8iLCJ1c2VySWQiOjUsImlhdCI6MTc2MTMyNDkyMywiZXhwIjoxNzYxNDExMzIzfQ.hWvYt2Z0Khp-ypszvYZKEISW3VGcNVtS8XZ2RdSmfy45D-yftZ9WLvBdbAafBI3QZ5PdQS2sXwcX9-b0-f--Yg
+        '400':
+          description: 로그인 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/verify:
+    post:
+      tags:
+        - 인증
+      summary: 토큰 검증
+      description: JWT 토큰의 유효성을 검증합니다.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 토큰 검증 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 토큰이 유효합니다.
+        '400':
+          description: 토큰 검증 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ========== 마이페이지 API ==========
+  /api/mypage/profile:
+    get:
+      tags:
+        - 마이페이지
+      summary: 사용자 프로필 조회
+      description: 현재 사용자의 프로필 정보를 조회합니다.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 프로필 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/mypage/posts:
+    get:
+      tags:
+        - 마이페이지
+      summary: 내 게시글 조회
+      description: 현재 사용자가 작성한 게시글 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: 페이지 번호 (0부터 시작)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: 페이지 크기
+      responses:
+        '200':
+          description: 게시글 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/mypage/bookmarks:
+    get:
+      tags:
+        - 마이페이지
+      summary: 내 북마크 조회
+      description: 현재 사용자가 북마크한 게시글 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 북마크 조회 성공
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bookmark'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ========== 건물 API ==========
+  /api/buildings:
+    get:
+      tags:
+        - 건물
+      summary: 모든 건물 조회
+      description: 모든 건물 목록을 페이징하여 조회합니다.
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: 페이지 번호 (0부터 시작)
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: 페이지 크기
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: createdAt,desc
+          description: 정렬 기준
+      responses:
+        '200':
+          description: 건물 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/buildings/{buildingId}:
+    get:
+      tags:
+        - 건물
+      summary: 건물 상세 조회
+      description: 특정 건물의 상세 정보를 조회합니다.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+      responses:
+        '200':
+          description: 건물 상세 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Building'
+        '404':
+          description: 건물을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/buildings/{buildingId}/reviews:
+    get:
+      tags:
+        - 건물
+      summary: 건물 후기 조회
+      description: 특정 건물의 후기 목록을 조회합니다.
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+        - name: sort
+          in: query
+          schema:
+            type: string
+            default: newest
+            enum: [newest, oldest, highest_rating, lowest_rating]
+          description: 정렬 기준
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: 페이지 번호
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: 페이지 크기
+      responses:
+        '200':
+          description: 후기 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/buildings/{buildingId}/scrap:
+    post:
+      tags:
+        - 건물
+      summary: 건물 스크랩
+      description: 특정 건물을 스크랩합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+      responses:
+        '200':
+          description: 스크랩 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingScrap'
+        '400':
+          description: 스크랩 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/buildings/{buildingId}/scrap/status:
+    get:
+      tags:
+        - 건물
+      summary: 건물 스크랩 상태 확인
+      description: 특정 건물의 스크랩 여부를 확인합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+      responses:
+        '200':
+          description: 스크랩 상태 확인 성공
+          content:
+            application/json:
+              schema:
+                type: boolean
+                example: true
+        '400':
+          description: 확인 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ========== 스크랩 API ==========
+  /api/scraps/buildings:
+    get:
+      tags:
+        - 스크랩
+      summary: 내 건물 스크랩 목록
+      description: 내가 스크랩한 건물 목록을 조회합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 0
+          description: 페이지 번호
+        - name: size
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: 페이지 크기
+      responses:
+        '200':
+          description: 스크랩 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageResponse'
+        '400':
+          description: 조회 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/scraps/buildings/{buildingId}:
+    post:
+      tags:
+        - 스크랩
+      summary: 건물 스크랩
+      description: 특정 건물을 스크랩합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+      responses:
+        '200':
+          description: 스크랩 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BuildingScrap'
+        '400':
+          description: 스크랩 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - 스크랩
+      summary: 건물 스크랩 취소
+      description: 특정 건물의 스크랩을 취소합니다.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: buildingId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 건물 ID
+      responses:
+        '200':
+          description: 스크랩 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: 스크랩이 취소되었습니다.
+        '400':
+          description: 스크랩 취소 실패
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ========== 인증 관련 스키마 ==========
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - username
+        - password
+        - nickname
+        - userType
+        - location
+        - university
+        - major
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        username:
+          type: string
+          example: miomio
+        password:
+          type: string
+          minLength: 8
+          example: password123
+        nickname:
+          type: string
+          minLength: 2
+          maxLength: 20
+          example: 사용자닉네임
+        userType:
+          type: string
+          enum: [STUDENT, RESIDENT, BOTH]
+          example: STUDENT
+        location:
+          type: string
+          example: 경기도 수원시
+        university:
+          type: string
+          example: 경희대학교
+        major:
+          type: string
+          example: 컴퓨터공학과
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: miomio
+        password:
+          type: string
+          example: miomio
+
+    # ========== 사용자 관련 스키마 ==========
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 5
+        email:
+          type: string
+          format: email
+          example: miomio
+        nickname:
+          type: string
+          example: 방미오
+        profileImage:
+          type: string
+          example: https://example.com/profile.jpg
+        characterImage:
+          type: string
+          example: https://example.com/character.jpg
+        userType:
+          type: string
+          enum: [STUDENT, RESIDENT, BOTH]
+          example: RESIDENT
+        isVerified:
+          type: boolean
+          example: true
+        verifiedBuildingName:
+          type: string
+          example: 아이파크 803호
+        rewards:
+          type: integer
+          example: 2000
+        mainCharacterId:
+          type: integer
+          example: 1
+        location:
+          type: string
+          example: 경기 수원시 영통구 영통동 1153
+        university:
+          type: string
+          example: 경희대학교
+        major:
+          type: string
+          example: 컴퓨터공학과
+        introduction:
+          type: string
+          example: 안녕하세요! 경희대학교 학생입니다.
+
+    # ========== 건물 관련 스키마 ==========
+    Building:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 357
+        buildingName:
+          type: string
+          example: 단독다가구_*
+        address:
+          type: string
+          example: 경기 용인시 기흥구 서천동
+        latitude:
+          type: number
+          format: double
+          example: 37.2430149989299
+        longitude:
+          type: number
+          format: double
+          example: 127.072437437369
+        deposit:
+          type: number
+          format: decimal
+          example: 10000000
+        monthlyRent:
+          type: number
+          format: decimal
+          example: 346666
+        households:
+          type: integer
+          example: 0
+        heatingType:
+          type: string
+          example: 개별난방
+        elevators:
+          type: integer
+          example: 0
+        buildingUsage:
+          type: string
+          example: 기타
+        nearbyConvenienceStores:
+          type: integer
+          example: 0
+        nearbyMarts:
+          type: integer
+          example: 0
+        nearbyHospitals:
+          type: integer
+          example: 0
+        schoolWalkingTime:
+          type: integer
+          example: 17
+        stationWalkingTime:
+          type: integer
+          example: 28
+        scrapCount:
+          type: integer
+          example: 1
+        floorsGround:
+          type: integer
+          example: 0
+        area:
+          type: number
+          format: double
+          example: 17.0
+        constructionYear:
+          type: integer
+          example: 1994
+        roadName:
+          type: string
+          example: 서그내로15번길
+        sampleCount:
+          type: integer
+          example: 3
+        avgPrice:
+          type: number
+          format: decimal
+          example: 10000000.00
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-24T21:09:10.027459"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-10-25T01:18:35.185757"
+        formattedDeposit:
+          type: string
+          example: "1000억"
+        formattedMonthlyRent:
+          type: string
+          example: "34억6천"
+
+    # ========== 스크랩 관련 스키마 ==========
+    BuildingScrap:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        buildingName:
+          type: string
+          example: 단독다가구_4**
+        buildingAddress:
+          type: string
+          example: 경기도 용인시 기흥구 서천동 4**
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-25T01:56:00.968877"
+
+    # ========== 북마크 관련 스키마 ==========
+    Bookmark:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        postId:
+          type: integer
+          example: 123
+        createdAt:
+          type: string
+          format: date-time
+          example: "2025-10-25T01:56:00.968877"
+
+    # ========== 페이징 관련 스키마 ==========
+    PageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items: {}
+        pageable:
+          type: object
+          properties:
+            pageNumber:
+              type: integer
+              example: 0
+            pageSize:
+              type: integer
+              example: 20
+            sort:
+              type: object
+              properties:
+                sorted:
+                  type: boolean
+                  example: true
+                unsorted:
+                  type: boolean
+                  example: false
+                empty:
+                  type: boolean
+                  example: false
+            offset:
+              type: integer
+              example: 0
+            paged:
+              type: boolean
+              example: true
+            unpaged:
+              type: boolean
+              example: false
+        totalPages:
+          type: integer
+          example: 1
+        totalElements:
+          type: integer
+          example: 2
+        last:
+          type: boolean
+          example: true
+        first:
+          type: boolean
+          example: true
+        numberOfElements:
+          type: integer
+          example: 2
+        size:
+          type: integer
+          example: 20
+        number:
+          type: integer
+          example: 0
+        sort:
+          type: object
+          properties:
+            sorted:
+              type: boolean
+              example: true
+            unsorted:
+              type: boolean
+              example: false
+            empty:
+              type: boolean
+              example: false
+        empty:
+          type: boolean
+          example: false
+
+    # ========== 에러 응답 스키마 ==========
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: 요청 처리 중 오류가 발생했습니다.
+        error:
+          type: string
+          example: 구체적인 오류 메시지
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-10-25T01:56:00.968877"

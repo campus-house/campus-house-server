@@ -1,5 +1,6 @@
 package com.example.campus_house.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -85,21 +86,25 @@ public class User extends BaseEntity {
     // 메모 관련
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Memo> memos = new ArrayList<>();
     
     // 게시글 관련
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
     
     // 댓글 관련
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Comment> comments = new ArrayList<>();
     
     // 좋아요 관련
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @JsonIgnore
     private List<Like> likes = new ArrayList<>();
     
     // 저장 관련

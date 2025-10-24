@@ -44,6 +44,8 @@ public class BuildingScrapService {
         BuildingScrap scrap = BuildingScrap.builder()
                 .user(user)
                 .building(building)
+                .buildingName(building.getBuildingName())
+                .buildingAddress(building.getAddress())
                 .build();
         
         BuildingScrap savedScrap = buildingScrapRepository.save(scrap);
