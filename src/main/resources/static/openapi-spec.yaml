@@ -1772,7 +1772,6 @@ components:
       type: object
       required:
         - email
-        - username
         - password
         - nickname
         - userType
@@ -1784,9 +1783,6 @@ components:
           type: string
           format: email
           example: user@example.com
-        username:
-          type: string
-          example: miomio
         password:
           type: string
           minLength: 8
@@ -1813,15 +1809,16 @@ components:
     LoginRequest:
       type: object
       required:
-        - username
+        - email
         - password
       properties:
-        username:
+        email:
           type: string
-          example: miomio
+          format: email
+          example: user@example.com
         password:
           type: string
-          example: miomio
+          example: password123
 
     ChangePasswordRequest:
       type: object
